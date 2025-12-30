@@ -604,7 +604,7 @@
 
     <script>
         // API Configuration
-        const API_URL = 'http://localhost:5000/api';
+        const API_URL = '/api';
         
         const container = document.querySelector('.container');
         const registerBtn = document.querySelector('.register-btn');
@@ -628,6 +628,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
+                    credentials: 'include',
                     body: JSON.stringify({ email })
                 });
                 
@@ -646,6 +647,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
+credentials: 'include',
                     body: JSON.stringify({ email, code, purpose })
                 });
                 
@@ -664,6 +666,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
+credentials: 'include',
                     body: JSON.stringify({ email })
                 });
                 
@@ -682,6 +685,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
+credentials: 'include',
                     body: JSON.stringify({ email, password })
                 });
                 
@@ -700,6 +704,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
+credentials: 'include',
                     body: JSON.stringify(userData)
                 });
                 
@@ -718,6 +723,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
+
                     credentials:'include',
                     body: JSON.stringify({ emailOrPhone, password })
                 });
@@ -737,6 +743,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
+credentials: 'include',
                     body: JSON.stringify({ email, name, googleId })
                 });
                 
@@ -794,7 +801,7 @@
                     alert(`Google Login Successful!\n\nWelcome ${userInfo.name}!`);
                     console.log('User data:', result.user);
                     // Redirect to dashboard
-                    // window.location.href = '/dashboard';
+                    window.location.href = '/dashboard';
                 } else {
                     alert('Error: ' + result.message);
                 }
@@ -851,12 +858,12 @@
             const result = await loginUser(emailOrPhone, password);
             
             if (result.success) {
-                alert('Login successful! Welcome ');
-                console.log('User logged in:', result.user);
                 // Redirect to dashboard
                  window.location.href = '/dashboard';
             } else {
                 alert('Error: ' + result.message);
+submitBtn.disabled = false;
+        submitBtn.textContent = 'Login';
             }
             
             submitBtn.disabled = false;
