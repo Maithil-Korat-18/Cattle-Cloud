@@ -22,22 +22,18 @@ app.register_blueprint(auth)
 
 @app.route("/")
 def home():
-    print(f"Home route - Session: {dict(session)}")
-    return render_template("dashboard.html")
+    return render_template("home.html")
 
 @app.route("/dashboard")
 def dashboard():
-    print(f"Dashboard route - Session: {dict(session)}")
     if "user_id" not in session:
-        print("No user_id in session, redirecting to login")
         return redirect("/login")
     return render_template("dashboard.html")
 
 @app.route("/login")
 def login_page():
     if "user_id" in session:
-        print("User already logged in, redirecting to dashboard")
-        return redirect("/dashboard")
+        return redirect("/")
     return render_template("index.html")
 
 @app.route("/logout")

@@ -801,7 +801,7 @@ credentials: 'include',
                     alert(`Google Login Successful!\n\nWelcome ${userInfo.name}!`);
                     console.log('User data:', result.user);
                     // Redirect to dashboard
-                    window.location.href = '/dashboard';
+                    window.location.href = '/';
                 } else {
                     alert('Error: ' + result.message);
                 }
@@ -859,7 +859,7 @@ credentials: 'include',
             
             if (result.success) {
                 // Redirect to dashboard
-                 window.location.href = '/dashboard';
+                 window.location.href = '/';
             } else {
                 alert('Error: ' + result.message);
 submitBtn.disabled = false;
