@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -205,4 +206,229 @@
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CattleSense | Smart Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2d5a27;
+            --secondary: #8b5a2b;
+            --light: #f4f7f6;
+            --dark: #2c3e50;
+            --white: #ffffff;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--light); color: var(--dark); line-height: 1.6; }
+
+        /* --- Navbar --- */
+        nav {
+            background: white; display: flex; justify-content: space-between; align-items: center;
+            padding: 0.8rem 5%; box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .logo-container { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo-text { font-size: 1.5rem; font-weight: 800; color: var(--primary); letter-spacing: -1px; }
+
+        .nav-links { list-style: none; display: flex; gap: 30px; align-items: center; margin: 0; }
+        .nav-links a { text-decoration: none; color: var(--dark); font-weight: 600; transition: 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+
+        /* Profile Dropdown */
+        .profile-container { position: relative; cursor: pointer; }
+        .dropdown {
+            display: none; position: absolute; right: 0; top: 120%;
+            background: white; border-radius: 8px; width: 180px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); overflow: hidden; border: 1px solid #eee;
+        }
+        .dropdown a { display: block; padding: 12px 15px; font-size: 0.95rem; border-bottom: 1px solid #f0f0f0; text-decoration: none; color: var(--dark); }
+        .dropdown a:hover { background: #f8fef7; }
+
+        /* --- Hero Section --- */
+        .hero { 
+            padding: 100px 5%; text-align: center; 
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1500595046743-cd271d694d30?auto=format&fit=crop&w=1400&q=80'); 
+            background-size: cover; background-position: center; color: white; 
+        }
+        .hero h1 { font-size: 3rem; margin-bottom: 10px; }
+        .btn { background: var(--primary); color: white; padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; display: inline-block; transition: 0.3s; }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+
+        /* --- System Modules Section --- */
+        .section { padding: 60px 5%; }
+        .section-title { text-align: center; margin-bottom: 40px; font-size: 2.2rem; color: var(--primary); font-weight: 700; }
+        
+        .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; }
+        
+        .feature-card {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 25px 15px;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+        .feature-card img {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 15px;
+            object-fit: contain;
+        }
+        .feature-card h5 { margin: 10px 0; font-size: 1.25rem; color: var(--dark); }
+        .feature-card p { font-size: 0.9rem; color: #666; margin: 0; }
+
+        /* --- FAQ --- */
+        .faq-section { padding: 60px 10%; background: #fff; }
+        .faq-item { margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+        .faq-question { padding: 20px; cursor: pointer; display: flex; justify-content: space-between; font-weight: 600; background: #fff; }
+        .faq-answer { max-height: 0; overflow: hidden; transition: 0.3s; background: #f9f9f9; }
+        .faq-item.active .faq-answer { max-height: 100px; padding: 20px; }
+        .faq-item.active .faq-question { color: var(--primary); border-bottom: 1px solid #eee; }
+
+        /* --- Footer --- */
+        footer { background: var(--dark); color: white; padding: 40px 5%; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="#" class="logo-container">
+            <i class="fas fa-bullseye" style="color: var(--primary); font-size: 1.8rem;"></i>
+            <span class="logo-text">CattleSense</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
+{% if session.get("user_id") %}
+        <div class="profile-container" style="position: relative; display: flex; align-items: center; gap: 10px;">
+            <div onclick="toggleDropdown()" style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                <img src="https://ui-avatars.com/api/?name={{ session.get('email') }}&background=2d5a27&color=fff" 
+                     style="width:35px; height:35px; border-radius:50%; border: 2px solid var(--primary);">
+                <span style="font-weight:600; color: var(--dark);"></span>
+            </div>
+
+            <div class="dropdown" id="myDropdown" style="display: none; position: absolute; right: 0; top: 120%; background: white; border-radius: 8px; width: 160px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1001; border: 1px solid #eee;">
+                <a href="/profile" style="display: block; padding: 12px 15px; text-decoration: none; color: var(--dark); border-bottom: 1px solid #f0f0f0;">My Profile</a>
+                <a href="/logout" style="display: block; padding: 12px 15px; text-decoration: none; color: #e74c3c; font-weight: bold;">Logout</a>
+            </div>
+        </div>
+    {% else %}
+        <a href="/login" class="btn btn-primary">Login</a>
+    {% endif %}
+        </ul>
+    </nav>
+
+    <header class="hero">
+        <h1>Precision Cattle Management</h1>
+        <p>Monitor health, milk production, and herd location in one smart platform.</p>
+        <a href="#" class="btn">Get Started Now</a>
+    </header>
+
+    <section class="section">
+        <h2 class="section-title">System Modules</h2>
+        <div class="row">
+            <div class="feature-card" onclick="location.href='/dashboard'">
+                <img src="https://cdn-icons-png.flaticon.com/512/1998/1998610.png" alt="Dashboard">
+                <div class="card-body">
+                    <h5>Dashboard</h5>
+                    <p>Quick overview & statistics</p>
+                </div>
+            </div>
+
+            <div class="feature-card" onclick="location.href='/cattle'">
+                <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="Cattle">
+                <div class="card-body">
+                    <h5>Cattle</h5>
+                    <p>Manage cattle information</p>
+                </div>
+            </div>
+
+            <div class="feature-card" onclick="location.href='/milk-report'">
+                <img src="https://cdn-icons-png.flaticon.com/512/616/616430.png" alt="Milk">
+                <div class="card-body">
+                    <h5>Milk Reports</h5>
+                    <p>Daily & monthly charts</p>
+                </div>
+            </div>
+
+            <div class="feature-card" onclick="location.href='/chatbot'">
+                <img src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png" alt="AI Assistant">
+                <div class="card-body">
+                    <h5>AI Assistant</h5>
+                    <p>Ask cattle-related questions</p>
+                </div>
+            </div>
+
+            <div class="feature-card" onclick="location.href='/health'">
+                <img src="https://cdn-icons-png.flaticon.com/512/2966/2966327.png" alt="Health">
+                <div class="card-body">
+                    <h5>Health</h5>
+                    <p>Track medical history</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="faq-section">
+        <h2 style="text-align: center; color: var(--primary);">Frequently Asked Questions</h2>
+        <div class="faq-item">
+            <div class="faq-question">How do I generate a milk report? <i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer"><p>Navigate to the Milk Reports module and select your desired date range to view production charts.</p></div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Is the AI Assistant available 24/7? <i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer"><p>Yes, our AI assistant is always online to help you with cattle care and platform navigation.</p></div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 CattleSense. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        function toggleDropdown() {
+            const dropdown = document.getElementById("myDropdown");
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
+
+        document.getElementById("loginBtn").onclick = function() {
+            this.style.display = "none";
+            document.getElementById("profileArea").style.display = "block";
+        };
+
+        function logout() {
+            document.getElementById("profileArea").style.display = "none";
+            document.getElementById("loginBtn").style.display = "block";
+            document.getElementById("myDropdown").style.display = "none";
+        }
+
+        document.querySelectorAll('.faq-question').forEach(q => {
+            q.addEventListener('click', () => {
+                const parent = q.parentElement;
+                parent.classList.toggle('active');
+            });
+        });
+
+        window.onclick = function(event) {
+            if (!event.target.matches('.fa-user-circle')) {
+                document.getElementById("myDropdown").style.display = "none";
+            }
+        }
+
+    </script>
+</body>
+>>>>>>> 437af1c6450c2c0e1f8ea3f4895237bcc65a772c
 </html>
