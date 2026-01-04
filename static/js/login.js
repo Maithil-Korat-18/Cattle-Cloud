@@ -1,4 +1,4 @@
-<<<<<<< HEAD:static/js/login.js
+
 // API Configuration
         const API_URL = '/api';
         
@@ -801,4 +801,3 @@
                 el.style.display = 'none';
             });
         }
->>>>>>> 437af1c6450c2c0e1f8ea3f4895237bcc65a772c:templates/index.html
