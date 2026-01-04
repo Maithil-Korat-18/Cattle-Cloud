@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Cattle Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/contact.css') }}">
+</head>
+<body class="dashboard-body">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dashboard" id="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">🐄</div>
+                <span class="brand-name">CattleTrack Pro</span>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="/breeds">Breeds</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('contact') }}" class="active">Contact</a></li>
+            </ul>
+            
+            {% if session.get('user_id') %}
+            <div class="profile-dropdown">
+                <button class="profile-btn" id="profileBtn">
+                    <div class="profile-avatar">{{ session.get('full_name', 'U')[0].upper() }}</div>
+                    <span class="profile-name">{{ session.get('full_name', 'User') }}</span>
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="{{ url_for('profile') }}" class="dropdown-item">
+                        <span>👤</span>
+                        <span>My Profile</span>
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="dropdown-item">
+                        <span>🚪</span>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
+            {% endif %}
+            
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="contact-main">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="contact-header">
+                <h1 class="contact-title">Contact Us</h1>
+                <p class="contact-subtitle">
+                    We'd love to hear from you! Whether you have questions, feedback, or need support, 
+                    our team is here to help you succeed with your cattle management.
+                </p>
+            </div>
+
+            <!-- Contact Content Grid -->
+            <div class="contact-grid">
+                <!-- Contact Information Section -->
+                <div class="contact-info-section">
+                    <h2 class="section-title">Get in Touch</h2>
+                    <p class="section-description">
+                        Have questions about our Cattle Management System? Our support team is 
+                        available to assist you during business hours.
+                    </p>
+
+                    <!-- Contact Cards -->
+                    <div class="contact-info-cards">
+                        <!-- Location Card -->
+                        <div class="info-card">
+                            <div class="info-icon location-icon">📍</div>
+                            <div class="info-content">
+                                <h3>Our Location</h3>
+                                <p>123 Agricultural Lane</p>
+                                <p>Gujarat, India - 380001</p>
+                            </div>
+                        </div>
+
+                        <!-- Email Card -->
+                        <div class="info-card">
+                            <div class="info-icon email-icon">📧</div>
+                            <div class="info-content">
+                                <h3>Email Us</h3>
+                                <p><a href="mailto:support@cattlemanagement.com">support@cattlemanagement.com</a></p>
+                                <p><a href="mailto:info@cattlemanagement.com">info@cattlemanagement.com</a></p>
+                            </div>
+                        </div>
+
+                        <!-- Phone Card -->
+                        <div class="info-card">
+                            <div class="info-icon phone-icon">📞</div>
+                            <div class="info-content">
+                                <h3>Call Us</h3>
+                                <p><a href="tel:+919876543210">+91 98765 43210</a></p>
+                                <p><a href="tel:+919123456789">+91 91234 56789</a></p>
+                            </div>
+                        </div>
+
+                        <!-- Working Hours Card -->
+                        <div class="info-card">
+                            <div class="info-icon hours-icon">🕐</div>
+                            <div class="info-content">
+                                <h3>Working Hours</h3>
+                                <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
+                                <p>Saturday: 9:00 AM - 2:00 PM</p>
+                                <p>Sunday: Closed</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Info -->
+                    <div class="additional-info">
+                        <h3>Need Immediate Support?</h3>
+                        <p>
+                            For urgent technical issues or system downtime, please call our 
+                            24/7 emergency support line at <strong>+91 98765 00000</strong>
+                        </p>
+                    </div>
+
+                    <!-- Social Links -->
+                    <div class="social-section">
+                        <h3>Follow Us</h3>
+                        <div class="social-links-contact">
+                            <a href="#" class="social-link facebook" title="Facebook">
+                                <span>📘</span>
+                            </a>
+                            <a href="#" class="social-link twitter" title="Twitter">
+                                <span>🐦</span>
+                            </a>
+                            <a href="#" class="social-link instagram" title="Instagram">
+                                <span>📷</span>
+                            </a>
+                            <a href="#" class="social-link linkedin" title="LinkedIn">
+                                <span>💼</span>
+                            </a>
+                            <a href="#" class="social-link youtube" title="YouTube">
+                                <span>📺</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form Section -->
+                <div class="contact-form-section">
+                    <div class="form-container">
+                        <h2 class="form-title">Send Us a Message</h2>
+                        <p class="form-description">
+                            Fill out the form below and we'll get back to you as soon as possible.
+                        </p>
+
+                        <!-- Success Alert (Hidden by default) -->
+                        <div id="successAlert" class="alert alert-success" style="display: none;">
+                            <span class="alert-icon">✓</span>
+                            <div class="alert-content">
+                                <strong>Success!</strong>
+                                <p>Your message has been sent successfully. We'll get back to you soon!</p>
+                            </div>
+                            <button class="alert-close" onclick="closeAlert()">×</button>
+                        </div>
+
+                        <!-- Error Alert (Hidden by default) -->
+                        <div id="errorAlert" class="alert alert-error" style="display: none;">
+                            <span class="alert-icon">⚠</span>
+                            <div class="alert-content">
+                                <strong>Error!</strong>
+                                <p id="errorMessage">Something went wrong. Please try again.</p>
+                            </div>
+                            <button class="alert-close" onclick="closeErrorAlert()">×</button>
+                        </div>
+
+                        <!-- Contact Form -->
+                        <form id="contactForm" class="contact-form" onsubmit="handleSubmit(event)">
+                            <!-- Full Name Field -->
+                            <div class="form-group">
+                                <label for="fullName" class="form-label">
+                                    Full Name <span class="required">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="fullName" 
+                                    name="fullName" 
+                                    class="form-input"
+                                    placeholder="Enter your full name"
+                                    required
+                                    minlength="3"
+                                >
+                            </div>
+
+                            <!-- Email Field -->
+                            <div class="form-group">
+                                <label for="email" class="form-label">
+                                    Email Address <span class="required">*</span>
+                                </label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    name="email" 
+                                    class="form-input"
+                                    placeholder="your.email@example.com"
+                                    required
+                                >
+                            </div>
+
+                            <!-- Subject Field -->
+                            <div class="form-group">
+                                <label for="subject" class="form-label">
+                                    Subject <span class="required">*</span>
+                                </label>
+                                <select id="subject" name="subject" class="form-input" required>
+                                    <option value="">Select a subject</option>
+                                    <option value="general">General Inquiry</option>
+                                    <option value="support">Technical Support</option>
+                                    <option value="feedback">Feedback</option>
+                                    <option value="feature">Feature Request</option>
+                                    <option value="billing">Billing Question</option>
+                                    <option value="partnership">Partnership Opportunity</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+
+                            <!-- Message Field -->
+                            <div class="form-group">
+                                <label for="message" class="form-label">
+                                    Message <span class="required">*</span>
+                                </label>
+                                <textarea 
+                                    id="message" 
+                                    name="message" 
+                                    class="form-textarea"
+                                    placeholder="Type your message here..."
+                                    rows="6"
+                                    required
+                                    minlength="10"
+                                ></textarea>
+                                <span class="char-count">
+                                    <span id="charCount">0</span> characters
+                                </span>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn-submit" id="submitBtn">
+                                <span class="btn-text">Send Message</span>
+                                <span class="btn-loader" style="display: none;">
+                                    <span class="loader"></span> Sending...
+                                </span>
+                            </button>
+                        </form>
+
+                        <!-- Form Footer -->
+                        <div class="form-footer">
+                            <p>
+                                <strong>Note:</strong> Fields marked with 
+                                <span class="required">*</span> are required.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="contact-faq-section">
+                <h2 class="section-title text-center">Frequently Asked Questions</h2>
+                <p class="section-description text-center">
+                    Quick answers to common questions. Can't find what you're looking for? Contact us!
+                </p>
+
+                <div class="faq-grid">
+                    <div class="faq-item-contact">
+                        <h3>How quickly will I get a response?</h3>
+                        <p>
+                            We typically respond to all inquiries within 24 hours during business days. 
+                            For urgent technical issues, please call our support line.
+                        </p>
+                    </div>
+
+                    <div class="faq-item-contact">
+                        <h3>Do you offer phone support?</h3>
+                        <p>
+                            Yes! Our phone support is available Monday-Friday from 9 AM to 6 PM IST, 
+                            and Saturday from 9 AM to 2 PM IST.
+                        </p>
+                    </div>
+
+                    <div class="faq-item-contact">
+                        <h3>Can I schedule a demo?</h3>
+                        <p>
+                            Absolutely! Contact us via email or phone to schedule a personalized 
+                            demo of our Cattle Management System.
+                        </p>
+                    </div>
+
+                    <div class="faq-item-contact">
+                        <h3>What information should I include?</h3>
+                        <p>
+                            Please provide as much detail as possible about your inquiry, including 
+                            farm size, current challenges, and specific features you're interested in.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-simple">
+        <div class="container">
+            <p>&copy; 2024 CattleTrack Pro. All rights reserved. | Empowering Farmers with Technology</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/contact.js') }}"></script>
+</body>
+</html>

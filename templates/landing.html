@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cattle Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">🐄</div>
+                <span class="brand-name">Cattle Cloud</span>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home" class="active">Home</a></li>
+                <li><a href="/login">Dashboard</a></li>
+                <li><a href="/breeds">Breeds</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+            <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">Modern Cattle Management Made Simple</h1>
+                <p class="hero-description">
+                    Streamline your farm operations with our comprehensive cattle management system. 
+                    Track milk yield, monitor health, manage feed, and access breed information all in one place.
+                </p>
+                <div class="hero-buttons">
+                    <a href="{{ url_for('login') }}" class="btn btn-large btn-primary">Get Started</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="https://images.unsplash.com/photo-1560493676-04071c5f467b?w=800&h=600&fit=crop" alt="Cattle Farm">
+            </div>
+        </div>
+    </section>
+
+    <!-- System Modules Section -->
+    <section class="modules" id="dashboard">
+        <div class="container">
+            <h2 class="section-title">System Modules</h2>
+            <p class="section-subtitle">Comprehensive tools to manage every aspect of your cattle farm</p>
+            
+            <div class="module-grid">
+                <a href="{{ url_for('login') }}" class="module-card">
+                    <div class="module-icon">📊</div>
+                    <h3>Milk Yield Tracking</h3>
+                    <p>Monitor daily, weekly, and monthly milk production with detailed analytics and trends.</p>
+                </a>
+                
+                <a href="{{ url_for('login') }}" class="module-card">
+                    <div class="module-icon">🏥</div>
+                    <h3>Health Monitoring</h3>
+                    <p>Keep track of vaccinations, treatments, and regular health checkups for each animal.</p>
+                </a>
+                
+                <a href="{{ url_for('login') }}" class="module-card">
+                    <div class="module-icon">🌾</div>
+                    <h3>Feed Management</h3>
+                    <p>Optimize feed schedules, track inventory, and manage nutrition for better productivity.</p>
+                </a>
+                
+                <a href="{{ url_for('login') }}" class="module-card">
+                    <div class="module-icon">🐮</div>
+                    <h3>Breeds Information</h3>
+                    <p>Access comprehensive breed database with characteristics and care requirements.</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="breeds">
+        <div class="container">
+            <h2 class="section-title">Why Choose CattleTrack Pro?</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Real-time Updates</h3>
+                    <p>Get instant notifications and updates on your cattle's health and production metrics.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📱</div>
+                    <h3>Mobile Friendly</h3>
+                    <p>Access your farm data anywhere, anytime from any device with responsive design.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Secure & Reliable</h3>
+                    <p>Your data is protected with industry-standard security protocols and encryption.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📈</div>
+                    <h3>Analytics & Reports</h3>
+                    <p>Generate detailed reports and insights to make data-driven farming decisions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq" id="about">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What is CattleTrack Pro?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        CattleTrack Pro is a comprehensive cattle management system designed to help farmers and ranchers 
+                        efficiently manage their livestock operations. It includes modules for tracking milk production, 
+                        monitoring animal health, managing feed schedules, and maintaining breed information.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How does milk yield tracking work?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Our milk yield tracking module allows you to record daily production for each animal. 
+                        The system automatically calculates weekly and monthly averages, identifies trends, 
+                        and generates visual reports to help you optimize production.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can I track health records for individual cattle?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Yes! Each animal has a detailed health profile where you can log vaccinations, 
+                        treatments, checkups, and any health issues. The system sends reminders for 
+                        upcoming vaccinations and scheduled checkups.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Is the system suitable for small farms?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Absolutely! CattleTrack Pro is designed to scale with your operation. Whether you have 
+                        5 cattle or 500, our system adapts to your needs. Small farms benefit from simplified 
+                        management, while larger operations enjoy advanced analytics and reporting features.
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How do I get started?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Getting started is easy! Click the "Get Started" or "Login" button to access the system. 
+                        For demo purposes, you can use username: "admin" with password: "admin123" or 
+                        username: "farmer" with password: "farmer123".
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>CattleTrack Pro</h3>
+                    <p>Modern cattle management solution for progressive farmers.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-icon">📘</a>
+                        <a href="#" class="social-icon">🐦</a>
+                        <a href="#" class="social-icon">📷</a>
+                        <a href="#" class="social-icon">💼</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#dashboard">Dashboard</a></li>
+                        <li><a href="#breeds">Features</a></li>
+                        <li><a href="{{ url_for('login') }}">Login</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>📧 info@cattletrack.com</li>
+                        <li>📞 +1 (555) 123-4567</li>
+                        <li>📍 123 Farm Road, Agriculture City</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#about">FAQ</a></li>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Support Center</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 CattleTrack Pro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

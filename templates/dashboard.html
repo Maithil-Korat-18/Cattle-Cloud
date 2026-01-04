@@ -1,181 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ACME Dashboard</title>
-
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial;
-      min-height: 200vh;
-      display: flex;
-      flex-direction: column;
-      background: linear-gradient(135deg,#ff9a9e,#fad0c4,#fbc2eb,#a18cd1);
-      background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
-    }
-
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    .navbar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 2rem;
-      background: rgba(255,255,255,0.1);
-      backdrop-filter: blur(20px);
-      box-shadow: 0 8px 30px rgba(0,0,0,.15);
-      z-index: 1000;
-    }
-
-    .navbar-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 800;
-      font-size: 1.2rem;
-      text-decoration: none;
-      color: #333;
-    }
-
-    .navbar-content {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
-
-    .navbar-item a {
-      text-decoration: none;
-      color: #444;
-      font-weight: 500;
-      padding: 8px 12px;
-      border-radius: 8px;
-      transition: 0.3s;
-    }
-
-    .navbar-item a:hover {
-      background: rgba(102,126,234,.15);
-    }
-
-    .btn {
-      padding: 10px 18px;
-      border-radius: 10px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      border: none;
-      transition: .3s;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg,#667eea,#764ba2);
-      color: white;
-    }
-
-    .btn-outline {
-      border: 2px solid #667eea;
-      color: #667eea;
-      background: transparent;
-    }
-
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,0,0,.2);
-    }
-
-    .main-content {
-      padding-top: 110px;
-      max-width: 1200px;
-      margin: auto;
-      padding-left: 20px;
-      padding-right: 20px;
-    }
-
-    .content-card {
-      background: rgba(255,255,255,.9);
-      border-radius: 20px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,.1);
-    }
-
-    footer {
-      margin-top: auto;
-      text-align: center;
-      padding: 20px;
-      background: rgba(255,255,255,0.15);
-      backdrop-filter: blur(15px);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Cattle Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
+<body class="dashboard-body">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dashboard" id="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">🐄</div>
+                <span class="brand-name">Cattle Cloud</span>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('dashboard') }}" class="active">Dashboard</a></li>
+                <li><a href="/breeds">Breeds</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+            <div class="profile-dropdown">
+                <button class="profile-btn" id="profileBtn">
+                    <div class="profile-avatar">{{ username[0].upper() }}</div>
+                    <span class="profile-name">{{ username }}</span>
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="{{ url_for('profile') }}" class="dropdown-item">
+                        <span>👤</span>
+                        <span>My Profile</span>
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="dropdown-item">
+                        <span>🚪</span>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
 
-<body>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="page-subtitle">Comprehensive overview of your cattle farm operations</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary btn-small">📊 Export Report</button>
+                    <button class="btn btn-primary btn-small">➕ Add Record</button>
+                </div>
+            </div>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-  <a href="/" class="navbar-brand">ACME</a>
+            <!-- Summary Stats -->
+            <div class="stats-row">
+                <div class="stat-card-small">
+                    <p class="stat-label">Total Cattle</p>
+                    <p class="stat-number">{{ data.total_cattle }}</p>
+                </div>
+                <div class="stat-card-small">
+                    <p class="stat-label">Avg Daily Milk</p>
+                    <p class="stat-number">{{ (data.weekly_milk | sum / 7) | round(0) | int }}L</p>
+                </div>
+                <div class="stat-card-small">
+                    <p class="stat-label">Healthy</p>
+                    <p class="stat-number">{{ data.total_cattle - data.health_alerts }}</p>
+                </div>
+                <div class="stat-card-small">
+                    <p class="stat-label">Need Attention</p>
+                    <p class="stat-number">{{ data.health_alerts }}</p>
+                </div>
+            </div>
 
-  <div class="navbar-content">
+            <!-- Charts Section -->
+            <div class="dashboard-grid">
+                <!-- Weekly Milk Production -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Weekly Milk Production</h3>
+                        <select class="filter-select">
+                            <option>This Week</option>
+                            <option>Last Week</option>
+                            <option>Last Month</option>
+                        </select>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="weeklyChart"></canvas>
+                        <div class="bar-chart">
+                            {% for value in data.weekly_milk %}
+                            <div class="bar-wrapper">
+                                <div class="bar" style="height: {{ (value / 200) * 100 }}%">
+                                    <span class="bar-value">{{ value }}L</span>
+                                </div>
+                                <span class="bar-x-label">Day {{ loop.index }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
 
-    <div class="navbar-item"><a href="#">Features</a></div>
-    <div class="navbar-item"><a href="#">Pricing</a></div>
-    <div class="navbar-item"><a href="#">About</a></div>
-<div class="navbar-item"><a href="/chatbot">Cattle AI</a></div>
-    {% if session.get("user_id") %}
-        <!-- LOGGED IN -->
-        <span style="font-weight:600;">
-          {{ session.get("email") }}
-        </span>
-        <a href="/logout" class="btn btn-outline">Logout</a>
-    {% else %}
-        <!-- NOT LOGGED IN -->
-        <a href="/login" class="btn btn-primary">Login</a>
-    {% endif %}
-  </div>
-</nav>
+                <!-- Monthly Milk Trend -->
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Monthly Milk Trend</h3>
+                        <select class="filter-select">
+                            <option>Last 6 Months</option>
+                            <option>Last Year</option>
+                        </select>
+                    </div>
+                    <div class="chart-container">
+                        <div class="line-chart">
+                            {% for value in data.monthly_milk %}
+                            <div class="line-point" style="bottom: {{ (value / 6000) * 100 }}%">
+                                <div class="point-dot"></div>
+                                <span class="point-value">{{ value }}L</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="chart-labels">
+                            <span>Aug</span>
+                            <span>Sep</span>
+                            <span>Oct</span>
+                            <span>Nov</span>
+                            <span>Dec</span>
+                            <span>Jan</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-<!-- MAIN -->
-<main class="main-content">
-  <div class="content-card">
-    <h1>Welcome to ACME</h1>
+            <!-- Cattle List -->
+            <div class="dashboard-card full-width">
+                <div class="card-header">
+                    <h3>Cattle Inventory</h3>
+                    <div class="card-actions">
+                        <input type="text" placeholder="Search cattle..." class="search-input">
+                        <button class="btn btn-primary btn-small">➕ Add Cattle</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Breed</th>
+                                <th>Age</th>
+                                <th>Health Status</th>
+                                <th>Milk Today</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cattle in data.cattle_list %}
+                            <tr>
+                                <td><strong>{{ cattle.id }}</strong></td>
+                                <td>{{ cattle.name }}</td>
+                                <td>{{ cattle.breed }}</td>
+                                <td>{{ cattle.age }} years</td>
+                                <td>
+                                    <span class="status-badge status-{{ cattle.health.lower() }}">
+                                        {{ cattle.health }}
+                                    </span>
+                                </td>
+                                <td>{{ cattle.milk_today }}L</td>
+                                <td>
+                                    <button class="btn-icon" title="View Details">👁️</button>
+                                    <button class="btn-icon" title="Edit">✏️</button>
+                                    <button class="btn-icon" title="Delete">🗑️</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-    {% if session.get("user_id") %}
-      <p>You are logged in successfully. You can now manage your cattle and milk records.</p>
-    {% else %}
-      <p>Please login to manage your cattle, milk production, and analytics.</p>
-    {% endif %}
-  </div>
+            <!-- Health Records -->
+            <div class="dashboard-grid-2">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Recent Health Records</h3>
+                        <a href="#" class="view-all-link">View All →</a>
+                    </div>
+                    <div class="records-list">
+                        {% for record in data.health_records %}
+                        <div class="record-item">
+                            <div class="record-icon">
+                                {% if record.status == 'Completed' %}
+                                ✅
+                                {% else %}
+                                ⏳
+                                {% endif %}
+                            </div>
+                            <div class="record-content">
+                                <p class="record-title">{{ record.issue }} - {{ record.cattle_id }}</p>
+                                <p class="record-meta">{{ record.date }} • {{ record.status }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
 
-  <div class="content-card">
-    <h2>Features</h2>
-    <ul>
-      <li>🐄 Cattle Management</li>
-      <li>🥛 Daily Milk Records</li>
-      <li>📊 Production Analytics</li>
-      <li>📈 Growth Tracking</li>
-      <li>🔐 Secure Login System</li>
-    </ul>
-  </div>
-</main>
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Feed Inventory</h3>
+                        <a href="#" class="view-all-link">View All →</a>
+                    </div>
+                    <div class="records-list">
+                        {% for feed in data.feed_records %}
+                        <div class="record-item">
+                            <div class="record-icon">🌾</div>
+                            <div class="record-content">
+                                <p class="record-title">{{ feed.type }} - {{ feed.quantity }}</p>
+                                <p class="record-meta">{{ feed.date }} • {{ feed.cost }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
 
-<footer>
-  <p>© 2025 ACME. All rights reserved.</p>
-</footer>
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h3>Quick Actions</h3>
+                <div class="action-buttons">
+                    <button class="action-btn">
+                        <span class="action-icon">📝</span>
+                        <span>Record Milk</span>
+                    </button>
+                    <button class="action-btn">
+                        <span class="action-icon">💉</span>
+                        <span>Add Health Record</span>
+                    </button>
+                    <button class="action-btn">
+                        <span class="action-icon">🌾</span>
+                        <span>Update Feed</span>
+                    </button>
+                    <button class="action-btn">
+                        <span class="action-icon">🐄</span>
+                        <span>Add Cattle</span>
+                    </button>
+                    <button class="action-btn">
+                        <span class="action-icon">📊</span>
+                        <span>Generate Report</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-simple">
+        <div class="container">
+            <p>&copy; 2024 CattleTrack Pro. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

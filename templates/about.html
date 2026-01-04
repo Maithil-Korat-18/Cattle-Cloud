@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Cattle Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">
+</head>
+<body class="dashboard-body">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dashboard" id="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">🐄</div>
+                <span class="brand-name">CattleTrack Pro</span>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="/breeds">Breeds</a></li>
+                <li><a href="{{ url_for('about') }}"class="active">About</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
+            </ul>
+            
+            {% if session.get('user_id') %}
+            <div class="profile-dropdown">
+                <button class="profile-btn" id="profileBtn">
+                    <div class="profile-avatar">{{ session.get('full_name', 'U')[0].upper() }}</div>
+                    <span class="profile-name">{{ session.get('full_name', 'User') }}</span>
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="{{ url_for('profile') }}" class="dropdown-item">
+                        <span>👤</span>
+                        <span>My Profile</span>
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="dropdown-item">
+                        <span>🚪</span>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
+            {% endif %}
+            
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="about-main">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="about-header">
+                <h1 class="about-title">About Cattle Management System</h1>
+                <p class="about-subtitle">Empowering farmers with modern technology for efficient cattle farm management</p>
+            </div>
+
+            <!-- Introduction Section -->
+            <section class="about-section intro-section">
+                <div class="section-content">
+                    <div class="intro-text">
+                        <h2 class="section-heading">Our Mission</h2>
+                        <p class="intro-paragraph">
+                            CattleTrack Pro is a comprehensive digital solution designed to revolutionize the way 
+                            farmers and dairy owners manage their cattle operations. Our mission is to bridge the 
+                            gap between traditional farming methods and modern technology, making farm management 
+                            more efficient, data-driven, and profitable.
+                        </p>
+                        <p class="intro-paragraph">
+                            We understand the challenges faced by cattle farmers in maintaining detailed records, 
+                            tracking health metrics, managing feed inventories, and optimizing milk production. 
+                            Our system provides an all-in-one platform that simplifies these complex tasks while 
+                            providing valuable insights for better decision-making.
+                        </p>
+                    </div>
+                    <div class="intro-image">
+                        <img src="https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=600&h=400&fit=crop" alt="Cattle Farm">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Problem Statement Section -->
+            <section class="about-section problem-section">
+                <h2 class="section-heading text-center">The Challenge</h2>
+                <p class="section-description text-center">
+                    Traditional cattle management faces numerous obstacles that impact productivity and profitability
+                </p>
+                
+                <div class="problem-grid">
+                    <div class="problem-card">
+                        <div class="problem-icon">📝</div>
+                        <h3>Manual Record Keeping</h3>
+                        <p>
+                            Farmers maintain paper-based records that are difficult to organize, prone to loss, 
+                            and time-consuming to update and retrieve.
+                        </p>
+                    </div>
+                    
+                    <div class="problem-card">
+                        <div class="problem-icon">📊</div>
+                        <h3>Lack of Analytics</h3>
+                        <p>
+                            Without proper data analysis tools, identifying trends in milk production, health issues, 
+                            or feed efficiency becomes nearly impossible.
+                        </p>
+                    </div>
+                    
+                    <div class="problem-card">
+                        <div class="problem-icon">⏰</div>
+                        <h3>Missed Schedules</h3>
+                        <p>
+                            Vaccination dates, health checkups, and breeding schedules are often missed due to 
+                            lack of automated reminders and tracking systems.
+                        </p>
+                    </div>
+                    
+                    <div class="problem-card">
+                        <div class="problem-icon">💰</div>
+                        <h3>Resource Wastage</h3>
+                        <p>
+                            Poor inventory management leads to overstocking or understocking of feed, medicines, 
+                            and other resources, resulting in financial losses.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Solution Section -->
+            <section class="about-section solution-section">
+                <h2 class="section-heading text-center">Our Solution</h2>
+                <p class="section-description text-center">
+                    A comprehensive digital platform that addresses all aspects of cattle farm management
+                </p>
+                
+                <div class="solution-content">
+                    <div class="solution-image">
+                        <img src="https://images.unsplash.com/photo-1559523161-0fc0e8059c34?w=600&h=400&fit=crop" alt="Digital Solution">
+                    </div>
+                    <div class="solution-text">
+                        <div class="solution-item">
+                            <div class="solution-number">01</div>
+                            <div class="solution-details">
+                                <h3>Digital Record Management</h3>
+                                <p>
+                                    Store and access all cattle information digitally. Track individual animal 
+                                    records, health history, milk production, and breeding information in one place.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="solution-item">
+                            <div class="solution-number">02</div>
+                            <div class="solution-details">
+                                <h3>Real-time Analytics</h3>
+                                <p>
+                                    Get instant insights through visual charts and graphs. Monitor milk production 
+                                    trends, identify underperforming cattle, and make data-driven decisions.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="solution-item">
+                            <div class="solution-number">03</div>
+                            <div class="solution-details">
+                                <h3>Automated Alerts</h3>
+                                <p>
+                                    Never miss important schedules with automated reminders for vaccinations, 
+                                    health checkups, breeding cycles, and feed restocking.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="solution-item">
+                            <div class="solution-number">04</div>
+                            <div class="solution-details">
+                                <h3>Mobile Accessibility</h3>
+                                <p>
+                                    Access your farm data anytime, anywhere from any device. Our responsive 
+                                    design ensures seamless experience on phones, tablets, and computers.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Key Features Section -->
+            <section class="about-section features-section">
+                <h2 class="section-heading text-center">Key Features</h2>
+                <p class="section-description text-center">
+                    Comprehensive tools designed to streamline every aspect of cattle farm operations
+                </p>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <div class="feature-icon">🥛</div>
+                        </div>
+                        <h3>Milk Yield Tracking</h3>
+                        <ul class="feature-list">
+                            <li>Daily, weekly, and monthly milk production records</li>
+                            <li>Individual cattle milk output tracking</li>
+                            <li>Production trend analysis and forecasting</li>
+                            <li>Automated calculations and reports</li>
+                            <li>Historical data comparison</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <div class="feature-icon">🏥</div>
+                        </div>
+                        <h3>Health Monitoring</h3>
+                        <ul class="feature-list">
+                            <li>Complete medical history for each animal</li>
+                            <li>Vaccination schedule and reminders</li>
+                            <li>Disease and treatment tracking</li>
+                            <li>Veterinary visit records</li>
+                            <li>Health status alerts and notifications</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <div class="feature-icon">🌾</div>
+                        </div>
+                        <h3>Feed Management</h3>
+                        <ul class="feature-list">
+                            <li>Feed inventory tracking and alerts</li>
+                            <li>Customized feeding schedules</li>
+                            <li>Nutrition planning and optimization</li>
+                            <li>Feed cost analysis and budgeting</li>
+                            <li>Supplier management</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <div class="feature-icon">🐮</div>
+                        </div>
+                        <h3>Breed Information</h3>
+                        <ul class="feature-list">
+                            <li>Comprehensive breed database</li>
+                            <li>Breed characteristics and traits</li>
+                            <li>Care requirements for different breeds</li>
+                            <li>Expected milk production by breed</li>
+                            <li>Breeding recommendations</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <div class="feature-icon">📊</div>
+                        </div>
+                        <h3>User Dashboard</h3>
+                        <ul class="feature-list">
+                            <li>Personalized overview of farm operations</li>
+                            <li>Real-time statistics and metrics</li>
+                            <li>Quick access to important data</li>
+                            <li>Visual charts and graphs</li>
+                            <li>Customizable dashboard layout</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <div class="feature-icon">📱</div>
+                        </div>
+                        <h3>Reports & Analytics</h3>
+                        <ul class="feature-list">
+                            <li>Detailed performance reports</li>
+                            <li>Financial analysis and profit tracking</li>
+                            <li>Export data in multiple formats</li>
+                            <li>Comparative analysis tools</li>
+                            <li>Predictive analytics</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Target Users Section -->
+            <section class="about-section users-section">
+                <h2 class="section-heading text-center">Who Benefits?</h2>
+                <p class="section-description text-center">
+                    Our system is designed for various stakeholders in the cattle farming industry
+                </p>
+                
+                <div class="users-grid">
+                    <div class="user-card">
+                        <div class="user-avatar">👨‍🌾</div>
+                        <h3>Small-Scale Farmers</h3>
+                        <p>
+                            Individual farmers managing 5-50 cattle can use our system to maintain organized 
+                            records, track milk production, and ensure timely health care for their animals. 
+                            The system helps them compete with larger operations through better management.
+                        </p>
+                        <div class="user-benefits">
+                            <span class="benefit-tag">Easy Record Keeping</span>
+                            <span class="benefit-tag">Cost Effective</span>
+                            <span class="benefit-tag">Mobile Friendly</span>
+                        </div>
+                    </div>
+                    
+                    <div class="user-card">
+                        <div class="user-avatar">🏭</div>
+                        <h3>Dairy Farm Owners</h3>
+                        <p>
+                            Large-scale dairy operations managing hundreds of cattle benefit from comprehensive 
+                            analytics, staff management features, and detailed reporting capabilities. Scale 
+                            your operations efficiently with centralized data management.
+                        </p>
+                        <div class="user-benefits">
+                            <span class="benefit-tag">Advanced Analytics</span>
+                            <span class="benefit-tag">Multi-user Access</span>
+                            <span class="benefit-tag">Scalable Solution</span>
+                        </div>
+                    </div>
+                    
+                    <div class="user-card">
+                        <div class="user-avatar">🏪</div>
+                        <h3>Cooperative Societies</h3>
+                        <p>
+                            Dairy cooperatives can manage multiple member farms, track collective milk 
+                            production, coordinate resources, and generate consolidated reports for better 
+                            decision-making and fair distribution of resources.
+                        </p>
+                        <div class="user-benefits">
+                            <span class="benefit-tag">Member Management</span>
+                            <span class="benefit-tag">Consolidated Reports</span>
+                            <span class="benefit-tag">Resource Sharing</span>
+                        </div>
+                    </div>
+                    
+                    <div class="user-card">
+                        <div class="user-avatar">🔬</div>
+                        <h3>Agricultural Consultants</h3>
+                        <p>
+                            Veterinarians and agricultural consultants can use the system to monitor multiple 
+                            farms, provide data-driven recommendations, and track the implementation of their 
+                            advice across different farming operations.
+                        </p>
+                        <div class="user-benefits">
+                            <span class="benefit-tag">Client Management</span>
+                            <span class="benefit-tag">Data Analysis</span>
+                            <span class="benefit-tag">Professional Reports</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Future Scope Section -->
+            <section class="about-section future-section">
+                <h2 class="section-heading text-center">Future Roadmap</h2>
+                <p class="section-description text-center">
+                    We're constantly evolving to meet the changing needs of modern agriculture
+                </p>
+                
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <div class="marker-icon">🎯</div>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>AI-Powered Insights</h3>
+                            <p>
+                                Implement machine learning algorithms to predict milk production trends, 
+                                detect early signs of diseases, and provide intelligent recommendations 
+                                for optimal farm management.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <div class="marker-icon">📱</div>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Mobile Application</h3>
+                            <p>
+                                Launch dedicated iOS and Android apps with offline functionality, allowing 
+                                farmers to update records even without internet connectivity, with automatic 
+                                sync when connection is restored.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <div class="marker-icon">🔗</div>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>IoT Integration</h3>
+                            <p>
+                                Connect with smart sensors and IoT devices for automated milk measurement, 
+                                body temperature monitoring, and feeding automation. Real-time data collection 
+                                from connected devices.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <div class="marker-icon">🌍</div>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Multi-Language Support</h3>
+                            <p>
+                                Expand accessibility by adding support for regional languages, making the 
+                                system usable for farmers across different regions and countries with 
+                                localized content and currency support.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <div class="marker-icon">🤝</div>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Marketplace Integration</h3>
+                            <p>
+                                Connect farmers directly with buyers, feed suppliers, and veterinary services. 
+                                Enable e-commerce capabilities for buying and selling cattle, milk, and 
+                                farm products.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-marker">
+                            <div class="marker-icon">💳</div>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Financial Management</h3>
+                            <p>
+                                Advanced accounting features including income and expense tracking, profit 
+                                analysis, tax calculations, and integration with banking systems for 
+                                seamless financial management.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Call to Action -->
+            <section class="about-section cta-section">
+                <div class="cta-content">
+                    <h2>Ready to Transform Your Farm?</h2>
+                    <p>Join thousands of farmers who are already benefiting from modern cattle management</p>
+                    <div class="cta-buttons">
+                        {% if session.get('user_id') %}
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-large">Go to Dashboard</a>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-large">Get Started Today</a>
+                        <a href="#contact" class="btn btn-secondary btn-large">Contact Us</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-simple">
+        <div class="container">
+            <p>&copy; 2024 CattleTrack Pro. All rights reserved. | Empowering Farmers with Technology</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

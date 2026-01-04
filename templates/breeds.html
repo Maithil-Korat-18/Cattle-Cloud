@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cattle Breeds - Cattle Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/breeds.css') }}">
+</head>
+<body class="dashboard-body">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dashboard" id="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">🐄</div>
+                <span class="brand-name">CattleTrack Pro</span>
+            </div>
+<ul class="nav-menu" id="navMenu">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="/breeds" class="active">Breeds</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('contact') }}" >Contact</a></li>
+            </ul>
+            
+            {% if session.get('user_id') %}
+            <div class="profile-dropdown">
+                <button class="profile-btn" id="profileBtn">
+                    <div class="profile-avatar">{{ session.get('full_name', 'U')[0].upper() }}</div>
+                    <span class="profile-name">{{ session.get('full_name', 'User') }}</span>
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="{{ url_for('profile') }}" class="dropdown-item">
+                        <span>👤</span>
+                        <span>My Profile</span>
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="dropdown-item">
+                        <span>🚪</span>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
+            {% endif %}
+            
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="breeds-main">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="breeds-header">
+                <h1 class="breeds-title">Milk-Producing Cattle Breeds</h1>
+                <p class="breeds-subtitle">
+                    Explore the characteristics, origins, and milk production capabilities of various cattle breeds 
+                    suitable for dairy farming in different climatic conditions.
+                </p>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <div class="filter-container">
+                    <h3 class="filter-title">Filter Breeds</h3>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all" onclick="filterBreeds('all')">
+                            <span class="filter-icon">🌍</span>
+                            <span>All Breeds</span>
+                            <span class="filter-count" id="count-all">10</span>
+                        </button>
+                        <button class="filter-btn" data-filter="indian" onclick="filterBreeds('indian')">
+                            <span class="filter-icon">🇮🇳</span>
+                            <span>Indian Breeds</span>
+                            <span class="filter-count" id="count-indian">5</span>
+                        </button>
+                        <button class="filter-btn" data-filter="foreign" onclick="filterBreeds('foreign')">
+                            <span class="filter-icon">🌐</span>
+                            <span>Foreign Breeds</span>
+                            <span class="filter-count" id="count-foreign">5</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        id="breedSearch" 
+                        class="search-input" 
+                        placeholder="Search breeds by name..."
+                        onkeyup="searchBreeds()"
+                    >
+                    <span class="search-icon">🔍</span>
+                </div>
+            </div>
+
+            <!-- Stats Section -->
+            <div class="stats-section">
+                <div class="stat-box">
+                    <div class="stat-number">10</div>
+                    <div class="stat-label">Total Breeds</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Indian Breeds</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Foreign Breeds</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">15-30L</div>
+                    <div class="stat-label">Avg. Milk/Day</div>
+                </div>
+            </div>
+
+            <!-- Breeds Grid -->
+            <div class="breeds-grid" id="breedsGrid">
+                <!-- Gir -->
+                <div class="breed-card" data-type="indian">
+                    <div class="breed-image">
+                        <img src="https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=400&h=300&fit=crop" alt="Gir Cattle">
+                        <div class="breed-badge indian-badge">Indian</div>
+                    </div>
+                    <div class="breed-content">
+                        <h3 class="breed-name">Gir</h3>
+                        <div class="breed-origin">
+                            <span class="icon">📍</span>
+                            <span>Gujarat, India</span>
+                        </div>
+                        <div class="breed-milk">
+                            <span class="icon">🥛</span>
+                            <span class="milk-amount">10-15 Liters/day</span>
+                        </div>
+                        <div class="breed-characteristics">
+                            <h4>Key Characteristics:</h4>
+                            <ul>
+                                <li>Long, pendulous ears</li>
+                                <li>Convex forehead with prominent horns</li>
+                                <li>High butterfat content in milk</li>
+                                <li>Disease resistant breed</li>
+                            </ul>
+                        </div>
+                        <div class="breed-adaptability">
+                            <h4>Adaptability:</h4>
+                            <div class="adaptability-tags">
+                                <span class="tag-hot">Hot Climate</span>
+                                <span class="tag-tropical">Tropical</span>
+                                <span class="tag-drought">Drought Resistant</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sahiwal -->
+                <div class="breed-card" data-type="indian">
+                    <div class="breed-image">
+                        <img src="https://images.unsplash.com/photo-1560493676-04071c5f467b?w=400&h=300&fit=crop" alt="Sahiwal Cattle">
+                        <div class="breed-badge indian-badge">Indian</div>
+                    </div>
+                    <div class="breed-content">
+                        <h3 class="breed-name">Sahiwal</h3>
+                        <div class="breed-origin">
+                            <span class="icon">📍</span>
+                            <span>Punjab, India/Pakistan</span>
+                        </div>
+                        <div class="breed-milk">
+                            <span class="icon">🥛</span>
+                            <span class="milk-amount">12-18 Liters/day</span>
+                        </div>
+                        <div class="breed-characteristics">
+                            <h4>Key Characteristics:</h4>
+                            <ul>
+                                <li>Reddish-brown color</li>
+                                <li>Loose skin with folds</li>
+                                <li>Excellent milk yield</li>
+                                <li>Hardy and adaptable</li>
+                            </ul>
+                        </div>
+                        <div class="breed-adaptability">
+                            <h4>Adaptability:</h4>
+                            <div class="adaptability-tags">
+                                <span class="tag-hot">Hot Climate</span>
+                                <span class="tag-humid">Humid Conditions</span>
+                                <span class="tag-disease">Disease Resistant</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Red Sindhi -->
+                <div class="breed-card" data-type="indian">
+                    <div class="breed-image">
+                        <img src="https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=400&h=300&fit=crop" alt="Red Sindhi Cattle">
+                        <div class="breed-badge indian-badge">Indian</div>
+                    </div>
+                    <div class="breed-content">
+                        <h3 class="breed-name">Red Sindhi</h3>
+                        <div class="breed-origin">
+                            <span class="icon">📍</span>
+                            <span>Sindh, Pakistan (Indian Origin)</span>
+                        </div>
+                        <div class="breed-milk">
+                            <span class="icon">🥛</span>
+                            <span class="milk-amount">8-12 Liters/day</span>
+                        </div>
+                        <div class="breed-characteristics">
+                            <h4>Key Characteristics:</h4>
+                            <ul>
+                                <li>Deep red color</li>
+                                <li>Medium-sized with compact body</li>
+                                <li>Good temperament</li>
+                                <li>Tick resistant</li>
+                            </ul>
+                        </div>
+                        <div class="breed-adaptability">
+                            <h4>Adaptability:</h4>
+                            <div class="adaptability-tags">
+                                <span class="tag-hot">Hot Climate</span>
+                                <span class="tag-tropical">Tropical</span>
+                                <span class="tag-parasite">Parasite Resistant</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tharparkar -->
+                <div class="breed-card" data-type="indian">
+                    <div class="breed-image">
+                        <img src="https://images.unsplash.com/photo-1559523161-0fc0e8059c34?w=400&h=300&fit=crop" alt="Tharparkar Cattle">
+                        <div class="breed-badge indian-badge">Indian</div>
+                    </div>
+                    <div class="breed-content">
+                        <h3 class="breed-name">Tharparkar</h3>
+                        <div class="breed-origin">
+                            <span class="icon">📍</span>
+                            <span>Rajasthan, India</span>
+                        </div>
+                        <div class="breed-milk">
+                            <span class="icon">🥛</span>
+                            <span class="milk-amount">10-15 Liters/day</span>
+                        </div>
+                        <div class="breed-characteristics">
+                            <h4>Key Characteristics:</h4>
+                            <ul>
+                                <li>White to light grey color</li>
+                                <li>Dual purpose (milk and draft)</li>
+                                <li>Strong and hardy</li>
+                                <li>Excellent heat tolerance</li>
+                            </ul>
+                        </div>
+                        <div class="breed-adaptability">
+                            <h4>Adaptability:</h4>
+                            <div class="adaptability-tags">
+                                <span class="tag-hot">Hot Climate</span>
+                                <span class="tag-drought">Drought Resistant</span>
+                                <span class="tag-arid">Arid Regions</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kankrej -->
+                <div class="breed-card" data-type="indian">
+                    <div class="breed-image">
+                        <img src="https://images.unsplash.com/photo-1548550023-2bdb3c5beed7?w=400&h=300&fit=crop" alt="Kankrej Cattle">
+                        <div class="breed-badge indian-badge">Indian</div>
+                    </div>
+                    <div class="breed-content">
+                        <h3 class="breed-name">Kankrej</h3>
+                        <div class="breed-origin">
+                            <span class="icon">📍</span>
+                            <span>Gujarat-Rajasthan Border, India</span>
+                        </div>
+                        <div class="breed-milk">
+                            <span class="icon">🥛</span>
+                            <span class="milk-amount">8-12 Liters/day</span>
+                        </div>
+                        <div class="breed-characteristics">
+                            <h4>Key Characteristics:</h4>
+                            <ul>
+                                <li>Silver-grey to steel black color</li>
+                                <li>Lyre-shaped horns</li>
+                                <li>Dual purpose breed</li>
+                                <li>Powerful and muscular</li>
+                            </ul>
+                        </div>
+                        <div class="breed-adaptability">
+                            <h4>Adaptability:</h4>
+                            <div class="adaptability-tags">
+                                <span class="tag-hot">Hot Climate</span>
+                                <span class="tag-drought">Drought Tolerant</span>
+                                <span class="tag-hardy">Very Hardy</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Jersey -->
+                <div class="breed-card" data-type="foreign">
+                    <div class="breed-image">
+                        <img src="https://images.unsplash.com/photo-1508965675245-c2b2a48e8280?w=400&h=300&fit=crop" alt="Jersey Cattle">
+                        <div class="breed-badge foreign-badge">Foreign</div>
+                    </div>
+                    <div class="breed-content">
+                        <h3 class="breed-name">Jersey</h3>
+                        <div class="breed-origin">
+                            <span class="icon">📍</span>
+                            <span>Jersey Island, UK</span>
+                        </div>
+                        <div class="breed-milk">
+                            <span class="icon">🥛</span>
+                            <span class="milk-amount">15-20 Liters/day</span>
+                        </div>
+                        <div class="breed-characteristics">
+                            <h4>Key Characteristics:</h4>
+                            <ul>
+                                <li>Light brown to dark fawn color</li>
+                                <li>Smallest dairy breed</li>
+                                <li>Highest butterfat content</li>
+                                <li>Docile temperament</li>
+                            </ul>
+                        </div>
+                        <div class="breed-adaptability">
+                            <h4>Adaptability:</h4>
+                            <div class="adaptability-tags">
+                                <span class="tag-moderate">Moderate Climate</span>
+                                <span class="tag-adaptable">Highly Adaptable</span>
+                                <span class="tag-efficient">Feed Efficient</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Holstein Friesian -->
+                <div class="breed-card" data-type="foreign">
+                    <div class="breed-image">
+                        <img src="https://images.unsplash.com/photo-1568214379698-4d4e0dee3e92?w=400&h=300&fit=crop" alt="Holstein Friesian Cattle">
+                        <div class="breed-badge foreign-badge">Foreign</div>
+                    </div>
+                    <div class="breed-content">
+                        <h3 class="breed-name">Holstein Friesian</h3>
+                        <div class="breed-origin">
+                            <span class="icon">📍</span>
+                            <span>Netherlands, Germany</span>
+                        </div>
+                        <div class="breed-milk">
+                            <span class="icon">🥛</span>
+                            <span class="milk-amount">25-30 Liters/day</span>
+                        </div>
+                        <div class="breed-characteristics">
+                            <h4>Key Characteristics:</h4>
+                            <ul>
+                                <li>Black and white patches</li>
+                                <li>Highest milk producer</li>
+                                <li>Large body size</li>
+                                <li>Excellent milk volume</li>
+                            </ul>
+                        </div>
+                        <div class="breed-adaptability">
+                            <h4>Adaptability:</h4>
+                            <div class="adaptability-tags">
+                                <span class="tag-cool">Cool Climate</span>
+                                <span class="tag-moderate">Moderate Climate</span>
+                                <span class="tag-care">Requires Care</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Brown Swiss -->
+                <div class="breed-card" data-type="foreign">
+                    <div class="breed-image">
+                        <img src="https://images.unsplash.com/photo-1527577850548-f532f1e2c60d?w=400&h=300&fit=crop" alt="Brown Swiss Cattle">
+                        <div class="breed-badge foreign-badge">Foreign</div>
+                    </div>
+                    <div class="breed-content">
+                        <h3 class="breed-name">Brown Swiss</h3>
+                        <div class="breed-origin">
+                            <span class="icon">📍</span>
+                            <span>Switzerland</span>
+                        </div>
+                        <div class="breed-milk">
+                            <span class="icon">🥛</span>
+                            <span class="milk-amount">20-25 Liters/day</span>
+                        </div>
+                        <div class="breed-characteristics">
+                            <h4>Key Characteristics:</h4>
+                            <ul>
+                                <li>Solid brown color</li>
+                                <li>Docile and calm nature</li>
+                                <li>Long productive life</li>
+                                <li>Good protein content</li>
+                            </ul>
+                        </div>
+                        <div class="breed-adaptability">
+                            <h4>Adaptability:</h4>
+                            <div class="adaptability-tags">
+                                <span class="tag-mountain">Mountain Climate</span>
+                                <span class="tag-hardy">Hardy Breed</span>
+                                <span class="tag-longevity">Long-lived</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Guernsey -->
+                <div class="breed-card" data-type="foreign">
+                    <div class="breed-image">
+                        <img src="https://images.unsplash.com/photo-1588771727042-dc4ea48551d4?w=400&h=300&fit=crop" alt="Guernsey Cattle">
+                        <div class="breed-badge foreign-badge">Foreign</div>
+                    </div>
+                    <div class="breed-content">
+                        <h3 class="breed-name">Guernsey</h3>
+                        <div class="breed-origin">
+                            <span class="icon">📍</span>
+                            <span>Guernsey Island, UK</span>
+                        </div>
+                        <div class="breed-milk">
+                            <span class="icon">🥛</span>
+                            <span class="milk-amount">15-20 Liters/day</span>
+                        </div>
+                        <div class="breed-characteristics">
+                            <h4>Key Characteristics:</h4>
+                            <ul>
+                                <li>Golden-brown to reddish color</li>
+                                <li>High beta-carotene in milk</li>
+                                <li>Gentle disposition</li>
+                                <li>Efficient grazer</li>
+                            </ul>
+                        </div>
+                        <div class="breed-adaptability">
+                            <h4>Adaptability:</h4>
+                            <div class="adaptability-tags">
+                                <span class="tag-moderate">Moderate Climate</span>
+                                <span class="tag-grazing">Good Grazer</span>
+                                <span class="tag-quality">High Quality Milk</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ayrshire -->
+                <div class="breed-card" data-type="foreign">
+                    <div class="breed-image">
+                        <img src="https://images.unsplash.com/photo-1503919545889-aef636e10ad4?w=400&h=300&fit=crop" alt="Ayrshire Cattle">
+                        <div class="breed-badge foreign-badge">Foreign</div>
+                    </div>
+                    <div class="breed-content">
+                        <h3 class="breed-name">Ayrshire</h3>
+                        <div class="breed-origin">
+                            <span class="icon">📍</span>
+                            <span>Ayrshire, Scotland</span>
+                        </div>
+                        <div class="breed-milk">
+                            <span class="icon">🥛</span>
+                            <span class="milk-amount">18-22 Liters/day</span>
+                        </div>
+                        <div class="breed-characteristics">
+                            <h4>Key Characteristics:</h4>
+                            <ul>
+                                <li>Red and white markings</li>
+                                <li>Medium-sized breed</li>
+                                <li>Vigorous and healthy</li>
+                                <li>Good udder quality</li>
+                            </ul>
+                        </div>
+                        <div class="breed-adaptability">
+                            <h4>Adaptability:</h4>
+                            <div class="adaptability-tags">
+                                <span class="tag-cool">Cool Climate</span>
+                                <span class="tag-grazing">Excellent Grazer</span>
+                                <span class="tag-hardy">Hardy Nature</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Results Message -->
+            <div id="noResults" class="no-results" style="display: none;">
+                <div class="no-results-icon">🔍</div>
+                <h3>No Breeds Found</h3>
+                <p>Try adjusting your search or filter criteria</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-simple">
+        <div class="container">
+            <p>&copy; 2024 CattleTrack Pro. All rights reserved. | Empowering Farmers with Knowledge</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/breeds.js') }}"></script>
+</body>
+</html>

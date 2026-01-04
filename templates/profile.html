@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Cattle Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="dashboard-body">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-dashboard" id="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="logo">🐄</div>
+                <span class="brand-name">CattleTrack Pro</span>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="/breeds">Breeds</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+            <div class="profile-dropdown">
+                <button class="profile-btn" id="profileBtn">
+                    <div class="profile-avatar">{{ user.username[0].upper() }}</div>
+                    <span class="profile-name">{{ user.username }}</span>
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="{{ url_for('profile') }}" class="dropdown-item active">
+                        <span>👤</span>
+                        <span>My Profile</span>
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="dropdown-item">
+                        <span>🚪</span>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="profile-container">
+                <!-- Profile Header -->
+                <div class="profile-header-card">
+                    <div class="profile-cover"></div>
+                    <div class="profile-info-header">
+                        <div class="profile-avatar-large">{{ user.username[0].upper() }}</div>
+                        <div class="profile-details">
+                            <h1>{{ user.username }}</h1>
+                            <p class="profile-role">{{ user.role }}</p>
+                            <p class="profile-email">{{ user.email }}</p>
+                        </div>
+                        <button class="btn btn-secondary">Edit Profile</button>
+                    </div>
+                </div>
+
+                <!-- Profile Content Grid -->
+                <div class="profile-grid">
+                    <!-- Account Information -->
+                    <div class="profile-card">
+                        <h3 class="profile-card-title">Account Information</h3>
+                        <div class="profile-info-list">
+                            <div class="info-item">
+                                <span class="info-label">Username</span>
+                                <span class="info-value">{{ user.username }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Email</span>
+                                <span class="info-value">{{ user.email }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Role</span>
+                                <span class="info-value">{{ user.role }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Member Since</span>
+                                <span class="info-value">{{ user.joined }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Last Login</span>
+                                <span class="info-value">{{ user.login_time }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Activity Summary -->
+                    <div class="profile-card">
+                        <h3 class="profile-card-title">Activity Summary</h3>
+                        <div class="activity-stats">
+                            <div class="activity-stat-item">
+                                <div class="activity-stat-icon">📝</div>
+                                <div class="activity-stat-info">
+                                    <p class="activity-stat-number">127</p>
+                                    <p class="activity-stat-label">Records Added</p>
+                                </div>
+                            </div>
+                            <div class="activity-stat-item">
+                                <div class="activity-stat-icon">📊</div>
+                                <div class="activity-stat-info">
+                                    <p class="activity-stat-number">45</p>
+                                    <p class="activity-stat-label">Reports Generated</p>
+                                </div>
+                            </div>
+                            <div class="activity-stat-item">
+                                <div class="activity-stat-icon">🐄</div>
+                                <div class="activity-stat-info">
+                                    <p class="activity-stat-number">45</p>
+                                    <p class="activity-stat-label">Cattle Managed</p>
+                                </div>
+                            </div>
+                            <div class="activity-stat-item">
+                                <div class="activity-stat-icon">💉</div>
+                                <div class="activity-stat-info">
+                                    <p class="activity-stat-number">23</p>
+                                    <p class="activity-stat-label">Health Checkups</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings -->
+                    <div class="profile-card">
+                        <h3 class="profile-card-title">Settings</h3>
+                        <div class="settings-list">
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <p class="setting-label">Email Notifications</p>
+                                    <p class="setting-description">Receive email alerts for important updates</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <p class="setting-label">Health Alerts</p>
+                                    <p class="setting-description">Get notified about cattle health issues</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <p class="setting-label">Weekly Reports</p>
+                                    <p class="setting-description">Automatic weekly performance reports</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security -->
+                    <div class="profile-card">
+                        <h3 class="profile-card-title">Security</h3>
+                        <div class="security-list">
+                            <button class="security-btn">
+                                <span class="security-icon">🔑</span>
+                                <div class="security-info">
+                                    <p class="security-label">Change Password</p>
+                                    <p class="security-description">Update your account password</p>
+                                </div>
+                                <span class="security-arrow">→</span>
+                            </button>
+                            <button class="security-btn">
+                                <span class="security-icon">🔐</span>
+                                <div class="security-info">
+                                    <p class="security-label">Two-Factor Authentication</p>
+                                    <p class="security-description">Add an extra layer of security</p>
+                                </div>
+                                <span class="security-arrow">→</span>
+                            </button>
+                            <button class="security-btn">
+                                <span class="security-icon">📱</span>
+                                <div class="security-info">
+                                    <p class="security-label">Connected Devices</p>
+                                    <p class="security-description">Manage your logged-in devices</p>
+                                </div>
+                                <span class="security-arrow">→</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="profile-card full-width">
+                        <h3 class="profile-card-title">Recent Activity</h3>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <p class="timeline-title">Added milk record for Bella (C001)</p>
+                                    <p class="timeline-time">2 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <p class="timeline-title">Updated health status for Luna (C003)</p>
+                                    <p class="timeline-time">5 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <p class="timeline-title">Generated weekly performance report</p>
+                                    <p class="timeline-time">Yesterday at 3:45 PM</p>
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-marker"></div>
+                                <div class="timeline-content">
+                                    <p class="timeline-title">Added new cattle Molly (C005)</p>
+                                    <p class="timeline-time">2 days ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-simple">
+        <div class="container">
+            <p>&copy; 2024 CattleTrack Pro. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
