@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Past Records - Cattle Management</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #2d3748;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+        .nav-left { display: flex; align-items: center; gap: 40px; }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        .brand-logo { font-size: 28px; }
+        .nav-menu { list-style: none; display: flex; gap: 8px; }
+        .nav-menu a {
+            text-decoration: none;
+            color: #718096;
+            font-size: 15px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .nav-menu a:hover { color: #667eea; background: #edf2f7; }
+        .nav-menu a.active { color: #667eea; background: #e6f2ff; }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .user-name { color: #2d3748; font-weight: 500; }
+        .logout-btn {
+            color: #718096;
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .logout-btn:hover { background: #f7fafc; border-color: #cbd5e0; }
+        
+        /* Main Content */
+        .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+        .page-header { margin-bottom: 32px; }
+        .page-title { font-size: 28px; font-weight: 700; color: #1a202c; margin-bottom: 6px; }
+        .page-subtitle { color: #718096; font-size: 15px; }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            color: #718096;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab:hover { color: #667eea; }
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+        
+        /* Filter Section */
+        .filter-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            align-items: end;
+        }
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .filter-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .filter-btn {
+            padding: 11px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .filter-btn:hover { background: #5a67d8; }
+        
+        /* Table Section */
+        .table-section {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            display: none;
+        }
+        .table-section.active { display: block; }
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: #f7fafc;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+        tr:hover { background: #f7fafc; }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+        .empty-icon { font-size: 48px; margin-bottom: 16px; }
+        .empty-text { font-size: 16px; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-left">
+                <div class="brand">
+                    <span class="brand-logo">🐄</span>
+                    <span>CattleTrack</span>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/records" class="active">Data & Records</a></li>
+                    <li><a href="/breeds">Breeds</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="nav-right">
+                <span class="user-name">{{ username }}</span>
+                <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Past Records</h1>
+            <p class="page-subtitle">View all historical milk and expense records</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('milk')">Milk Records</button>
+            <button class="tab" onclick="switchTab('expense')">Expense Records</button>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label>Start Date</label>
+                    <input type="date" id="filterStartDate">
+                </div>
+                <div class="filter-group">
+                    <label>End Date</label>
+                    <input type="date" id="filterEndDate">
+                </div>
+                <div>
+                    <button class="filter-btn" onclick="applyFilter()">Apply Filter</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Milk Records Table -->
+        <div id="milkTable" class="table-section active">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Cow Name</th>
+                            <th>Milk (Liters)</th>
+                            <th>Rate (₹/L)</th>
+                            <th>Income (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="milkRecordsBody">
+                        {% for record in milk_records %}
+                        <tr data-date="{{ record.date }}">
+                            <td>{{ record.date }}</td>
+                            <td><strong>{{ record.cow_name }}</strong></td>
+                            <td>{{ record.quantity }}L</td>
+                            <td>₹{{ record.rate }}</td>
+                            <td><strong>₹{{ record.income }}</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if milk_records|length == 0 %}
+                <div class="empty-state">
+                    <div class="empty-icon">📝</div>
+                    <div class="empty-text">No milk records found</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Expense Records Table -->
+        <div id="expenseTable" class="table-section">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Expense Type</th>
+                            <th>Amount (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expenseRecordsBody">
+                        {% for record in expense_records %}
+                        <tr data-date="{{ record.date }}">
+                            <td>{{ record.date }}</td>
+                            <td><strong>{{ record.type }}</strong></td>
+                            <td><strong>₹{{ record.amount }}</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if expense_records|length == 0 %}
+                <div class="empty-state">
+                    <div class="empty-icon">💰</div>
+                    <div class="empty-text">No expense records found</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Switching
+        function switchTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update table visibility
+            document.querySelectorAll('.table-section').forEach(t => t.classList.remove('active'));
+            if (tab === 'milk') {
+                document.getElementById('milkTable').classList.add('active');
+            } else {
+                document.getElementById('expenseTable').classList.add('active');
+            }
+        }
+
+        // Filter Records
+        function applyFilter() {
+            const startDate = document.getElementById('filterStartDate').value;
+            const endDate = document.getElementById('filterEndDate').value;
+            
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+            
+            // Filter milk records
+            const milkRows = document.querySelectorAll('#milkRecordsBody tr');
+            milkRows.forEach(row => {
+                const rowDate = row.getAttribute('data-date');
+                if (rowDate >= startDate && rowDate <= endDate) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            // Filter expense records
+            const expenseRows = document.querySelectorAll('#expenseRecordsBody tr');
+            expenseRows.forEach(row => {
+                const rowDate = row.getAttribute('data-date');
+                if (rowDate >= startDate && rowDate <= endDate) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Set default date range (last 7 days)
+        window.onload = function() {
+            const today = new Date();
+            const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            
+            document.getElementById('filterEndDate').valueAsDate = today;
+            document.getElementById('filterStartDate').valueAsDate = lastWeek;
+        }
+    </script>
+</body>
+</html>
