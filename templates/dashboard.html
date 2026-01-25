@@ -3,269 +3,565 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Cattle Management System</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Dashboard - Cattle Management</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #2d3748;
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+        .nav-left { display: flex; align-items: center; gap: 40px; }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #667eea;
+        }
+        .brand-logo { font-size: 28px; }
+        .nav-menu { list-style: none; display: flex; gap: 8px; }
+        .nav-menu a {
+            text-decoration: none;
+            color: #718096;
+            font-size: 15px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .nav-menu a:hover { color: #667eea; background: #edf2f7; }
+        .nav-menu a.active { color: #667eea; background: #e6f2ff; }
+        .nav-right { display: flex; align-items: center; gap: 20px; }
+        .user-name { color: #2d3748; font-weight: 500; }
+        .logout-btn {
+            color: #718096;
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .logout-btn:hover { background: #f7fafc; border-color: #cbd5e0; }
+        
+        /* Main Content */
+        .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
+        .page-header { margin-bottom: 32px; }
+        .page-title { font-size: 28px; font-weight: 700; color: #1a202c; margin-bottom: 6px; }
+        .page-subtitle { color: #718096; font-size: 15px; }
+        
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+        .summary-card {
+            background: white;
+            padding: 28px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .card-label { font-size: 14px; color: #718096; margin-bottom: 12px; font-weight: 500; }
+        .card-value { font-size: 32px; font-weight: 700; color: #667eea; }
+        
+        /* Today Summary Strip */
+        .today-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 24px 28px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+            color: white;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(102,126,234,0.2);
+        }
+        .today-item { text-align: center; }
+        .today-label { font-size: 13px; opacity: 0.9; margin-bottom: 8px; }
+        .today-value { font-size: 24px; font-weight: 700; }
+        
+        /* Section */
+        .section {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .section-title { font-size: 20px; font-weight: 600; margin-bottom: 24px; color: #1a202c; }
+        
+        /* Action Buttons */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .action-btn {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            padding: 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .action-btn:hover {
+            border-color: #667eea;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102,126,234,0.15);
+        }
+        .action-icon { font-size: 36px; margin-bottom: 12px; }
+        .action-label { font-size: 15px; font-weight: 600; color: #2d3748; }
+        
+        /* Table */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            background: #f7fafc;
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+        tr:hover { background: #f7fafc; }
+        .view-btn {
+            background: #667eea;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 13px;
+            transition: background 0.3s;
+        }
+        .view-btn:hover { background: #5a67d8; }
+        .health-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .health-good { background: #c6f6d5; color: #22543d; }
+        .health-excellent { background: #bee3f8; color: #2c5282; }
+        .health-fair { background: #feebc8; color: #7c2d12; }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .modal-title { font-size: 22px; font-weight: 700; color: #1a202c; }
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #718096;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        .close-btn:hover { background: #f7fafc; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5a67d8; }
+        .btn-secondary {
+            background: white;
+            color: #718096;
+            border: 2px solid #e2e8f0;
+        }
+        .btn-secondary:hover { background: #f7fafc; }
+        
+        /* Success Message */
+        .success-message {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: #48bb78;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(72,187,120,0.3);
+            display: none;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 2000;
+        }
+        .success-message.show { display: block; }
+    </style>
 </head>
-<body class="dashboard-body">
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-dashboard" id="navbar">
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
         <div class="nav-container">
             <div class="nav-left">
-                <div class="logo">🐄</div>
-                <span class="brand-name">Cattle Cloud</span>
-            </div>
-            <ul class="nav-menu" id="navMenu">
-                <li><a href="{{ url_for('home') }}">Home</a></li>
-                <li><a href="{{ url_for('dashboard') }}" class="active">Dashboard</a></li>
-                <li><a href="/breeds">Breeds</a></li>
-                <li><a href="/about">About</a></li>
-                <li><a href="/contact">Contact</a></li>
-            </ul>
-            <div class="profile-dropdown">
-                <button class="profile-btn" id="profileBtn">
-                    <div class="profile-avatar">{{ username[0].upper() }}</div>
-                    <span class="profile-name">{{ username }}</span>
-                    <span class="dropdown-arrow">▼</span>
-                </button>
-                <div class="dropdown-menu" id="dropdownMenu">
-                    <a href="{{ url_for('profile') }}" class="dropdown-item">
-                        <span>👤</span>
-                        <span>My Profile</span>
-                    </a>
-                    <a href="{{ url_for('logout') }}" class="dropdown-item">
-                        <span>🚪</span>
-                        <span>Logout</span>
-                    </a>
+                <div class="brand">
+                    <span class="brand-logo">🐄</span>
+                    <span>CattleTrack</span>
                 </div>
+                <ul class="nav-menu">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/dashboard" class="active">Dashboard</a></li>
+<li><a href="/records" >Data & Report</a></li>
+<li><a href="/breeds">Breeds</a></li>
+<li><a href="/about" >About</a></li>
+<li><a href="/contact" >Contact</a></li>
+                </ul>
             </div>
-            <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
+            <div class="nav-right">
+                <span class="user-name">{{ username }}</span>
+                <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="main-content">
-        <div class="container">
-            <!-- Page Header -->
-            <div class="page-header">
-                <div>
-                    <h1 class="page-title">Dashboard</h1>
-                    <p class="page-subtitle">Comprehensive overview of your cattle farm operations</p>
-                </div>
-                <div class="header-actions">
-                    <button class="btn btn-secondary btn-small">📊 Export Report</button>
-                    <button class="btn btn-primary btn-small">➕ Add Record</button>
-                </div>
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">Overview of your cattle farm operations</p>
+        </div>
+        
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="card-label">Total Cattle</div>
+                <div class="card-value">{{ stats.total_cattle }}</div>
             </div>
-
-            <!-- Summary Stats -->
-            <div class="stats-row">
-                <div class="stat-card-small">
-                    <p class="stat-label">Total Cattle</p>
-                    <p class="stat-number">{{ data.total_cattle }}</p>
-                </div>
-                <div class="stat-card-small">
-                    <p class="stat-label">Avg Daily Milk</p>
-                    <p class="stat-number">{{ (data.weekly_milk | sum / 7) | round(0) | int }}L</p>
-                </div>
-                <div class="stat-card-small">
-                    <p class="stat-label">Healthy</p>
-                    <p class="stat-number">{{ data.total_cattle - data.health_alerts }}</p>
-                </div>
-                <div class="stat-card-small">
-                    <p class="stat-label">Need Attention</p>
-                    <p class="stat-number">{{ data.health_alerts }}</p>
-                </div>
+            <div class="summary-card">
+                <div class="card-label">Milk This Week (Liters)</div>
+                <div class="card-value">{{ stats.total_weekly_milk }}</div>
             </div>
-
-            <!-- Charts Section -->
-            <div class="dashboard-grid">
-                <!-- Weekly Milk Production -->
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h3>Weekly Milk Production</h3>
-                        <select class="filter-select">
-                            <option>This Week</option>
-                            <option>Last Week</option>
-                            <option>Last Month</option>
-                        </select>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="weeklyChart"></canvas>
-                        <div class="bar-chart">
-                            {% for value in data.weekly_milk %}
-                            <div class="bar-wrapper">
-                                <div class="bar" style="height: {{ (value / 200) * 100 }}%">
-                                    <span class="bar-value">{{ value }}L</span>
-                                </div>
-                                <span class="bar-x-label">Day {{ loop.index }}</span>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Monthly Milk Trend -->
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h3>Monthly Milk Trend</h3>
-                        <select class="filter-select">
-                            <option>Last 6 Months</option>
-                            <option>Last Year</option>
-                        </select>
-                    </div>
-                    <div class="chart-container">
-                        <div class="line-chart">
-                            {% for value in data.monthly_milk %}
-                            <div class="line-point" style="bottom: {{ (value / 6000) * 100 }}%">
-                                <div class="point-dot"></div>
-                                <span class="point-value">{{ value }}L</span>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        <div class="chart-labels">
-                            <span>Aug</span>
-                            <span>Sep</span>
-                            <span>Oct</span>
-                            <span>Nov</span>
-                            <span>Dec</span>
-                            <span>Jan</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="summary-card">
+                <div class="card-label">Net Profit (₹)</div>
+                <div class="card-value">₹{{ stats.net_profit }}</div>
             </div>
+        </div>
 
-            <!-- Cattle List -->
-            <div class="dashboard-card full-width">
-                <div class="card-header">
-                    <h3>Cattle Inventory</h3>
-                    <div class="card-actions">
-                        <input type="text" placeholder="Search cattle..." class="search-input">
-                        <button class="btn btn-primary btn-small">➕ Add Cattle</button>
-                    </div>
-                </div>
-                <div class="table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Breed</th>
-                                <th>Age</th>
-                                <th>Health Status</th>
-                                <th>Milk Today</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for cattle in data.cattle_list %}
-                            <tr>
-                                <td><strong>{{ cattle.id }}</strong></td>
-                                <td>{{ cattle.name }}</td>
-                                <td>{{ cattle.breed }}</td>
-                                <td>{{ cattle.age }} years</td>
-                                <td>
-                                    <span class="status-badge status-{{ cattle.health.lower() }}">
-                                        {{ cattle.health }}
-                                    </span>
-                                </td>
-                                <td>{{ cattle.milk_today }}L</td>
-                                <td>
-                                    <button class="btn-icon" title="View Details">👁️</button>
-                                    <button class="btn-icon" title="Edit">✏️</button>
-                                    <button class="btn-icon" title="Delete">🗑️</button>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+        <!-- Today's Summary -->
+        <div class="today-summary">
+            <div class="today-item">
+                <div class="today-label">Today's Milk</div>
+                <div class="today-value">{{ stats.today_milk }}L</div>
             </div>
-
-            <!-- Health Records -->
-            <div class="dashboard-grid-2">
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h3>Recent Health Records</h3>
-                        <a href="#" class="view-all-link">View All →</a>
-                    </div>
-                    <div class="records-list">
-                        {% for record in data.health_records %}
-                        <div class="record-item">
-                            <div class="record-icon">
-                                {% if record.status == 'Completed' %}
-                                ✅
-                                {% else %}
-                                ⏳
-                                {% endif %}
-                            </div>
-                            <div class="record-content">
-                                <p class="record-title">{{ record.issue }} - {{ record.cattle_id }}</p>
-                                <p class="record-meta">{{ record.date }} • {{ record.status }}</p>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <div class="dashboard-card">
-                    <div class="card-header">
-                        <h3>Feed Inventory</h3>
-                        <a href="#" class="view-all-link">View All →</a>
-                    </div>
-                    <div class="records-list">
-                        {% for feed in data.feed_records %}
-                        <div class="record-item">
-                            <div class="record-icon">🌾</div>
-                            <div class="record-content">
-                                <p class="record-title">{{ feed.type }} - {{ feed.quantity }}</p>
-                                <p class="record-meta">{{ feed.date }} • {{ feed.cost }}</p>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
+            <div class="today-item">
+                <div class="today-label">Today's Income</div>
+                <div class="today-value">₹{{ stats.today_income }}</div>
             </div>
+            <div class="today-item">
+                <div class="today-label">Today's Expense</div>
+                <div class="today-value">₹{{ stats.today_expense }}</div>
+            </div>
+        </div>
 
-            <!-- Quick Actions -->
-            <div class="quick-actions">
-                <h3>Quick Actions</h3>
-                <div class="action-buttons">
-                    <button class="action-btn">
-                        <span class="action-icon">📝</span>
-                        <span>Record Milk</span>
-                    </button>
-                    <button class="action-btn">
-                        <span class="action-icon">💉</span>
-                        <span>Add Health Record</span>
-                    </button>
-                    <button class="action-btn">
-                        <span class="action-icon">🌾</span>
-                        <span>Update Feed</span>
-                    </button>
-                    <button class="action-btn">
-                        <span class="action-icon">🐄</span>
-                        <span>Add Cattle</span>
-                    </button>
-                    <button class="action-btn">
-                        <span class="action-icon">📊</span>
-                        <span>Generate Report</span>
-                    </button>
+        <!-- Today's Records -->
+        <div class="section">
+            <h2 class="section-title">Today's Records</h2>
+            <div class="action-grid">
+                <div class="action-btn" onclick="openModal('milkModal')">
+                    <div class="action-icon">📝</div>
+                    <div class="action-label">Record Milk</div>
+                </div>
+                <div class="action-btn" onclick="openModal('expenseModal')">
+                    <div class="action-icon">💰</div>
+                    <div class="action-label">Add Expense</div>
+                </div>
+                <div class="action-btn" onclick="openModal('cattleModal')">
+                    <div class="action-icon">🐄</div>
+                    <div class="action-label">Add Cattle</div>
                 </div>
             </div>
         </div>
-    </main>
 
-    <!-- Footer -->
-    <footer class="footer-simple">
-        <div class="container">
-            <p>&copy; 2024 CattleTrack Pro. All rights reserved.</p>
+        <!-- Cattle List -->
+        <div class="section">
+            <h2 class="section-title">Cattle List</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Breed</th>
+                            <th>Health</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cattle in cattle_list %}
+                        <tr>
+                            <td><strong>{{ cattle.name }}</strong></td>
+                            <td>{{ cattle.breed }}</td>
+                            <td>
+                                <span class="health-badge health-{{ cattle.health.lower() }}">
+                                    {{ cattle.health }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="/cattle/{{ cattle.id }}" class="view-btn">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </footer>
+    </div>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <!-- Record Milk Modal -->
+    <div id="milkModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Record Milk</h2>
+                <button class="close-btn" onclick="closeModal('milkModal')">&times;</button>
+            </div>
+            <form onsubmit="submitMilk(event)">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="milkDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Cow Name</label>
+                    <select id="milkCow" required>
+                        <option value="">Select Cow</option>
+                        {% for cattle in cattle_list %}
+                        <option value="{{ cattle.name }}">{{ cattle.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Milk Quantity (Liters)</label>
+                    <input type="number" id="milkQuantity" step="0.1" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Rate per Liter (₹)</label>
+                    <input type="number" id="milkRate" step="0.1" min="0" value="50" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('milkModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Expense Modal -->
+    <div id="expenseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Expense</h2>
+                <button class="close-btn" onclick="closeModal('expenseModal')">&times;</button>
+            </div>
+            <form onsubmit="submitExpense(event)">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="expenseDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Expense Type</label>
+                    <select id="expenseType" required>
+                        <option value="">Select Type</option>
+                        <option value="Feed">Feed</option>
+                        <option value="Medicine">Medicine</option>
+                        <option value="Labor">Labor</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Amount (₹)</label>
+                    <input type="number" id="expenseAmount" step="0.01" min="0" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('expenseModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Expense</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Cattle Modal -->
+    <div id="cattleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Cattle</h2>
+                <button class="close-btn" onclick="closeModal('cattleModal')">&times;</button>
+            </div>
+            <form onsubmit="submitCattle(event)">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="cattleName" required>
+                </div>
+                <div class="form-group">
+                    <label>Breed</label>
+                    <select id="cattleBreed" required>
+                        <option value="">Select Breed</option>
+                        <option value="Holstein">Holstein</option>
+                        <option value="Jersey">Jersey</option>
+                        <option value="Gir">Gir</option>
+                        <option value="Sahiwal">Sahiwal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Age (years)</label>
+                    <input type="number" id="cattleAge" min="0" max="20" required>
+                </div>
+                <div class="form-group">
+                    <label>Health Status</label>
+                    <select id="cattleHealth" required>
+                        <option value="">Select Status</option>
+                        <option value="Excellent">Excellent</option>
+                        <option value="Good">Good</option>
+                        <option value="Fair">Fair</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('cattleModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Cattle</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Message -->
+    <div id="successMessage" class="success-message"></div>
+
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+            const today = new Date().toISOString().split('T')[0];
+            document.querySelectorAll('input[type="date"]').forEach(input => {
+                if (!input.value) input.value = today;
+            });
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('show');
+            }
+        }
+
+        function submitMilk(event) {
+            event.preventDefault();
+            showSuccess('Milk record added successfully');
+            closeModal('milkModal');
+        }
+
+        function submitExpense(event) {
+            event.preventDefault();
+            showSuccess('Expense added successfully');
+            closeModal('expenseModal');
+        }
+
+        function submitCattle(event) {
+            event.preventDefault();
+            showSuccess('Cattle added successfully');
+            closeModal('cattleModal');
+        }
+
+        function showSuccess(message) {
+            const msgDiv = document.getElementById('successMessage');
+            msgDiv.textContent = message;
+            msgDiv.classList.add('show');
+            setTimeout(() => msgDiv.classList.remove('show'), 3000);
+        }
+    </script>
 </body>
 </html>
