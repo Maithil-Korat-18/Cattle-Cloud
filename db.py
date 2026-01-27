@@ -1,13 +1,18 @@
-import os
 import mysql.connector
-from dotenv import load_dotenv
+from mysql.connector import pooling
 
-load_dotenv()  # only for local
+dbconfig = {
+    "host": "localhost",
+    "user": "root",
+    "password": "",
+    "database": "cattle_management"
+}
+
+cnxpool = pooling.MySQLConnectionPool(
+    pool_name="mypool",
+    pool_size=5,
+    **dbconfig
+)
 
 def get_db():
-    return mysql.connector.connect(
-        host=os.getenv("DB_HOST"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        database=os.getenv("DB_NAME")
-    )
+    return cnxpool.get_connection()
