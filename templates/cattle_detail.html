@@ -365,10 +365,7 @@
         <div class="cattle-header">
             <h1 class="cattle-title">{{ cattle.name }}</h1>
             <div class="info-grid">
-                <div class="info-item">
-                    <div class="info-label">ID</div>
-                    <div class="info-value">{{ cattle.id }}</div>
-                </div>
+                
                 <div class="info-item">
                     <div class="info-label">Breed</div>
                     <div class="info-value">{{ cattle.breed }}</div>
@@ -399,9 +396,9 @@
 
             <!-- View Options -->
             <div class="view-options">
-                <button class="view-btn active" onclick="changeView('last_7')">Last 7 Days</button>
-                <button class="view-btn" onclick="changeView('all_time')">All Time</button>
-                <button class="view-btn" onclick="changeView('custom')">Custom Range</button>
+                <button class="view-btn active" onclick="changeView(event,'last_7')">Last 7 Days</button>
+                <button class="view-btn" onclick="changeView(event,'all_time')">All Time</button>
+                <button class="view-btn" onclick="changeView(event,'custom')">Custom Range</button>
             </div>
 
             <!-- Custom Range Filter -->
@@ -470,7 +467,7 @@
             drawChart(currentData);
         }
 
-        function changeView(viewType) {
+        function changeView(event,viewType) {
             currentViewType = viewType;
             
             // Update button states

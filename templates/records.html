@@ -208,8 +208,8 @@
 
         <!-- Tabs -->
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('milk')">Milk Records</button>
-            <button class="tab" onclick="switchTab('expense')">Expense Records</button>
+            <button class="tab active" onclick="switchTab(event,'milk')">Milk Records</button>
+            <button class="tab" onclick="switchTab(event,'expense')">Expense Records</button>
         </div>
 
         <!-- Filter Section -->
@@ -296,7 +296,7 @@
 
     <script>
         // Tab Switching
-        function switchTab(tab) {
+        function switchTab(event,tab) {
             // Update tab buttons
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
