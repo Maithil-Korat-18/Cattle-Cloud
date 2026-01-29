@@ -73,7 +73,7 @@ def dashboard():
         "dashboard.html",
         stats=stats,
         cattle_list=cattle_list,
-        username=session["user_id"]
+        username=session["full_name"]
     )
 
 # ================= ADD MILK =================
