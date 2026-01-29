@@ -365,7 +365,6 @@
 
             googleLoginAPI(userInfo.email, userInfo.name, userInfo.sub).then(result => {
                 if (result.success) {
-                    console.log('User data:', result.user);
                     window.location.href = '/home';
                 } else {
                     showMessage('error', result.message);
@@ -801,3 +800,4 @@
                 el.style.display = 'none';
             });
         }
+

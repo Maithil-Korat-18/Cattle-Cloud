@@ -289,7 +289,6 @@ actionButtons.forEach(button => {
     button.addEventListener('click', () => {
         const actionText = button.textContent.trim();
         console.log('Action clicked:', actionText);
-        alert(`${actionText} functionality will be implemented here`);
     });
 });
 
