@@ -4,311 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Cattle Management</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8f9fa;
-            color: #2d3748;
-        }
-        
-        /* Navigation */
-        .navbar {
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 70px;
-        }
-        .nav-left { display: flex; align-items: center; gap: 40px; }
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 20px;
-            font-weight: 700;
-            color: #667eea;
-        }
-        .brand-logo { font-size: 28px; }
-        .nav-menu { list-style: none; display: flex; gap: 8px; }
-        .nav-menu a {
-            text-decoration: none;
-            color: #718096;
-            font-size: 15px;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-        .nav-menu a:hover { color: #667eea; background: #edf2f7; }
-        .nav-menu a.active { color: #667eea; background: #e6f2ff; }
-        .nav-right { display: flex; align-items: center; gap: 20px; }
-        .user-name { color: #2d3748; font-weight: 500; }
-        .logout-btn {
-            color: #718096;
-            text-decoration: none;
-            padding: 8px 18px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-        .logout-btn:hover { background: #f7fafc; border-color: #cbd5e0; }
-        
-        /* Main Content */
-        .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
-        .page-header { margin-bottom: 32px; }
-        .page-title { font-size: 28px; font-weight: 700; color: #1a202c; margin-bottom: 6px; }
-        .page-subtitle { color: #718096; font-size: 15px; }
-        
-        /* Summary Cards */
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
-            margin-bottom: 40px;
-        }
-        .summary-card {
-            background: white;
-            padding: 28px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
-        }
-        .card-label { font-size: 14px; color: #718096; margin-bottom: 12px; font-weight: 500; }
-        .card-value { font-size: 32px; font-weight: 700; color: #667eea; }
-        
-        /* Today Summary Strip */
-        .today-summary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 24px 28px;
-            border-radius: 12px;
-            margin-bottom: 40px;
-            color: white;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(102,126,234,0.2);
-        }
-        .today-item { text-align: center; }
-        .today-label { font-size: 13px; opacity: 0.9; margin-bottom: 8px; }
-        .today-value { font-size: 24px; font-weight: 700; }
-        
-        /* Section */
-        .section {
-            background: white;
-            padding: 32px;
-            border-radius: 12px;
-            margin-bottom: 32px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
-        }
-        .section-title { font-size: 20px; font-weight: 600; margin-bottom: 24px; color: #1a202c; }
-        
-        /* Action Buttons */
-        .action-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        .action-btn {
-            background: #f7fafc;
-            border: 2px solid #e2e8f0;
-            padding: 24px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-        }
-        .action-btn:hover {
-            border-color: #667eea;
-            background: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102,126,234,0.15);
-        }
-        .action-icon { font-size: 36px; margin-bottom: 12px; }
-        .action-label { font-size: 15px; font-weight: 600; color: #2d3748; }
-        
-        /* Table */
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; }
-        th {
-            background: #f7fafc;
-            padding: 14px 16px;
-            text-align: left;
-            font-size: 13px;
-            font-weight: 600;
-            color: #4a5568;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        td {
-            padding: 16px;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 14px;
-        }
-        tr:hover { background: #f7fafc; }
-        .view-btn {
-            background: #667eea;
-            color: white;
-            padding: 6px 16px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 13px;
-            transition: background 0.3s;
-        }
-        .view-btn:hover { background: #5a67d8; }
-        .health-badge {
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .health-good { background: #c6f6d5; color: #22543d; }
-        .health-excellent { background: #bee3f8; color: #2c5282; }
-        .health-fair { background: #feebc8; color: #7c2d12; }
-        
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal.show { display: flex; }
-        .modal-content {
-            background: white;
-            padding: 32px;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-        .modal-title { font-size: 22px; font-weight: 700; color: #1a202c; }
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            color: #718096;
-            padding: 0;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            transition: all 0.3s;
-        }
-        .close-btn:hover { background: #f7fafc; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #2d3748;
-        }
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px 14px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-            margin-top: 24px;
-        }
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .btn-primary { background: #667eea; color: white; }
-        .btn-primary:hover { background: #5a67d8; }
-        .btn-secondary {
-            background: white;
-            color: #718096;
-            border: 2px solid #e2e8f0;
-        }
-        .btn-secondary:hover { background: #f7fafc; }
-        
-        /* Success Message */
-        .success-message {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            background: #48bb78;
-            color: white;
-            padding: 16px 24px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(72,187,120,0.3);
-            display: none;
-            font-size: 14px;
-            font-weight: 500;
-            z-index: 2000;
-        }
-        .success-message.show { display: block; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">  
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar">
+     <nav class="navbar navbar-dashboard" id="navbar">
         <div class="nav-container">
             <div class="nav-left">
-                <div class="brand">
-                    <span class="brand-logo">🐄</span>
-                    <span>CattleTrack</span>
-                </div>
-                <ul class="nav-menu">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/dashboard" class="active">Dashboard</a></li>
-<li><a href="/records" >Data & Report</a></li>
-<li><a href="/breeds">Breeds</a></li>
-<li><a href="/about" >About</a></li>
-<li><a href="/contact" >Contact</a></li>
-                </ul>
+                <div class="logo">🐄</div>
+                <span class="brand-name">CattleTrack Pro</span>
             </div>
-            <div class="nav-right">
-                <span class="user-name">{{ username }}</span>
-                <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/home" >Home</a></li>
+                <li><a href="/dashboard" class="active">Dashboard</a></li>
+<li><a href="/records" >Data & Report</a></li>
+                <li><a href="/breeds">Breeds</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+            <div class="profile-dropdown">
+                <button class="profile-btn" id="profileBtn">
+                    <div class="profile-avatar">{{ username[0].upper() }}</div>
+                    <span class="profile-name">{{ username }}</span>
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="/profile" class="dropdown-item">
+                        <span>👤</span>
+                        <span>My Profile</span>
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="dropdown-item">
+                        <span>🚪</span>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
         </div>
-    </nav>
+    </nav>>
 
+<br><br><br>
     <!-- Main Content -->
     <div class="container">
         <div class="page-header">
@@ -518,124 +258,58 @@
 
     <!-- Success Message -->
     <div id="successMessage" class="success-message"></div>
+<!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>CattleTrack Pro</h3>
+                    <p>Modern cattle management solution for progressive farmers.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-icon">📘</a>
+                        <a href="#" class="social-icon">🐦</a>
+                        <a href="#" class="social-icon">📷</a>
+                        <a href="#" class="social-icon">💼</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#dashboard">Dashboard</a></li>
+                        <li><a href="#breeds">Features</a></li>
+                        <li><a href="{{ url_for('login') }}">Login</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>📧 info@cattletrack.com</li>
+                        <li>📞 +1 (555) 123-4567</li>
+                        <li>📍 123 Farm Road, Agriculture City</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#about">FAQ</a></li>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Support Center</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 CattleTrack Pro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 
-    <script>
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.add('show');
-            const today = new Date().toISOString().split('T')[0];
-            document.querySelectorAll('input[type="date"]').forEach(input => {
-                if (!input.value) input.value = today;
-            });
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('show');
-        }
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.classList.remove('show');
-            }
-        }
-
-        function submitMilk(event) {
-    event.preventDefault();
-    
-    const data = {
-        date: document.getElementById('milkDate').value,
-        cow_name: document.getElementById('milkCow').value,
-        milk_liters: document.getElementById('milkQuantity').value,
-        rate: document.getElementById('milkRate').value
-    };
-
-    fetch('/add-milk', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.success) {
-            showSuccess(result.message);
-            closeModal('milkModal');
-            setTimeout(() => location.reload(), 1500);
-        } else {
-            showSuccess('Error: ' + result.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showSuccess('Error adding milk record');
-    });
-}
-
-   function submitExpense(event) {
-    event.preventDefault();
-    
-    const data = {
-        date: document.getElementById('expenseDate').value,
-        type: document.getElementById('expenseType').value,
-        amount: document.getElementById('expenseAmount').value
-    };
-
-    fetch('/add-expense', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.success) {
-            showSuccess(result.message);
-            closeModal('expenseModal');
-            setTimeout(() => location.reload(), 1500);
-        } else {
-            showSuccess('Error: ' + result.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showSuccess('Error adding expense');
-    });
-}
-
-
-      function submitCattle(event) {
-    event.preventDefault();
-    
-    const data = {
-        name: document.getElementById('cattleName').value,
-        breed: document.getElementById('cattleBreed').value,
-        age: document.getElementById('cattleAge').value,
-        health: document.getElementById('cattleHealth').value
-    };
-
-    fetch('/add-cattle', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(result => {
-        if (result.success) {
-            showSuccess(result.message);
-            closeModal('cattleModal');
-            setTimeout(() => location.reload(), 1500);
-        } else {
-            showSuccess('Error: ' + result.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showSuccess('Error adding cattle');
-    });
-}
-        function showSuccess(message) {
-            const msgDiv = document.getElementById('successMessage');
-            msgDiv.textContent = message;
-            msgDiv.classList.add('show');
-            setTimeout(() => msgDiv.classList.remove('show'), 3000);
-        }
-    </script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>    
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 </body>
 </html>

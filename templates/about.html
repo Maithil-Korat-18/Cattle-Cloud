@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About - Cattle Management System</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">
 </head>
 <body class="dashboard-body">
@@ -469,9 +469,53 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer-simple">
+    <footer class="footer" id="contact">
         <div class="container">
-            <p>&copy; 2024 CattleTrack Pro. All rights reserved. | Empowering Farmers with Technology</p>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>CattleTrack Pro</h3>
+                    <p>Modern cattle management solution for progressive farmers.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-icon">📘</a>
+                        <a href="#" class="social-icon">🐦</a>
+                        <a href="#" class="social-icon">📷</a>
+                        <a href="#" class="social-icon">💼</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#dashboard">Dashboard</a></li>
+                        <li><a href="#breeds">Features</a></li>
+                        <li><a href="{{ url_for('login') }}">Login</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>📧 info@cattletrack.com</li>
+                        <li>📞 +1 (555) 123-4567</li>
+                        <li>📍 123 Farm Road, Agriculture City</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#about">FAQ</a></li>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Support Center</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 CattleTrack Pro. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 

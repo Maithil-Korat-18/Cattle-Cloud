@@ -4,359 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ cattle.name }} - Cattle Details</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8f9fa;
-            color: #2d3748;
-        }
-        
-        /* Navigation */
-        .navbar {
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 70px;
-        }
-        .nav-left { display: flex; align-items: center; gap: 40px; }
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 20px;
-            font-weight: 700;
-            color: #667eea;
-        }
-        .brand-logo { font-size: 28px; }
-        .nav-menu { list-style: none; display: flex; gap: 8px; }
-        .nav-menu a {
-            text-decoration: none;
-            color: #718096;
-            font-size: 15px;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
-        .nav-menu a:hover { color: #667eea; background: #edf2f7; }
-        .nav-right { display: flex; align-items: center; gap: 20px; }
-        .user-name { color: #2d3748; font-weight: 500; }
-        .logout-btn {
-            color: #718096;
-            text-decoration: none;
-            padding: 8px 18px;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-        .logout-btn:hover { background: #f7fafc; border-color: #cbd5e0; }
-        
-        /* Main Content */
-        .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
-        .back-link {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 24px;
-        }
-        .back-link:hover { text-decoration: underline; }
-        
-        /* Cattle Info */
-        .cattle-header {
-            background: white;
-            padding: 32px;
-            border-radius: 12px;
-            margin-bottom: 32px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
-        }
-        .cattle-title {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: #1a202c;
-        }
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 24px;
-        }
-        .info-item {
-            padding: 16px;
-            background: #f7fafc;
-            border-radius: 8px;
-        }
-        .info-label {
-            font-size: 13px;
-            color: #718096;
-            margin-bottom: 6px;
-            font-weight: 500;
-        }
-        .info-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: #2d3748;
-        }
-        
-        /* Average Display */
-        .average-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 32px;
-            border-radius: 12px;
-            margin-bottom: 32px;
-            color: white;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(102,126,234,0.2);
-        }
-        .average-label {
-            font-size: 16px;
-            opacity: 0.9;
-            margin-bottom: 12px;
-        }
-        .average-value {
-            font-size: 48px;
-            font-weight: 700;
-        }
-        
-        /* Chart Section */
-        .chart-section {
-            background: white;
-            padding: 32px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border: 1px solid #e2e8f0;
-        }
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-        .chart-title {
-            font-size: 20px;
-            font-weight: 600;
-            color: #1a202c;
-        }
-        .generate-report-btn {
-            padding: 10px 20px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        .generate-report-btn:hover { background: #5a67d8; }
-        
-        /* Chart Container */
-        .chart-container {
-            padding: 20px 0;
-            position: relative;
-        }
-        .chart-svg {
-            width: 100%;
-            height: 300px;
-            background: #f7fafc;
-            border-radius: 8px;
-            padding: 20px;
-        }
-        
-        /* View Options */
-        .view-options {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-        .view-btn {
-            padding: 10px 20px;
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            color: #718096;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .view-btn:hover {
-            border-color: #667eea;
-            color: #667eea;
-        }
-        .view-btn.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-        
-        /* Custom Range Filter */
-        .custom-range {
-            display: none;
-            padding: 20px;
-            background: #f7fafc;
-            border-radius: 8px;
-            margin-top: 16px;
-        }
-        .custom-range.show { display: block; }
-        .range-inputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr auto;
-            gap: 16px;
-            align-items: end;
-        }
-        .range-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #2d3748;
-        }
-        .range-group input {
-            width: 100%;
-            padding: 10px 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        .apply-filter-btn {
-            padding: 11px 24px;
-            background: #667eea;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .apply-filter-btn:hover { background: #5a67d8; }
-        
-        /* Report Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .modal.show { display: flex; }
-        .modal-content {
-            background: white;
-            padding: 32px;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 600px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-        .modal-title { font-size: 22px; font-weight: 700; color: #1a202c; }
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            color: #718096;
-            padding: 0;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            transition: all 0.3s;
-        }
-        .close-btn:hover { background: #f7fafc; }
-        
-        .report-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-        .report-item {
-            padding: 20px;
-            background: #f7fafc;
-            border-radius: 8px;
-        }
-        .report-label { font-size: 13px; color: #718096; margin-bottom: 8px; }
-        .report-value { font-size: 24px; font-weight: 700; color: #667eea; }
-        
-        .download-btn {
-            width: 100%;
-            padding: 12px;
-            background: #48bb78;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .download-btn:hover { background: #38a169; }
-        
-        /* Success Message */
-        .success-message {
-            position: fixed;
-            top: 24px;
-            right: 24px;
-            background: #48bb78;
-            color: white;
-            padding: 16px 24px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(72,187,120,0.3);
-            display: none;
-            z-index: 2000;
-        }
-        .success-message.show { display: block; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cattle_detail.css') }}">
 </head>
 <body>
+<div id="pageData"
+     data-cattle-id="{{ cattle.id }}"
+     data-cattle-name="{{ cattle.name }}"
+     data-cattle-breed="{{ cattle.breed }}"
+     data-cattle-age="{{ cattle.age }}"
+     data-cattle-health="{{ cattle.health }}"
+     data-history='{{ default_history | tojson }}'>
+</div>
     <!-- Navigation -->
-    <nav class="navbar">
+    <nav class="navbar navbar-dashboard" id="navbar">
         <div class="nav-container">
             <div class="nav-left">
-                <div class="brand">
-                    <span class="brand-logo">🐄</span>
-                    <span>CattleTrack</span>
-                </div>
-                <ul class="nav-menu">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/dashboard">Dashboard</a></li>
-<li><a href="/records" >Data & Report</a></li>
-<li><a href="/breeds">Breeds</a></li>
-<li><a href="/about" >About</a></li>
-<li><a href="/contact" >Contact</a></li>
-                </ul>
+                <div class="logo">🐄</div>
+                <span class="brand-name">CattleTrack Pro</span>
             </div>
-            <div class="nav-right">
-                <span class="user-name">{{ username }}</span>
-                <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/home">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+<li><a href="/records" >Data & Report</a></li>
+                <li><a href="/breeds">Breeds</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+            <div class="profile-dropdown">
+                <button class="profile-btn" id="profileBtn">
+                    <div class="profile-avatar">{{ username[0].upper() }}</div>
+                    <span class="profile-name">{{ username }}</span>
+                    <span class="dropdown-arrow">▼</span>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="/profile" class="dropdown-item">
+                        <span>👤</span>
+                        <span>My Profile</span>
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="dropdown-item">
+                        <span>🚪</span>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
         </div>
     </nav>
-
+<br><br><br>
     <!-- Main Content -->
     <div class="container">
         <a href="/dashboard" class="back-link">← Back to Dashboard</a>
@@ -386,7 +85,10 @@
             <div class="average-label" id="averageLabel">Average Milk (Last 7 Days)</div>
             <div class="average-value" id="averageValue">{{ avg_milk }} Liters/day</div>
         </div>
-
+<div id="pageData"
+     data-cattle-id="{{ cattle.id }}"
+     data-history='{{ default_history | tojson }}'>
+</div>
         <!-- Chart Section -->
         <div class="chart-section">
             <div class="chart-header">
@@ -429,7 +131,7 @@
     <div id="reportModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title">Cow Report - {{ cattle.name }}</h2>
+                <h2 class="modal-title">Cow Report -  <span id="modalCattleName">{{ cattle.name }}</span></h2>
                 <button class="close-btn" onclick="closeModal()">&times;</button>
             </div>
             <div class="report-grid">
@@ -450,250 +152,65 @@
                     <div class="report-value" id="reportCount">-</div>
                 </div>
             </div>
-            <button class="download-btn" onclick="downloadReport()">Download Report (Demo)</button>
+            <button class="download-btn" onclick="downloadReport()">Download Report</button>
         </div>
     </div>
+<!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>CattleTrack Pro</h3>
+                    <p>Modern cattle management solution for progressive farmers.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-icon">📘</a>
+                        <a href="#" class="social-icon">🐦</a>
+                        <a href="#" class="social-icon">📷</a>
+                        <a href="#" class="social-icon">💼</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#dashboard">Dashboard</a></li>
+                        <li><a href="#breeds">Features</a></li>
+                        <li><a href="{{ url_for('login') }}">Login</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>📧 info@cattletrack.com</li>
+                        <li>📞 +1 (555) 123-4567</li>
+                        <li>📍 123 Farm Road, Agriculture City</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#about">FAQ</a></li>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Support Center</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2024 CattleTrack Pro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 
     <!-- Success Message -->
     <div id="successMessage" class="success-message"></div>
-
-    <script>
-        const cattleId = '{{ cattle.id }}';
-        let currentData = {{ default_history | tojson }};
-        let currentViewType = 'last_7';
-
-        // Draw initial chart
-        window.onload = function() {
-            drawChart(currentData);
-        }
-
-        function changeView(event,viewType) {
-            currentViewType = viewType;
-            
-            // Update button states
-            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            // Show/hide custom range filter
-            const customRange = document.getElementById('customRangeFilter');
-            if (viewType === 'custom') {
-                customRange.classList.add('show');
-                return; // Don't fetch data yet, wait for user input
-            } else {
-                customRange.classList.remove('show');
-            }
-            
-            // Fetch and update data
-            fetchFilteredData(viewType);
-        }
-
-        function applyCustomRange() {
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            
-            if (!startDate || !endDate) {
-                alert('Please select both start and end dates');
-                return;
-            }
-            
-            if (startDate > endDate) {
-                alert('Start date must be before end date');
-                return;
-            }
-            
-            fetchFilteredData('custom', startDate, endDate);
-        }
-
-        function fetchFilteredData(viewType, startDate = null, endDate = null) {
-            const requestData = {
-                view_type: viewType
-            };
-            
-            if (viewType === 'custom') {
-                requestData.start_date = startDate;
-                requestData.end_date = endDate;
-            }
-            
-            fetch(`/api/cattle/${cattleId}/filter`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(requestData)
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    currentData = result.data.history;
-                    updateDisplay(result.data, viewType);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        }
-
-        function updateDisplay(data, viewType) {
-            // Update average display
-            const avgLabel = document.getElementById('averageLabel');
-            const avgValue = document.getElementById('averageValue');
-            
-            if (viewType === 'last_7') {
-                avgLabel.textContent = 'Average Milk (Last 7 Days)';
-            } else if (viewType === 'all_time') {
-                avgLabel.textContent = 'Average Milk (All Time)';
-            } else {
-                avgLabel.textContent = 'Average Milk (Custom Range)';
-            }
-            avgValue.textContent = data.avg_milk + ' Liters/day';
-            
-            // Update chart title
-            const chartTitle = document.getElementById('chartTitle');
-            if (viewType === 'last_7') {
-                chartTitle.textContent = 'Milk Performance (Last 7 Days)';
-            } else if (viewType === 'all_time') {
-                chartTitle.textContent = 'Milk Performance (All Time)';
-            } else {
-                chartTitle.textContent = 'Milk Performance (Custom Range)';
-            }
-            
-            // Redraw chart
-            drawChart(data.history);
-        }
-
-        function drawChart(data) {
-            const svg = document.getElementById('milkChart');
-            const width = svg.clientWidth;
-            const height = svg.clientHeight;
-            const padding = 60;
-            
-            // Clear previous chart
-            svg.innerHTML = '';
-            
-            if (data.length === 0) {
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', width / 2);
-                text.setAttribute('y', height / 2);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('fill', '#718096');
-                text.textContent = 'No data available for selected range';
-                svg.appendChild(text);
-                return;
-            }
-            
-            // Calculate scales
-            const maxMilk = Math.max(...data.map(d => d.quantity));
-            const xStep = (width - 2 * padding) / (data.length - 1);
-            const yScale = (height - 2 * padding) / maxMilk;
-            
-            // Draw axes
-            const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            xAxis.setAttribute('x1', padding);
-            xAxis.setAttribute('y1', height - padding);
-            xAxis.setAttribute('x2', width - padding);
-            xAxis.setAttribute('y2', height - padding);
-            xAxis.setAttribute('stroke', '#e2e8f0');
-            xAxis.setAttribute('stroke-width', '2');
-            svg.appendChild(xAxis);
-            
-            const yAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-            yAxis.setAttribute('x1', padding);
-            yAxis.setAttribute('y1', padding);
-            yAxis.setAttribute('x2', padding);
-            yAxis.setAttribute('y2', height - padding);
-            yAxis.setAttribute('stroke', '#e2e8f0');
-            yAxis.setAttribute('stroke-width', '2');
-            svg.appendChild(yAxis);
-            
-            // Draw line and points
-            let pathData = '';
-            data.forEach((record, index) => {
-                const x = padding + (index * xStep);
-                const y = height - padding - (record.quantity * yScale);
-                
-                if (index === 0) {
-                    pathData += `M ${x} ${y}`;
-                } else {
-                    pathData += ` L ${x} ${y}`;
-                }
-                
-                // Draw point
-                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                circle.setAttribute('cx', x);
-                circle.setAttribute('cy', y);
-                circle.setAttribute('r', '5');
-                circle.setAttribute('fill', '#667eea');
-                svg.appendChild(circle);
-                
-                // Draw value label
-                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                label.setAttribute('x', x);
-                label.setAttribute('y', y - 10);
-                label.setAttribute('text-anchor', 'middle');
-                label.setAttribute('font-size', '12');
-                label.setAttribute('fill', '#2d3748');
-                label.setAttribute('font-weight', '600');
-                label.textContent = record.quantity + 'L';
-                svg.appendChild(label);
-                
-                // Draw date label
-                const dateLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                dateLabel.setAttribute('x', x);
-                dateLabel.setAttribute('y', height - padding + 20);
-                dateLabel.setAttribute('text-anchor', 'middle');
-                dateLabel.setAttribute('font-size', '11');
-                dateLabel.setAttribute('fill', '#718096');
-                dateLabel.textContent = record.date.substring(5); // MM-DD
-                svg.appendChild(dateLabel);
-            });
-            
-            // Draw line path
-            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            path.setAttribute('d', pathData);
-            path.setAttribute('stroke', '#667eea');
-            path.setAttribute('stroke-width', '3');
-            path.setAttribute('fill', 'none');
-            svg.insertBefore(path, svg.firstChild);
-        }
-
-        function openReportModal() {
-            fetch(`/api/cattle/${cattleId}/filter`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({view_type: currentViewType})
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    const data = result.data;
-                    document.getElementById('reportTotal').textContent = data.total_milk + 'L';
-                    document.getElementById('reportAverage').textContent = data.avg_milk + 'L';
-                    document.getElementById('reportHighest').textContent = 
-                        data.highest_day.quantity + 'L on ' + data.highest_day.date;
-                    document.getElementById('reportCount').textContent = data.record_count;
-                    
-                    document.getElementById('reportModal').classList.add('show');
-                }
-            });
-        }
-
-        function closeModal() {
-            document.getElementById('reportModal').classList.remove('show');
-        }
-
-        function downloadReport() {
-            showSuccess('Report download started (Demo)');
-            setTimeout(() => closeModal(), 1000);
-        }
-
-        function showSuccess(message) {
-            const msg = document.getElementById('successMessage');
-            msg.textContent = message;
-            msg.classList.add('show');
-            setTimeout(() => msg.classList.remove('show'), 3000);
-        }
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                closeModal();
-            }
-        }
-    </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>  
+    <script src="{{ url_for('static', filename='js/cattle_detail.js') }}">
+</script>
 </body>
 </html>

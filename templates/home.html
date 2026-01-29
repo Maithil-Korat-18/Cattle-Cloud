@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Cattle Management System</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 </head>
 <body class="dashboard-body">
     <!-- Navigation Bar -->
@@ -63,7 +65,7 @@
                     <div class="stat-info">
                         <h3>Total Cattle</h3>
                         <p class="stat-value">{{ data.total_cattle }}</p>
-                        <p class="stat-change positive">+2 this month</p>
+                        <p class="stat-change positive"></p>
                     </div>
                 </div>
 
@@ -72,7 +74,7 @@
                     <div class="stat-info">
                         <h3>Milk This Week</h3>
                         <p class="stat-value">{{ data.milk_this_week }}L</p>
-                        <p class="stat-change positive">+5% from last week</p>
+                        <p class="stat-change positive"></p>
                     </div>
                 </div>
 
@@ -81,7 +83,7 @@
                     <div class="stat-info">
                         <h3>Monthly Average</h3>
                         <p class="stat-value">{{ data.monthly_average }}L</p>
-                        <p class="stat-change neutral">Stable</p>
+                        <p class="stat-change neutral"></p>
                     </div>
                 </div>
 
@@ -153,7 +155,7 @@
                         </div>
                     </a>
                     
-                    <a href="/dashboard" class="module-card-home">
+                    <a href="/breeds" class="module-card-home">
                         <div class="module-header">
                             <div class="module-icon-home">🐮</div>
                             <span class="module-badge">Info</span>
@@ -198,9 +200,53 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer-simple">
+    <footer class="footer" id="contact">
         <div class="container">
-            <p>&copy; 2024 CattleTrack Pro. All rights reserved.</p>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>CattleTrack Pro</h3>
+                    <p>Modern cattle management solution for progressive farmers.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-icon">📘</a>
+                        <a href="#" class="social-icon">🐦</a>
+                        <a href="#" class="social-icon">📷</a>
+                        <a href="#" class="social-icon">💼</a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/home">Home</a></li>
+                        <li><a href="/dashboard">Dashboard</a></li>
+                        <li><a href="/breeds">Features</a></li>
+                        <li><a href="{{ url_for('login') }}">Login</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li>📧 Cattle-Cloud@gmail.com</li>
+                        <li>📞 +1 (555) 123-4567</li>
+                        <li>📍 123 Farm Road, Agriculture City</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="/about">FAQ</a></li>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Support Center</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2026 Cattle-Cloud. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 
