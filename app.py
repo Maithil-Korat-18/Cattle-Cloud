@@ -7,6 +7,8 @@ from datetime import timedelta,datetime
 from cattle import cattle_bp
 from records import records_bp
 from home import home_bp
+from profile import profile_bp
+
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key_123"
@@ -15,6 +17,7 @@ app.register_blueprint(dashboard_bp)
 app.register_blueprint(cattle_bp)
 app.register_blueprint(records_bp)
 app.register_blueprint(home_bp)
+app.register_blueprint(profile_bp)
 # ✅ IMPORTANT: Session configuration
 app.config.update(
     SESSION_COOKIE_NAME='session',

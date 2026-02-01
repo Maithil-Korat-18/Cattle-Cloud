@@ -16,11 +16,26 @@ def send_otp_email(email, otp, purpose="registration"):
         color = "#667eea"
         title = "🔐 Email Verification"
         message = "Thank you for registering! Use the OTP below to verify your email."
-    else:
+    elif purpose == "reset":
         subject = "Password Reset Code"
         color = "#f5576c"
-        title = "🔑 Password Reset"
+        title = "🔒 Password Reset"
         message = "Use the OTP below to reset your password."
+    elif purpose == "password_change":
+        subject = "Password Change Verification"
+        color = "#f59e0b"
+        title = "🔑 Password Change"
+        message = "You requested to change your password. Use the OTP below to verify and proceed."
+    elif purpose == "email_change":
+        subject = "Email Change Verification"
+        color = "#3b82f6"
+        title = "📧 Email Change"
+        message = "You requested to change your email address. Use the OTP below to verify your new email."
+    else:
+        subject = "Verification Code"
+        color = "#667eea"
+        title = "🔐 Verification"
+        message = "Use the OTP below to verify your action."
 
     msg["Subject"] = subject
 
@@ -48,7 +63,7 @@ def send_otp_email(email, otp, purpose="registration"):
             <p style="color:red">Do not share this code with anyone.</p>
 
             <hr>
-            <small>© 2025 ACME</small>
+            <small>© 2025 CattleTrack Pro</small>
         </div>
     </body>
     </html>
