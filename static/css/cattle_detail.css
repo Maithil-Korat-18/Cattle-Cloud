@@ -5,7 +5,9 @@
             color: #2d3748;
         }
         
-       
+ #milkChart {
+    min-height: 350px;
+}
         
         /* Main Content */
         .container { max-width: 1200px; margin: 0 auto; padding: 32px 24px; }
@@ -275,3 +277,57 @@
             z-index: 2000;
         }
         .success-message.show { display: block; }
+
+.edit-trigger-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-trigger-btn:hover {
+    background: #edf2f7;
+    transform: scale(1.1);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #4a5568;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.save-changes-btn {
+    width: 100%;
+    padding: 12px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+}
