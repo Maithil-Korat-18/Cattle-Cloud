@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Cattle Management System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
-
     <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
 </head>
 <body class="dashboard-body">
@@ -19,7 +18,7 @@
             <ul class="nav-menu" id="navMenu">
                 <li><a href="/home" class="active">Home</a></li>
                 <li><a href="/dashboard">Dashboard</a></li>
-<li><a href="/records" >Data & Report</a></li>
+                <li><a href="/records">Data & Report</a></li>
                 <li><a href="/breeds">Breeds</a></li>
                 <li><a href="/about">About</a></li>
                 <li><a href="/contact">Contact</a></li>
@@ -61,55 +60,127 @@
             <!-- Summary Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🐄</div>
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #2d6a4f 0%, #40916c 100%);">🐄</div>
                     <div class="stat-info">
                         <h3>Total Cattle</h3>
                         <p class="stat-value">{{ data.total_cattle }}</p>
-                        <p class="stat-change positive"></p>
+                        <p class="stat-change neutral">Active in farm</p>
                     </div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">🥛</div>
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #4a90e2 0%, #0066cc 100%);">🥛</div>
                     <div class="stat-info">
-                        <h3>Milk This Week</h3>
-                        <p class="stat-value">{{ data.milk_this_week }}L</p>
-                        <p class="stat-change positive"></p>
+                        <h3>Milk Today</h3>
+                        {% if ((data.weekly_milk | sum) / (data.weekly_milk | length)) | round(1) > data.milk_change %}
+				<p class="stat-value">{{ data.milk_today }}L</p>			
+				<p class="stat-change negative">{{ data.milk_change }}% below avg</p>
+			{% else %}
+				<p class="stat-value">{{ data.milk_today }}L</p>
+    				<p class="stat-change positive">+{{ data.milk_change }}% above avg</p>
+			{% endif %}
                     </div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">📊</div>
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">💰</div>
                     <div class="stat-info">
-                        <h3>Monthly Average</h3>
-                        <p class="stat-value">{{ data.monthly_average }}L</p>
-                        <p class="stat-change neutral"></p>
+                        <h3>Today's Income</h3>
+                        <p class="stat-value">₹{{ data.today_income }}</p>
+                        <p class="stat-change positive">From milk sales</p>
                     </div>
                 </div>
 
                 <div class="stat-card">
-                    <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">⚠️</div>
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">⚠️</div>
                     <div class="stat-info">
-                        <h3>Health Alerts</h3>
+                        <h3>Alerts</h3>
                         <p class="stat-value">{{ data.health_alerts }}</p>
-                        <p class="stat-change warning">Requires attention</p>
+                        {% if data.health_alerts > 0 %}
+                        <p class="stat-change warning">Needs attention</p>
+                        {% else %}
+                        <p class="stat-change positive">All good!</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
-            <!-- Quick Stats Chart -->
+            <!-- Weekly Milk Production Chart -->
             <div class="chart-section">
                 <div class="chart-card">
-                    <h3>Weekly Milk Production</h3>
-                    <div class="simple-chart">
-                        {% for value in data.weekly_milk %}
-                        <div class="chart-bar">
-                            <div class="bar-fill" style="height: {{ (value / (data.weekly_milk|max|default(1))) * 100 }}%"></div>
-                            <span class="bar-label">Day {{ loop.index }}</span>
-                        </div>
-                        {% endfor %}
+                    <div class="chart-title-section">
+                        <h3>Weekly Milk Production</h3>
+                        <p class="chart-subtitle">Track your daily milk collection over the past week</p>
                     </div>
-                    <p class="chart-footer">Average: {{ (data.weekly_milk | sum / data.weekly_milk | length) | round(1) }}L per day</p>
+                    
+                    {% if data.weekly_milk %}
+                    {% set max_value = data.weekly_milk|max if data.weekly_milk|max > 0 else 100 %}
+                    {% set rounded_max = ((max_value // 100) + 1) * 100 if max_value > 10 else 100 %}
+                    {% set colors = ['#60A5FA', '#818CF8', '#A78BFA', '#C084FC', '#E879F9', '#F472B6', '#FB7185'] %}
+                    
+                    <div class="modern-chart">
+                        <!-- Y-Axis -->
+                        <div class="y-axis">
+                            <span class="axis-label">{{ rounded_max }}</span>
+                            <span class="axis-label">{{ (rounded_max * 0.75)|round|int }}</span>
+                            <span class="axis-label">{{ (rounded_max * 0.5)|round|int }}</span>
+                            <span class="axis-label">{{ (rounded_max * 0.25)|round|int }}</span>
+                            <span class="axis-label">0</span>
+                        </div>
+                        
+                        <!-- Chart Area -->
+                        <div class="chart-area-modern">
+                            <!-- Grid Lines -->
+                            <div class="horizontal-lines">
+                                <div class="h-line"></div>
+                                <div class="h-line"></div>
+                                <div class="h-line"></div>
+                                <div class="h-line"></div>
+                                <div class="h-line"></div>
+                            </div>
+                            
+                            <!-- Bars Container -->
+                            <div class="bars-modern">
+                                {% for value in data.weekly_milk %}
+                                <div class="bar-modern">
+                                    <div class="bar-inner" 
+                                         style="height: {{ (value / rounded_max * 100)|round(1) if value > 0 else 2 }}%; background: {{ colors[loop.index0 % 7] }};"
+                                         data-day="{{ data.weekly_labels[loop.index0] }}"
+                                         data-value="{{ value|round(1) }}">
+                                        <div class="tooltip-modern">
+                                            <strong>{{ data.weekly_labels[loop.index0] }}</strong>
+                                            <span>Milk Production : {{ value|round(1) }}L</span>
+                                        </div>
+                                    </div>
+                                    <span class="bar-label-modern">{{ data.weekly_labels[loop.index0] }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Row -->
+                    <div class="chart-bottom-stats">
+                        <div class="stat-box">
+                            <span class="stat-title">Average per day</span>
+                            <span class="stat-number">{{ ((data.weekly_milk|sum) / (data.weekly_milk|length))|round(1) }}L</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-title">Total this week</span>
+                            <span class="stat-number">{{ data.weekly_milk|sum|round(1) }}L</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-title">Best day</span>
+                            <span class="stat-number">{{ data.weekly_milk|max|round(1) }}L</span>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="no-data-chart">
+                        <div class="no-data-icon">📊</div>
+                        <p class="no-data-text">No milk production data available</p>
+                        <p class="no-data-subtext">Start recording to see your weekly trends</p>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
 
@@ -134,7 +205,11 @@
                     <a href="/dashboard" class="module-card-home">
                         <div class="module-header">
                             <div class="module-icon-home">🏥</div>
+                            {% if data.health_alerts > 0 %}
                             <span class="module-badge alert">{{ data.health_alerts }} Alerts</span>
+                            {% else %}
+                            <span class="module-badge">Healthy</span>
+                            {% endif %}
                         </div>
                         <h3>Health Monitoring</h3>
                         <p>Track health records, vaccinations, and medical treatments</p>
@@ -172,28 +247,39 @@
             <!-- Recent Activity -->
             <div class="activity-section">
                 <h2 class="section-heading">Recent Activity</h2>
+                <p class="section-description">Latest updates from your farm</p>
+                
                 <div class="activity-list">
-                    <div class="activity-item">
-                        <div class="activity-icon">📝</div>
-                        <div class="activity-content">
-                            <p class="activity-title">New milk record added for Bella (C001)</p>
-                            <p class="activity-time">2 hours ago</p>
+                    {% if data.activities %}
+                        {% for activity in data.activities %}
+                        <div class="activity-item">
+                            <div class="activity-icon" style="background: {{ activity.color }}1a; color: {{ activity.color }};">
+                                {{ activity.icon }}
+                            </div>
+                            <div class="activity-content">
+                                <p class="activity-title">{{ activity.title }}</p>
+                                {% if activity.subtitle %}
+                                <p class="activity-subtitle">{{ activity.subtitle }}</p>
+                                {% endif %}
+                                <p class="activity-time">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                                        <circle cx="6" cy="6" r="5" stroke="currentColor" fill="none" stroke-width="1"/>
+                                        <path d="M6 3 v3 h2" stroke="currentColor" fill="none" stroke-width="1" stroke-linecap="round"/>
+                                    </svg>
+                                    {{ activity.time }}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon">💉</div>
-                        <div class="activity-content">
-                            <p class="activity-title">Vaccination completed for Luna (C003)</p>
-                            <p class="activity-time">5 hours ago</p>
+                        {% endfor %}
+                    {% else %}
+                        <div class="activity-item no-activity">
+                            <div class="activity-icon">📋</div>
+                            <div class="activity-content">
+                                <p class="activity-title">No recent activities</p>
+                                <p class="activity-subtitle">Start adding records to see activity here</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon">🌾</div>
-                        <div class="activity-content">
-                            <p class="activity-title">Feed inventory updated - 500kg Hay added</p>
-                            <p class="activity-time">Yesterday</p>
-                        </div>
-                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -208,7 +294,7 @@
                     <p>Modern cattle management solution for progressive farmers.</p>
                     <div class="social-links">
                         <a href="#" class="social-icon">📘</a>
-                        <a href="#" class="social-icon">🐦</a>
+                        <a href="#" class="social-icon">🦆</a>
                         <a href="#" class="social-icon">📷</a>
                         <a href="#" class="social-icon">💼</a>
                     </div>

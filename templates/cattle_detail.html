@@ -60,25 +60,57 @@
     <div class="container">
         <a href="/dashboard" class="back-link">← Back to Dashboard</a>
         
-        <!-- Cattle Header -->
-        <div class="cattle-header">
-            <h1 class="cattle-title">{{ cattle.name }}</h1>
-            <div class="info-grid">
-                
-                <div class="info-item">
-                    <div class="info-label">Breed</div>
-                    <div class="info-value">{{ cattle.breed }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Age</div>
-                    <div class="info-value">{{ cattle.age }} years</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Health Status</div>
-                    <div class="info-value">{{ cattle.health }}</div>
-                </div>
-            </div>
+        <div class="cattle-header" style="position: relative;">
+    <button class="edit-trigger-btn" onclick="openEditModal()" title="Edit Cow Details">✏️</button>
+    <h1 class="cattle-title">{{ cattle.name }}</h1>
+    <div class="info-grid">
+        <div class="info-item">
+            <div class="info-label">Breed</div>
+            <div class="info-value">{{ cattle.breed }}</div>
         </div>
+        <div class="info-item">
+            <div class="info-label">Age</div>
+            <div class="info-value">{{ cattle.age }} years</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">Health Status</div>
+            <div class="info-value">{{ cattle.health }}</div>
+        </div>
+    </div>
+</div>
+
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Edit Cow Details</h2>
+            <button class="close-btn" onclick="closeEditModal()">&times;</button>
+        </div>
+        <form id="editCattleForm">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="editName" value="{{ cattle.name }}" required>
+            </div>
+            <div class="form-group">
+                <label>Breed</label>
+                <input type="text" id="editBreed" value="{{ cattle.breed }}" required>
+            </div>
+            <div class="form-group">
+                <label>Age (Years)</label>
+                <input type="number" id="editAge" value="{{ cattle.age }}" required>
+            </div>
+            <div class="form-group">
+                <label>Health Status</label>
+                <select id="editHealth">
+                    <option value="Healthy" {% if cattle.health == 'Healthy' %}selected{% endif %}>Healthy</option>
+                    <option value="Sick" {% if cattle.health == 'Sick' %}selected{% endif %}>Sick</option>
+                    <option value="Under Treatment" {% if cattle.health == 'Under Treatment' %}selected{% endif %}>Under Treatment</option>
+                    <option value="Recovering" {% if cattle.health == 'Recovering' %}selected{% endif %}>Recovering</option>
+                </select>
+            </div>
+            <button type="submit" class="save-changes-btn">Save Changes</button>
+        </form>
+    </div>
+</div>
 
         <!-- Average Section -->
         <div class="average-section">
@@ -122,8 +154,8 @@
 
             <!-- Chart -->
             <div class="chart-container">
-                <svg class="chart-svg" id="milkChart"></svg>
-            </div>
+    <div id="milkChart"></div>
+</div>
         </div>
     </div>
 
@@ -208,6 +240,7 @@
 
     <!-- Success Message -->
     <div id="successMessage" class="success-message"></div>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>  
     <script src="{{ url_for('static', filename='js/cattle_detail.js') }}">

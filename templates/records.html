@@ -5,59 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Past Records - Cattle Management</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/records.css') }}">
-<style>
-/* ===============================
-   FILTER + REPORT BUTTON
-================================ */
-
-.filter-grid {
-    align-items: end;
-}
-
-#generateReportBtn {
-    padding: 11px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    min-width: 200px;
-    transition: all 0.3s ease;
-}
-
-/* Milk mode */
-#generateReportBtn.milk {
-    background: #667eea;
-    color: white;
-}
-#generateReportBtn.milk:hover {
-    background: #5a67d8;
-}
-
-/* Expense mode */
-#generateReportBtn.expense {
-    background: #48bb78;
-    color: white;
-}
-#generateReportBtn.expense:hover {
-    background: #38a169;
-}
-
-</style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/records.css') }}">
 </head>
 <body>
     <!-- Navigation -->
-     <nav class="navbar navbar-dashboard" id="navbar">
+    <nav class="navbar navbar-dashboard" id="navbar">
         <div class="nav-container">
             <div class="nav-left">
                 <div class="logo">🐄</div>
                 <span class="brand-name">CattleTrack Pro</span>
             </div>
             <ul class="nav-menu" id="navMenu">
-                <li><a href="/home" >Home</a></li>
-                <li><a href="/dashboard" >Dashboard</a></li>
-<li><a href="/records" class="active">Data & Report</a></li>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/records" class="active">Data & Report</a></li>
                 <li><a href="/breeds">Breeds</a></li>
                 <li><a href="/about">About</a></li>
                 <li><a href="/contact">Contact</a></li>
@@ -86,15 +47,14 @@
             </div>
         </div>
     </nav>
-<br><br><br>
+    <br><br><br>
+    
     <!-- Main Content -->
     <div class="container">
         <div class="page-header">
             <h1 class="page-title">Past Records</h1>
             <p class="page-subtitle">View all historical milk and expense records</p>
         </div>
-
-
 
         <!-- Tabs -->
         <div class="tabs">
@@ -113,20 +73,31 @@
                     <label>End Date</label>
                     <input type="date" id="filterEndDate">
                 </div>
+                <div class="filter-group">
+                    <label>Show Entries</label>
+                    <select id="entriesPerPage" onchange="changeEntriesPerPage()">
+                        <option value="10" {% if per_page == 10 %}selected{% endif %}>10 entries</option>
+                        <option value="25" {% if per_page == 25 %}selected{% endif %}>25 entries</option>
+                        <option value="50" {% if per_page == 50 %}selected{% endif %}>50 entries</option>
+                        <option value="100" {% if per_page == 100 %}selected{% endif %}>100 entries</option>
+                    </select>
+                </div>
                 <div>
                     <button class="filter-btn" onclick="applyFilter()">Apply Filter</button>
                 </div>
-<div>
-    <button id="generateReportBtn" class="generate-report-btn">
-        Generate Milk Report
-    </button>
-</div>
-
+                <div>
+                    <button id="generateReportBtn" class="generate-report-btn milk">
+                        📄 Generate Report
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- Milk Records Table -->
         <div id="milkTable" class="table-section active">
+            <div class="records-info">
+                <p>Showing <strong id="milkShowing">{{ milk_records|length }}</strong> of <strong>{{ total_milk }}</strong> records</p>
+            </div>
             <div class="table-container">
                 <table>
                     <thead>
@@ -152,15 +123,26 @@
                 </table>
                 {% if milk_records|length == 0 %}
                 <div class="empty-state">
-                    <div class="empty-icon">📝</div>
+                    <div class="empty-icon">📊</div>
                     <div class="empty-text">No milk records found</div>
                 </div>
                 {% endif %}
             </div>
+            
+            {% if total_milk > milk_records|length %}
+            <div class="load-more-container">
+                <button class="load-more-btn" onclick="loadMoreRecords('milk')">
+                    Load More Records
+                </button>
+            </div>
+            {% endif %}
         </div>
 
         <!-- Expense Records Table -->
         <div id="expenseTable" class="table-section">
+            <div class="records-info">
+                <p>Showing <strong id="expenseShowing">{{ expense_records|length }}</strong> of <strong>{{ total_expenses }}</strong> records</p>
+            </div>
             <div class="table-container">
                 <table>
                     <thead>
@@ -187,9 +169,26 @@
                 </div>
                 {% endif %}
             </div>
+            
+            {% if total_expenses > expense_records|length %}
+            <div class="load-more-container">
+                <button class="load-more-btn" onclick="loadMoreRecords('expense')">
+                    Load More Records
+                </button>
+            </div>
+            {% endif %}
         </div>
     </div>
-<!-- Footer -->
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Generating PDF Report...</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
     <footer class="footer" id="contact">
         <div class="container">
             <div class="footer-content">
@@ -239,9 +238,15 @@
             </div>
         </div>
     </footer>
-    <script src="{{ url_for('static', filename='js/script.js') }}">
-</script> <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="{{ url_for('static', filename='js/records.js') }}"></script>
 
+    <script>
+        // Store current page state
+        let milkOffset = {{ milk_records|length }};
+        let expenseOffset = {{ expense_records|length }};
+        const totalMilk = {{ total_milk }};
+        const totalExpenses = {{ total_expenses }};
+    </script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/records.js') }}"></script>
 </body>
 </html>
