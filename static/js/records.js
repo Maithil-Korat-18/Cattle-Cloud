@@ -20,17 +20,27 @@ function applyFilter() {
     const endDate = document.getElementById("filterEndDate").value;
 
     const filterRows = rows => {
+        let visibleCount = 0;
         rows.forEach(row => {
             const d = row.dataset.date;
-            row.style.display =
-                !startDate || !endDate || (d >= startDate && d <= endDate)
-                    ? ""
-                    : "none";
+            const isVisible = !startDate || !endDate || (d >= startDate && d <= endDate);
+            row.style.display = isVisible ? "" : "none";
+            if (isVisible) visibleCount++;
         });
+        return visibleCount;
     };
 
-    filterRows(document.querySelectorAll("#milkRecordsBody tr"));
-    filterRows(document.querySelectorAll("#expenseRecordsBody tr"));
+    const milkVisible = filterRows(document.querySelectorAll("#milkRecordsBody tr"));
+    const expenseVisible = filterRows(document.querySelectorAll("#expenseRecordsBody tr"));
+    
+    // Update showing counts
+    document.getElementById("milkShowing").textContent = milkVisible;
+    document.getElementById("expenseShowing").textContent = expenseVisible;
+}
+
+function changeEntriesPerPage() {
+    const perPage = document.getElementById("entriesPerPage").value;
+    window.location.href = `/records?per_page=${perPage}`;
 }
 
 window.onload = function () {
@@ -50,197 +60,165 @@ function updateGenerateButton() {
     const btn = document.getElementById("generateReportBtn");
 
     if (currentTab === "milk") {
-        btn.textContent = "Generate Milk Report";
+        btn.textContent = "📄  Milk Report";
         btn.className = "generate-report-btn milk";
-        btn.onclick = generateMilkReportFiltered;
+        btn.onclick = generatePDFReport;
     } else {
-        btn.textContent = "Generate Expense Report";
+        btn.textContent = "📄 Expense Report";
         btn.className = "generate-report-btn expense";
-        btn.onclick = generateExpenseReportFiltered;
+        btn.onclick = generatePDFReport;
     }
 }
 
 // =============================
-// FILTERED REPORT GENERATION
+// PYTHON PDF GENERATION
 // =============================
-function generateMilkReportFiltered() {
-    const rows = Array.from(document.querySelectorAll("#milkRecordsBody tr"))
-        .filter(r => r.style.display !== "none");
-
-    if (!rows.length) return alert("No milk records available");
-    generateMilkPDF(rows);
-}
-
-function generateExpenseReportFiltered() {
-    const rows = Array.from(document.querySelectorAll("#expenseRecordsBody tr"))
-        .filter(r => r.style.display !== "none");
-
-    if (!rows.length) return alert("No expense records available");
-    generateExpensePDF(rows);
-}
-
-// =============================
-// PDF GENERATION
-// =============================
-function generateMilkPDF(rows) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    let y = 50, totalMilk = 0, totalIncome = 0;
-    let page = 1;
-
-    // ===== Header =====
-    doc.setFillColor(102, 126, 234);
-    doc.rect(0, 0, 210, 40, "F");
-
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(22);
-    doc.setFont(undefined, "bold");
-    doc.text("CattleTrack Pro", 105, 18, { align: "center" });
-
-    doc.setFontSize(14);
-    doc.setFont(undefined, "normal");
-    doc.text("Milk Records Report", 105, 30, { align: "center" });
-
-    doc.setTextColor(0);
-
-    // ===== Table Header =====
-    const drawTableHeader = () => {
-        doc.setFillColor(237, 242, 247);
-        doc.rect(10, y - 7, 190, 10, "F");
-
-        doc.setFontSize(11);
-        doc.setFont(undefined, "bold");
-        doc.text("Date", 12, y);
-        doc.text("Cow", 45, y);
-        doc.text("Milk (L)", 95, y);
-        doc.text("Rate (₹)", 125, y);
-        doc.text("Income (₹)", 160, y);
-
-        y += 8;
-        doc.setFont(undefined, "normal");
-    };
-
-    drawTableHeader();
-
-    // ===== Table Rows =====
-    rows.forEach((row, i) => {
-        const cols = row.querySelectorAll("td");
-
-        const milk = parseFloat(cols[2].innerText.replace("L", ""));
-        const rate = parseFloat(cols[3].innerText.replace("₹", ""));
-        const income = parseFloat(cols[4].innerText.replace("₹", ""));
-
-        totalMilk += milk;
-        totalIncome += income;
-
-        if (y > 270) {
-            doc.text(`Page ${page}`, 190, 290);
-            doc.addPage();
-            page++;
-            y = 30;
-            drawTableHeader();
+function generatePDFReport() {
+    const startDate = document.getElementById("filterStartDate").value;
+    const endDate = document.getElementById("filterEndDate").value;
+    
+    // Show loading overlay
+    document.getElementById("loadingOverlay").style.display = "flex";
+    
+    fetch("/api/records/generate-pdf", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            report_type: currentTab,
+            start_date: startDate,
+            end_date: endDate
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Hide loading overlay
+        document.getElementById("loadingOverlay").style.display = "none";
+        
+        if (data.success) {
+            // Create temporary link and trigger download
+            const link = document.createElement('a');
+            link.href = data.file_path;
+            link.download = data.filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Show success message
+            showNotification("PDF report generated successfully!", "success");
+        } else {
+            showNotification(data.error || "Failed to generate PDF", "error");
         }
-
-        if (i % 2 === 0) {
-            doc.setFillColor(249, 250, 251);
-            doc.rect(10, y - 6, 190, 8, "F");
-        }
-
-        doc.text(cols[0].innerText, 12, y);
-        doc.text(cols[1].innerText, 45, y);
-        doc.text(milk.toString(), 95, y);
-        doc.text(rate.toString(), 125, y);
-        doc.text(income.toString(), 160, y);
-
-        y += 8;
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        document.getElementById("loadingOverlay").style.display = "none";
+        showNotification("An error occurred while generating the report", "error");
     });
-
-    // ===== Summary Box =====
-    y += 8;
-    doc.setFillColor(247, 250, 252);
-    doc.rect(10, y, 190, 20, "F");
-
-    doc.setFont(undefined, "bold");
-    doc.text(`Total Milk Produced: ${totalMilk.toFixed(1)} L`, 15, y + 8);
-    doc.text(`Total Income: ₹${totalIncome.toFixed(2)}`, 120, y + 8);
-
-    doc.text(`Page ${page}`, 190, 290);
-    doc.save("Milk_Report.pdf");
 }
-function generateExpensePDF(rows) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
 
-    let y = 50, total = 0;
-    let page = 1;
-
-    // ===== Header =====
-    doc.setFillColor(72, 187, 120);
-    doc.rect(0, 0, 210, 40, "F");
-
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(22);
-    doc.setFont(undefined, "bold");
-    doc.text("CattleTrack Pro", 105, 18, { align: "center" });
-
-    doc.setFontSize(14);
-    doc.setFont(undefined, "normal");
-    doc.text("Expense Records Report", 105, 30, { align: "center" });
-
-    doc.setTextColor(0);
-
-    // ===== Table Header =====
-    const drawTableHeader = () => {
-        doc.setFillColor(237, 247, 242);
-        doc.rect(20, y - 7, 170, 10, "F");
-
-        doc.setFontSize(11);
-        doc.setFont(undefined, "bold");
-        doc.text("Date", 22, y);
-        doc.text("Expense Type", 90, y);
-        doc.text("Amount (₹)", 160, y);
-
-        y += 8;
-        doc.setFont(undefined, "normal");
-    };
-
-    drawTableHeader();
-
-    // ===== Rows =====
-    rows.forEach((row, i) => {
-        const cols = row.querySelectorAll("td");
-        const amount = parseFloat(cols[2].innerText.replace("₹", ""));
-        total += amount;
-
-        if (y > 270) {
-            doc.text(`Page ${page}`, 190, 290);
-            doc.addPage();
-            page++;
-            y = 30;
-            drawTableHeader();
+// =============================
+// LOAD MORE RECORDS
+// =============================
+function loadMoreRecords(type) {
+    const limit = parseInt(document.getElementById("entriesPerPage").value);
+    const offset = type === 'milk' ? milkOffset : expenseOffset;
+    
+    fetch("/api/records/load-more", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            type: type,
+            offset: offset,
+            limit: limit
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.records.length > 0) {
+            const tbody = document.getElementById(type === 'milk' ? 'milkRecordsBody' : 'expenseRecordsBody');
+            
+            data.records.forEach(record => {
+                const row = document.createElement('tr');
+                row.dataset.date = record.date;
+                
+                if (type === 'milk') {
+                    row.innerHTML = `
+                        <td>${record.date}</td>
+                        <td><strong>${record.cow_name}</strong></td>
+                        <td>${record.quantity}L</td>
+                        <td>₹${record.rate}</td>
+                        <td><strong>₹${record.income}</strong></td>
+                    `;
+                } else {
+                    row.innerHTML = `
+                        <td>${record.date}</td>
+                        <td><strong>${record.type}</strong></td>
+                        <td><strong>₹${record.amount}</strong></td>
+                    `;
+                }
+                
+                tbody.appendChild(row);
+            });
+            
+            // Update offset
+            if (type === 'milk') {
+                milkOffset += data.records.length;
+                document.getElementById("milkShowing").textContent = milkOffset;
+                
+                // Hide button if no more records
+                if (milkOffset >= totalMilk) {
+                    const container = document.querySelector('#milkTable .load-more-container');
+                    if (container) container.style.display = 'none';
+                }
+            } else {
+                expenseOffset += data.records.length;
+                document.getElementById("expenseShowing").textContent = expenseOffset;
+                
+                // Hide button if no more records
+                if (expenseOffset >= totalExpenses) {
+                    const container = document.querySelector('#expenseTable .load-more-container');
+                    if (container) container.style.display = 'none';
+                }
+            }
+            
+            showNotification(`Loaded ${data.records.length} more records`, "success");
+        } else {
+            showNotification("No more records to load", "info");
         }
-
-        if (i % 2 === 0) {
-            doc.setFillColor(249, 252, 250);
-            doc.rect(20, y - 6, 170, 8, "F");
-        }
-
-        doc.text(cols[0].innerText, 22, y);
-        doc.text(cols[1].innerText, 90, y);
-        doc.text(amount.toString(), 160, y);
-
-        y += 8;
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        showNotification("Failed to load more records", "error");
     });
+}
 
-    // ===== Summary =====
-    y += 8;
-    doc.setFillColor(240, 253, 244);
-    doc.rect(20, y, 170, 15, "F");
-
-    doc.setFont(undefined, "bold");
-    doc.text(`Total Expense: ₹${total.toFixed(2)}`, 30, y + 10);
-
-    doc.text(`Page ${page}`, 190, 290);
-    doc.save("Expense_Report.pdf");
+// =============================
+// NOTIFICATION SYSTEM
+// =============================
+function showNotification(message, type = "info") {
+    // Remove existing notifications
+    const existing = document.querySelector('.notification');
+    if (existing) existing.remove();
+    
+    // Create notification
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.innerHTML = `
+        <span>${message}</span>
+        <button onclick="this.parentElement.remove()">×</button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.classList.add('fade-out');
+            setTimeout(() => notification.remove(), 300);
+        }
+    }, 5000);
 }
