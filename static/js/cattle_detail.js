@@ -1,531 +1,601 @@
-// Global variables
-let currentViewType = 'last_7';
-let currentData = [];
-let currentReportData = null;
-let cattleId = null;
+// ===========================
+// CATTLE DETAIL PAGE JS
+// ===========================
+
 let milkChart = null;
-function drawLineChart(data) {
-    if (!data || data.length === 0) return;
+let currentPage = 1;
+let currentDays = 7;
+let entriesPerPage = 10;
+let allMilkRecords = [];
 
-    const dates = data.map(d => d.date);
-    const values = data.map(d => Number(d.quantity));
-
-    const options = {
-        chart: {
-            type: 'area',
-            height: 350,
-            toolbar: { show: false },
-            animations: { enabled: false }
-        },
-        series: [{
-            name: 'Milk (Liters)',
-            data: values
-        }],
-        xaxis: {
-            categories: dates,
-            labels: { rotate: -45 }
-        },
-        stroke: {
-            curve: 'straight',
-            width: 3
-        },
-        fill: {
-            type: 'gradient',
-            gradient: {
-                shadeIntensity: 0,
-                opacityFrom: 0.50,
-                opacityTo: 0.25,
-                stops: [0, 90, 100]
-            }
-        },
-dataLabels: {
-    enabled: false   // 🔥 THIS HIDES VALUES
-},
-        markers: {
-            size: 6,
-            strokeWidth: 2,
-            hover: { size: 6 }
-        },
-        colors: ['#4F46E5'],
-        grid: {
-            borderColor: '#e5e7eb',
-            strokeDashArray: 4
-        },
-        yaxis: {
-            title: { text: 'Liters' }
-        },
-        tooltip: {
-            theme: 'light'
-        }
-    };
-
-    if (milkChart) milkChart.destroy();
-
-    milkChart = new ApexCharts(
-        document.querySelector("#milkChart"),
-        options
-    );
-    milkChart.render();
-}
-
-// Initialize on page load
-window.onload = function() {
-    console.log('Page loaded, initializing...');
-    
-    // Get cattle ID and initial data from page
-    const pageData = document.getElementById('pageData');
-    if (pageData) {
-        cattleId = pageData.dataset.cattleId;
-        console.log('Cattle ID:', cattleId);
-        
-        const defaultHistory = pageData.dataset.history;
-        console.log('Default history data:', defaultHistory);
-        
-        if (defaultHistory) {
-            try {
-                currentData = JSON.parse(defaultHistory);
-                console.log('Parsed data:', currentData);
-                
-                if (currentData && currentData.length > 0) {
-                    drawLineChart(currentData);
-                } else {
-                    console.warn('No data available in default history');
-                }
-            } catch (e) {
-                console.error('Error parsing default history:', e);
-                console.error('Raw data:', defaultHistory);
-            }
-        } else {
-            console.warn('No default history data attribute found');
-        }
-    } else {
-        console.error('pageData element not found!');
-    }
-    
-    setupNavigation();
-    setMaxDate();
-}
-
-// Setup navigation dropdown
-function setupNavigation() {
-    const profileBtn = document.getElementById('profileBtn');
-    const dropdownMenu = document.getElementById('dropdownMenu');
-    const hamburger = document.getElementById('hamburger');
-    const navMenu = document.getElementById('navMenu');
-
-    if (profileBtn && dropdownMenu) {
-        profileBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            dropdownMenu.classList.toggle('show');
-        });
-
-        document.addEventListener('click', function() {
-            dropdownMenu.classList.remove('show');
-        });
-    }
-
-    if (hamburger && navMenu) {
-        hamburger.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
-        });
-    }
-}
-
-// Set max date for date inputs
-function setMaxDate() {
-    const today = new Date().toISOString().split('T')[0];
-    const startDate = document.getElementById('startDate');
-    const endDate = document.getElementById('endDate');
-    if (startDate) startDate.max = today;
-    if (endDate) endDate.max = today;
-}
-
-// Change view handler
-function changeView(event, viewType) {
-    currentViewType = viewType;
-    
-    // Update button states
-    document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    // Show/hide custom range filter
-    const customRange = document.getElementById('customRangeFilter');
-    if (viewType === 'custom') {
-        customRange.classList.add('show');
-        return;
-    } else {
-        customRange.classList.remove('show');
-    }
-    
-    // Fetch data from backend
-    fetchFilteredData(viewType);
-}
-
-// Apply custom date range
-function applyCustomRange() {
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
-    
-    if (!startDate || !endDate) {
-        alert('Please select both start and end dates');
-        return;
-    }
-    
-    if (startDate > endDate) {
-        alert('Start date must be before end date');
-        return;
-    }
-    
-    fetchFilteredData('custom', startDate, endDate);
-}
-
-// Fetch filtered data from backend
-function fetchFilteredData(viewType, startDate = null, endDate = null) {
-    const requestData = {
-        view_type: viewType
-    };
-    
-    if (viewType === 'custom') {
-        requestData.start_date = startDate;
-        requestData.end_date = endDate;
-    }
-    
-    console.log('Fetching data:', requestData);
-    
-    fetch(`/api/cattle/${cattleId}/filter`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestData)
-    })
-    .then(response => {
-        console.log('Response status:', response.status);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(result => {
-        console.log('API Response:', result);
-       
-        if (result.success && result.data) {
-            currentData = result.data.history || [];
-            updateDisplay(result.data, viewType);
-	    drawLineChart(result.data.history);
-
-        } else {
-            console.error('API returned success=false or missing data');
-            showSuccess('Error: Could not load data');
-        }
-    })
-    .catch(error => {
-        console.error('Fetch error:', error);
-        showSuccess('Error connecting to server: ' + error.message);
-    });
-}
-
-// Update display with new data
-function updateDisplay(data, viewType) {
-    // Update average display
-    const avgLabel = document.getElementById('averageLabel');
-    const avgValue = document.getElementById('averageValue');
-    
-    if (viewType === 'last_7') {
-        avgLabel.textContent = 'Average Milk (Last 7 Days)';
-    } else if (viewType === 'all_time') {
-        avgLabel.textContent = 'Average Milk (All Time)';
-    } else {
-        avgLabel.textContent = 'Average Milk (Custom Range)';
-    }
-    avgValue.textContent = data.avg_milk + ' Liters/day';
-    
-    // Update chart title
-    const chartTitle = document.getElementById('chartTitle');
-    if (viewType === 'last_7') {
-        chartTitle.textContent = 'Milk Performance (Last 7 Days)';
-    } else if (viewType === 'all_time') {
-        chartTitle.textContent = 'Milk Performance (All Time)';
-    } else {
-        chartTitle.textContent = 'Milk Performance (Custom Range)';
-    }
-drawLineChart(data.history);
-}
-
-// Open report modal
-function openReportModal() {
-    // Check if we have cattle ID
-    if (!cattleId) {
-        console.error('No cattle ID found');
-        showSuccess('Error: Cattle ID not found');
-        return;
-    }
-    const total = currentData.reduce(
-    (sum, item) => sum + Number(item.quantity),
-    0
-);
-
-const average = (total / currentData.length).toFixed(1);
-
-const highest = currentData.reduce(
-    (max, item) =>
-        Number(item.quantity) > Number(max.quantity) ? item : max,
-    currentData[0]
-);
-    // Use current data if available, otherwise fetch from backend
-    if (currentData && currentData.length > 0) {
-        // Calculate statistics from current data
-        const total = currentData.reduce(
-    (sum, item) => sum + Number(item.quantity),
-    0
-);
-        const average = (total / currentData.length).toFixed(1);
-        const highest = currentData.reduce((max, item) => 
-    Number(item.quantity) > Number(max.quantity) ? item : max,
-    currentData[0]
-);
-        
-        const pageData = document.getElementById('pageData');
-        const cattleName = pageData ? pageData.dataset.cattleName : 'Cattle';
-        
-        // Update modal content
-        document.getElementById('modalCattleName').textContent = cattleName;
-        document.getElementById('reportTotal').textContent = total.toFixed(1) + 'L';
-        document.getElementById('reportAverage').textContent = average + 'L';
-        document.getElementById('reportHighest').textContent = 
-            highest?.quantity || 0 + 'L on ' + formatDate(highest?.date || new Date());
-        document.getElementById('reportCount').textContent = currentData.length;
-        
-        // Store report data for download
-        currentReportData = {
-            cattleName: cattleName,
-            total: total.toFixed(1),
-            average: average,
-            highest: highest,
-            recordCount: currentData.length,
-            viewType: currentViewType,
-            data: currentData
-        };
-        
-        document.getElementById('reportModal').classList.add('show');
-        return;
-    }
-    
-    // Fetch fresh data from backend if no current data
-    const requestData = {
-        view_type: currentViewType
-    };
-    
-    console.log('Fetching report data for cattle:', cattleId);
-    
-    fetch(`/api/cattle/${cattleId}/filter`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestData)
-    })
-    .then(response => {
-        console.log('Response status:', response.status);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(result => {
-        console.log('API Response:', result);
-        
-        if (result.success && result.data) {
-            const data = result.data;
-            const pageData = document.getElementById('pageData');
-            const cattleName = pageData ? pageData.dataset.cattleName : 'Cattle';
-            
-            // Update modal content
-            document.getElementById('modalCattleName').textContent = cattleName;
-            document.getElementById('reportTotal').textContent = 
-                (data.total_milk || 0).toFixed(1) + 'L';
-            document.getElementById('reportAverage').textContent = 
-                (data.avg_milk || 0) + 'L';
-            document.getElementById('reportHighest').textContent = 
-                (data.highest_day.quantity || 0) + 'L on ' + 
-                formatDate(data.highest_day.date || 'N/A');
-            document.getElementById('reportCount').textContent = 
-                data.record_count || 0;
-            
-            // Store report data for download
-            currentReportData = {
-                cattleName: cattleName,
-                total: (data.total_milk || 0).toFixed(1),
-                average: data.avg_milk || 0,
-                highest: data.highest_day || { date: 'N/A', quantity: 0 },
-                recordCount: data.record_count || 0,
-                viewType: currentViewType,
-                data: data.history || []
-            };
-            
-            document.getElementById('reportModal').classList.add('show');
-        } else {
-            console.error('Invalid response format:', result);
-            showSuccess('Error: Invalid response from server');
-        }
-    })
-    .catch(error => {
-        console.error('Error loading report:', error);
-        showSuccess('Error loading report data: ' + error.message);
-    });
-}
-function downloadReport() {
-    closeModal();
-
-    const params = new URLSearchParams({
-        view_type: currentViewType
-    });
-
-    if (currentViewType === 'custom') {
-        params.append('start_date', document.getElementById('startDate').value);
-        params.append('end_date', document.getElementById('endDate').value);
-    }
-
-    setTimeout(() => {
-        window.location.href = `/cattle/${cattleId}/report?` + params.toString();
-    }, 300);
-}
-// Close modal
-function closeModal() {
-    document.getElementById('reportModal').classList.remove('show');
-}
-
-// Format date for display
-function formatDate(dateStr) {
-    if (typeof dateStr === 'string' && dateStr.includes(' ')) {
-        return dateStr;
-    }
-
-    const date = new Date(dateStr);
-    if (isNaN(date)) return dateStr;
-
-    return date.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-    });
-}
-
-// Helper functions for report generation
-function getViewTypeName(viewType) {
-    switch(viewType) {
-        case 'last_7': return 'Last 7 Days';
-        case 'last_30': return 'Last 30 Days';
-        case 'all_time': return 'All Time';
-        case 'custom': return 'Custom Date Range';
-        default: return 'Unknown';
-    }
-}
-
-function getPerformanceRating(average) {
-    average = parseFloat(average);
-    if (average >= 25) return 'Excellent - Above industry average';
-    if (average >= 20) return 'Good - Meeting expectations';
-    if (average >= 15) return 'Average - Room for improvement';
-    return 'Below Average - Attention required';
-}
-
-function getTrendAnalysis(data) {
-    if (data.length < 3) return 'Insufficient data for trend analysis.';
-    
-    const firstHalf = data.slice(0, Math.floor(data.length / 2));
-    const secondHalf = data.slice(Math.floor(data.length / 2));
-    
-    const firstAvg = firstHalf.reduce((sum, item) => sum + item.quantity, 0) / firstHalf.length;
-    const secondAvg = secondHalf.reduce((sum, item) => sum + item.quantity, 0) / secondHalf.length;
-    
-    const diff = ((secondAvg - firstAvg) / firstAvg * 100).toFixed(1);
-    
-    if (diff > 5) return `Positive trend: Production increased by ${diff}% in recent period.`;
-    if (diff < -5) return `Declining trend: Production decreased by ${Math.abs(diff)}% in recent period.`;
-    return `Stable: Production remained consistent with ${Math.abs(diff)}% variation.`;
-}
-
-function getRecommendations(average, breed) {
-    average = parseFloat(average);
-    let recommendations = [];
-    
-    if (average < 20) {
-        recommendations.push('• Consider reviewing nutrition plan with a veterinarian');
-        recommendations.push('• Ensure adequate water intake (cows need 30-50 gallons/day)');
-        recommendations.push('• Check for signs of stress or illness');
-    }
-    
-    if (breed === 'Holstein') {
-        recommendations.push('• Holstein cows typically produce 25-30L/day at peak lactation');
-        recommendations.push('• Ensure high-quality forage and balanced mineral supplements');
-    }
-    
-    recommendations.push('• Maintain regular milking schedule (2-3 times daily)');
-    recommendations.push('• Monitor udder health and cleanliness');
-    recommendations.push('• Keep detailed records for veterinary consultation');
-    
-    return recommendations.join('\n');
-}
-
-// Success message
-function showSuccess(message) {
-    const msg = document.getElementById('successMessage');
-    msg.textContent = message;
-    msg.classList.add('show');
-    setTimeout(() => msg.classList.remove('show'), 3000);
-}
-
-// Close modal on outside click
-window.onclick = function(event) {
-    if (event.target.classList.contains('modal')) {
-        closeModal();
-    }
-}
-
-// Handle window resize for responsive chart
-let resizeTimer;
-window.addEventListener('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function() {
-        if (currentData.length > 0) {
-            drawChart(currentData);
-        }
-    }, 250);
+// ===========================
+// INITIALIZATION
+// ===========================
+document.addEventListener('DOMContentLoaded', function() {
+    initializeMilkChart(INITIAL_CHART_DATA);
+    setupEventListeners();
+    setDefaultDates();
+    loadAllMilkRecords();
 });
-// Modal Toggle Functions
-function openEditModal() {
-    document.getElementById('editModal').classList.add('show');
-}
 
-function closeEditModal() {
-    document.getElementById('editModal').classList.remove('show');
-}
-
-// Handle Form Submission
-document.getElementById('editCattleForm')?.addEventListener('submit', function(e) {
-    e.preventDefault();
+function setupEventListeners() {
+    // Chart filter buttons
+    document.querySelectorAll('.filter-btn[data-days]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn:not([data-bs-toggle])').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const days = parseInt(this.getAttribute('data-days'));
+            currentDays = days;
+            loadChartData(days);
+        });
+    });
     
-    const updatedData = {
-        name: document.getElementById('editName').value,
-        breed: document.getElementById('editBreed').value,
-        age: document.getElementById('editAge').value,
-        health: document.getElementById('editHealth').value
-    };
+    // Record type tabs
+    document.querySelectorAll('.record-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.record-tab').forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            const type = this.getAttribute('data-type');
+            document.querySelectorAll('.record-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            if (type === 'milk') {
+                document.getElementById('addMilkForm').classList.add('active');
+            } else {
+                document.getElementById('addHealthForm').classList.add('active');
+            }
+        });
+    });
+    
+    // Entries per page selector
+    const entriesSelect = document.getElementById('entriesPerPage');
+    if (entriesSelect) {
+        entriesSelect.addEventListener('change', function() {
+            entriesPerPage = parseInt(this.value);
+            currentPage = 1;
+            displayMilkRecords();
+        });
+    }
+}
 
-    fetch(`/api/cattle/${cattleId}/edit`, {
+function setDefaultDates() {
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Set default date for milk record
+    const milkDateInput = document.querySelector('#addMilkForm input[name="date"]');
+    if (milkDateInput) {
+        milkDateInput.value = today;
+    }
+    
+    // Set default dates for report (last 30 days)
+    const reportEndDate = document.getElementById('reportEndDate');
+    const reportStartDate = document.getElementById('reportStartDate');
+    if (reportEndDate && reportStartDate) {
+        reportEndDate.value = today;
+        
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        reportStartDate.value = thirtyDaysAgo.toISOString().split('T')[0];
+    }
+    
+    // Set default dates for custom chart range (last 30 days)
+    const customEndDate = document.getElementById('customEndDate');
+    const customStartDate = document.getElementById('customStartDate');
+    if (customEndDate && customStartDate) {
+        customEndDate.value = today;
+        
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        customStartDate.value = thirtyDaysAgo.toISOString().split('T')[0];
+    }
+}
+
+// ===========================
+// CHART INITIALIZATION
+// ===========================
+function initializeMilkChart(data) {
+    const ctx = document.getElementById('milkChart');
+    if (!ctx) return;
+    
+    // Sort data by date
+    const sortedData = [...data].sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    const labels = sortedData.map(d => {
+        const date = new Date(d.date);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    });
+    
+    const milkData = sortedData.map(d => parseFloat(d.milk_liters) || 0);
+    const maxValue = Math.max(...milkData, 10);
+    
+    if (milkChart) {
+        milkChart.destroy();
+    }
+    
+    milkChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Milk Production (L)',
+                data: milkData,
+                backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                borderColor: 'rgba(102, 126, 234, 1)',
+                borderWidth: 0,
+                borderRadius: 8,
+                barPercentage: 0.7
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: '#1f2937',
+                    padding: 12,
+                    cornerRadius: 8,
+                    titleFont: {
+                        family: 'Inter',
+                        size: 14,
+                        weight: '600'
+                    },
+                    bodyFont: {
+                        family: 'Inter',
+                        size: 13
+                    },
+                    callbacks: {
+                        label: function(context) {
+                            return 'Production: ' + context.parsed.y.toFixed(1) + ' L';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    border: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            family: 'Inter',
+                            size: 12,
+                            weight: '500'
+                        },
+                        color: '#6b7280',
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    max: Math.ceil(maxValue * 1.1),
+                    grid: {
+                        color: '#f3f4f6',
+                        drawBorder: false
+                    },
+                    border: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            family: 'Inter',
+                            size: 12
+                        },
+                        color: '#6b7280',
+                        stepSize: Math.ceil(maxValue / 5),
+                        callback: function(value) {
+                            return value + ' L';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// ===========================
+// CHART DATA LOADING
+// ===========================
+function loadChartData(days, startDate = null, endDate = null) {
+    let url = `/cattle/${CATTLE_ID}/milk-chart?days=${days}`;
+    
+    if (startDate && endDate) {
+        url = `/cattle/${CATTLE_ID}/milk-chart?start_date=${startDate}&end_date=${endDate}`;
+    }
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                initializeMilkChart(result.data);
+            } else {
+                showNotification('Error loading chart data', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Failed to load chart data', 'error');
+        });
+}
+
+function applyCustomRange() {
+    const form = document.getElementById('customRangeForm');
+    
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const formData = new FormData(form);
+    const startDate = formData.get('start_date');
+    const endDate = formData.get('end_date');
+    
+    if (new Date(startDate) > new Date(endDate)) {
+        showNotification('Start date must be before end date', 'error');
+        return;
+    }
+    
+    // Remove active class from all filter buttons
+    document.querySelectorAll('.filter-btn:not([data-bs-toggle])').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Load chart with custom range
+    loadChartData(null, startDate, endDate);
+    
+    // Close modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('customRangeModal'));
+    modal.hide();
+    
+    showNotification('Custom range applied', 'success');
+}
+
+// ===========================
+// MILK RECORDS
+// ===========================
+function loadAllMilkRecords() {
+    fetch(`/cattle/${CATTLE_ID}/milk?page=1&per_page=1000`)
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                allMilkRecords = result.records;
+                displayMilkRecords();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+function displayMilkRecords() {
+    const tbody = document.getElementById('milkRecordsTable');
+    const recordsInfo = document.getElementById('recordsInfo');
+    
+    if (allMilkRecords.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">No milk records found</td></tr>';
+        recordsInfo.textContent = 'Showing 0 entries';
+        return;
+    }
+    
+    // Calculate pagination
+    const totalRecords = allMilkRecords.length;
+    const totalPages = Math.ceil(totalRecords / entriesPerPage);
+    const startIndex = (currentPage - 1) * entriesPerPage;
+    const endIndex = Math.min(startIndex + entriesPerPage, totalRecords);
+    const recordsToShow = allMilkRecords.slice(startIndex, endIndex);
+    
+    // Update records info
+    recordsInfo.textContent = `Showing entries ${startIndex + 1}-${endIndex} of ${totalRecords}`;
+    
+    // Update table
+    tbody.innerHTML = recordsToShow.map(record => {
+        const date = new Date(record.date);
+        const formattedDate = date.toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric', 
+            year: 'numeric' 
+        });
+        
+        return `
+            <tr>
+                <td>${formattedDate}</td>
+                <td>${parseFloat(record.morning_liters).toFixed(1)}</td>
+                <td>${parseFloat(record.evening_liters).toFixed(1)}</td>
+                <td class="highlight">${parseFloat(record.milk_liters).toFixed(1)}</td>
+                <td>₹${parseFloat(record.rate).toFixed(2)}</td>
+                <td class="income">₹${parseFloat(record.income).toFixed(0)}</td>
+            </tr>
+        `;
+    }).join('');
+    
+    // Update pagination
+    updatePagination(currentPage, totalPages);
+}
+
+// ===========================
+// PAGINATION
+// ===========================
+function updatePagination(page, totalPages) {
+    const container = document.getElementById('milkPagination');
+    
+    if (!container || totalPages <= 1) {
+        if (container) container.innerHTML = '';
+        return;
+    }
+    
+    let html = '<div class="pagination-wrapper">';
+    
+    // Previous button
+    html += `<button class="pagination-btn" ${page === 1 ? 'disabled' : ''} 
+             onclick="changePage(${page - 1})">
+             <span class="material-symbols-outlined">chevron_left</span>
+             </button>`;
+    
+    // Page numbers
+    html += '<div class="pagination-numbers">';
+    
+    let pages = [];
+    if (totalPages <= 7) {
+        pages = Array.from({length: totalPages}, (_, i) => i + 1);
+    } else {
+        if (page <= 3) {
+            pages = [1, 2, 3, 4, '...', totalPages];
+        } else if (page >= totalPages - 2) {
+            pages = [1, '...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+        } else {
+            pages = [1, '...', page - 1, page, page + 1, '...', totalPages];
+        }
+    }
+    
+    for (let p of pages) {
+        if (p === '...') {
+            html += '<span class="pagination-ellipsis">...</span>';
+        } else {
+            html += `<button class="pagination-number ${p === page ? 'active' : ''}" 
+                     onclick="changePage(${p})">${p}</button>`;
+        }
+    }
+    
+    html += '</div>';
+    
+    // Next button
+    html += `<button class="pagination-btn" ${page === totalPages ? 'disabled' : ''} 
+             onclick="changePage(${page + 1})">
+             <span class="material-symbols-outlined">chevron_right</span>
+             </button>`;
+    
+    html += '</div>';
+    
+    container.innerHTML = html;
+}
+
+function changePage(page) {
+    currentPage = page;
+    displayMilkRecords();
+    
+    // Scroll to table
+    document.querySelector('.table-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ===========================
+// UPDATE CATTLE
+// ===========================
+function updateCattle() {
+    const form = document.getElementById('editCattleForm');
+    const formData = new FormData(form);
+    
+    const data = {
+        name: formData.get('name'),
+        tag_no: formData.get('tag_no'),
+        breed: formData.get('breed'),
+        age: parseInt(formData.get('age')),
+        gender: formData.get('gender'),
+        health: formData.get('health')
+    };
+    
+    fetch(`/cattle/${CATTLE_ID}/update`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedData)
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
     })
     .then(response => response.json())
     .then(result => {
         if (result.success) {
-            showSuccess('Cattle details updated successfully!');
-            setTimeout(() => location.reload(), 1000); // Reload to reflect changes
+            showNotification('Cattle updated successfully', 'success');
+            
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editCattleModal'));
+            modal.hide();
+            
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         } else {
-            showSuccess('Error: Could not update details');
+            showNotification(result.error || 'Failed to update cattle', 'error');
         }
     })
-    .catch(err => console.error('Error:', err));
-});
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred', 'error');
+    });
+}
+
+// ===========================
+// ADD RECORDS
+// ===========================
+function submitRecord() {
+    const activeForm = document.querySelector('.record-form.active');
+    const formId = activeForm.id;
+    
+    if (formId === 'addMilkForm') {
+        submitMilkRecord();
+    } else {
+        submitHealthRecord();
+    }
+}
+
+function submitMilkRecord() {
+    const form = document.getElementById('addMilkForm');
+    
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const formData = new FormData(form);
+    
+    const data = {
+        date: formData.get('date'),
+        morning_liters: parseFloat(formData.get('morning_liters')),
+        evening_liters: parseFloat(formData.get('evening_liters')),
+        rate: parseFloat(formData.get('rate'))
+    };
+    
+    fetch(`/cattle/${CATTLE_ID}/add-milk`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            showNotification('Milk record added successfully', 'success');
+            
+            form.reset();
+            setDefaultDates();
+            
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addRecordModal'));
+            modal.hide();
+            
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            showNotification(result.error || 'Failed to add milk record', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred', 'error');
+    });
+}
+
+function submitHealthRecord() {
+    const form = document.getElementById('addHealthForm');
+    
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const formData = new FormData(form);
+    
+    const data = {
+        issue: formData.get('issue'),
+        treatment: formData.get('treatment'),
+        vet_name: formData.get('vet_name'),
+        next_checkup: formData.get('next_checkup') || null
+    };
+    
+    fetch(`/cattle/${CATTLE_ID}/add-health`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            showNotification('Health record added successfully', 'success');
+            
+            form.reset();
+            
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addRecordModal'));
+            modal.hide();
+            
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            showNotification(result.error || 'Failed to add health record', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('An error occurred', 'error');
+    });
+}
+
+// ===========================
+// GENERATE REPORT
+// ===========================
+function generateReport() {
+    const form = document.getElementById('reportForm');
+    
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+    
+    const formData = new FormData(form);
+    const startDate = formData.get('start_date');
+    const endDate = formData.get('end_date');
+    
+    if (new Date(startDate) > new Date(endDate)) {
+        showNotification('Start date must be before end date', 'error');
+        return;
+    }
+    
+    showNotification('Generating report...', 'info');
+    
+    // Open PDF in new window
+    window.open(`/cattle/${CATTLE_ID}/generate-pdf?start_date=${startDate}&end_date=${endDate}`, '_blank');
+    
+    // Close modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('reportModal'));
+    modal.hide();
+    
+    setTimeout(() => {
+        showNotification('Report generated successfully', 'success');
+    }, 1000);
+}
+
+// ===========================
+// NOTIFICATIONS
+// ===========================
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <span class="material-symbols-outlined">
+            ${type === 'success' ? 'check_circle' : type === 'error' ? 'error' : 'info'}
+        </span>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => {
+            notification.remove();
+        }, 300);
+    }, 3000);
+}
