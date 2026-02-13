@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finances - Cattle-Cloud</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/expenses.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <span class="material-symbols-outlined">grass</span>
+                </div>
+                <span class="sidebar-brand">Cattle-Cloud</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="/dashboard" class="nav-item">
+                    <span class="material-symbols-outlined nav-icon">dashboard</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="/cattle" class="nav-item">
+                    <span class="material-symbols-outlined nav-icon">pets</span>
+                    <span class="nav-text">Cattle Herd</span>
+                </a>
+                <a href="/milk" class="nav-item">
+                    <span class="material-symbols-outlined nav-icon">water_drop</span>
+                    <span class="nav-text">Production</span>
+                </a>
+		<a href="/milk" class="nav-item">
+                    <span class="material-symbols-outlined nav-icon">Feed</span>
+                    <span class="nav-text">Feed</span>
+                </a>
+                <a href="/expenses" class="nav-item active">
+                    <span class="material-symbols-outlined nav-icon filled">account_balance_wallet</span>
+                    <span class="nav-text">Finances</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item">
+                    <span class="material-symbols-outlined nav-icon">settings</span>
+                    <span class="nav-text">Settings</span>
+                </a>
+                
+                <div class="user-profile">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPWkZjCgogEUATrDJQIusbvxGyyx9IIGNYh6W3Lew2sXZRXu816fbskZ54TpweLa5WI506LnIN_9M8ydY64TJYotY_5431t-o7tNNOWZABq2w3LAJWPUaj3sE6y_VGqTflnHAO9i5P92IKXzuBjI6YAYlLnqWAmrVe7Jhe1B-X3sjUpaAN4l3Z5UXjtVozMfEmXwxkr06CcoLzhZrGw9bUjycVZrA6tcUrG1m3cJmy1lGwQmLho5oL_d04sCZsmeFwSXTlt8TirpI" alt="Profile" class="profile-img">
+                    <div class="profile-info">
+                        <p class="profile-name">{{ session.get('user_name', 'User') }}</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Financial Overview</h1>
+                    <p class="page-subtitle">Track revenue, expenses, and profitability</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" id="generateReportBtn">
+                        <span class="material-symbols-outlined">description</span>
+                        Generate Report
+                    </button>
+                    <button class="btn btn-primary" id="addExpenseBtn">
+                        <span class="material-symbols-outlined">add</span>
+                        Add Expense
+                    </button>
+                </div>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-icon revenue">
+                        <span class="material-symbols-outlined">trending_up</span>
+                    </div>
+                    <div class="metric-content">
+                        <p class="metric-label">Total Revenue</p>
+                        <h3 class="metric-value" id="totalRevenue">₹0</h3>
+                        <p class="metric-change positive">
+                            <span class="material-symbols-outlined">arrow_upward</span>
+                            <span id="revenueChange">0%</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon expenses">
+                        <span class="material-symbols-outlined">payments</span>
+                    </div>
+                    <div class="metric-content">
+                        <p class="metric-label">Total Expenses</p>
+                        <h3 class="metric-value" id="totalExpenses">₹0</h3>
+                        <p class="metric-change negative">
+                            <span class="material-symbols-outlined">arrow_downward</span>
+                            <span id="expensesChange">0%</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon profit">
+                        <span class="material-symbols-outlined">account_balance</span>
+                    </div>
+                    <div class="metric-content">
+                        <p class="metric-label">Net Profit</p>
+                        <h3 class="metric-value" id="netProfit">₹0</h3>
+                        <p class="metric-change" id="profitChange">
+                            <span class="material-symbols-outlined">remove</span>
+                            <span>0%</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="metric-card">
+                    <div class="metric-icon pending">
+                        <span class="material-symbols-outlined">schedule</span>
+                    </div>
+                    <div class="metric-content">
+                        <p class="metric-label">Pending Invoices</p>
+                        <h3 class="metric-value" id="pendingInvoices">0</h3>
+                        <p class="metric-change neutral">
+                            <span>Requires attention</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Cash Flow (Last 6 Months)</h3>
+                        <div class="chart-legend">
+                            <span class="legend-item">
+                                <span class="legend-dot revenue"></span>
+                                Revenue
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-dot expenses"></span>
+                                Expenses
+                            </span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <svg id="cashFlowChart" width="100%" height="300"></svg>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Revenue Breakdown</h3>
+                    </div>
+                    <div class="chart-container donut-container">
+                        <svg id="revenueDonut" width="100%" height="300"></svg>
+                        <div id="donutLegend" class="donut-legend"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-card">
+                <div class="table-header">
+                    <h3 class="table-title">Recent Transactions</h3>
+                    <div class="table-filters">
+                        <select class="filter-select" id="filterType">
+                            <option value="all">All Types</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="transactions-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTableBody">
+                            <tr>
+                                <td colspan="5" class="loading-cell">Loading transactions...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="modal" id="addExpenseModal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Expense</h3>
+                <button class="modal-close" id="closeModal">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <form id="expenseForm">
+                <div class="form-group">
+                    <label for="expenseDate">Date</label>
+                    <input type="date" id="expenseDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="expenseCategory">Category</label>
+                    <select id="expenseCategory" class="form-control" required>
+                        <option value="">Select category</option>
+                        <option value="Feed">Feed</option>
+                        <option value="Veterinary">Veterinary</option>
+                        <option value="Labor">Labor</option>
+                        <option value="Equipment">Equipment</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="Maintenance">Maintenance</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="expenseDescription">Description</label>
+                    <input type="text" id="expenseDescription" class="form-control" placeholder="Enter description" required>
+                </div>
+                <div class="form-group">
+                    <label for="expenseAmount">Amount (₹)</label>
+                    <input type="number" id="expenseAmount" class="form-control" placeholder="0.00" step="0.01" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Expense</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/expenses.js') }}"></script>
+</body>
+</html>

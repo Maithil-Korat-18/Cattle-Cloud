@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed Inventory - Cattle-Cloud</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/feed.css') }}">
+</head>
+<body>
+    <div class="page-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <span class="material-symbols-outlined">grass</span>
+                </div>
+                <span class="sidebar-brand">Cattle-Cloud</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="/dashboard" class="nav-item">
+                    <span class="material-symbols-outlined nav-icon">dashboard</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="/cattle" class="nav-item">
+                    <span class="material-symbols-outlined nav-icon">pets</span>
+                    <span class="nav-text">Cattle Herd</span>
+                </a>
+                <a href="/milk" class="nav-item">
+                    <span class="material-symbols-outlined nav-icon">water_drop</span>
+                    <span class="nav-text">Production</span>
+                </a>
+                <a href="/feed" class="nav-item active">
+                    <span class="material-symbols-outlined nav-icon filled">nutrition</span>
+                    <span class="nav-text">Feed</span>
+                </a>
+                <a href="/expenses" class="nav-item">
+                    <span class="material-symbols-outlined nav-icon">account_balance_wallet</span>
+                    <span class="nav-text">Finances</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item">
+                    <span class="material-symbols-outlined nav-icon">settings</span>
+                    <span class="nav-text">Settings</span>
+                </a>
+                
+                <div class="user-profile">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPWkZjCgogEUATrDJQIusbvxGyyx9IIGNYh6W3Lew2sXZRXu816fbskZ54TpweLa5WI506LnIN_9M8ydY64TJYotY_5431t-o7tNNOWZABq2w3LAJWPUaj3sE6y_VGqTflnHAO9i5P92IKXzuBjI6YAYlLnqWAmrVe7Jhe1B-X3sjUpaAN4l3Z5UXjtVozMfEmXwxkr06CcoLzhZrGw9bUjycVZrA6tcUrG1m3cJmy1lGwQmLho5oL_d04sCZsmeFwSXTlt8TirpI" alt="Profile" class="profile-img">
+                    <div class="profile-info">
+                        <p class="profile-name">{{ user_name }}</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <header class="page-header">
+                <div>
+                    <h1 class="page-title">Feed Inventory</h1>
+                    <p class="page-subtitle">Monitor and manage your livestock feed stock levels.</p>
+                </div>
+                <button class="btn-gradient" data-bs-toggle="modal" data-bs-target="#addStockModal">
+                    <span class="material-symbols-outlined">add_circle</span>
+                    <span>Add Feed Stock</span>
+                </button>
+            </header>
+            
+            <section class="summary-section">
+                <div class="summary-grid" id="summaryGrid">
+                    <div class="summary-card skeleton">
+                        <div class="skeleton-content"></div>
+                    </div>
+                    <div class="summary-card skeleton">
+                        <div class="skeleton-content"></div>
+                    </div>
+                    <div class="summary-card skeleton">
+                        <div class="skeleton-content"></div>
+                    </div>
+                    <div class="summary-card skeleton">
+                        <div class="skeleton-content"></div>
+                    </div>
+                </div>
+            </section>
+            
+            <div class="main-grid">
+                <div class="left-column">
+                    <section class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Current Stock Details</h2>
+                            <div class="search-box">
+                                <span class="material-symbols-outlined">search</span>
+                                <input type="text" id="searchInput" placeholder="Search stock...">
+                            </div>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="stock-table">
+                                <thead>
+                                    <tr>
+                                        <th>Item Name</th>
+                                        <th>Category</th>
+                                        <th>Current Qty</th>
+                                        <th>Min. Level</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="stockTableBody">
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-footer">
+                            <span id="tableInfo">Showing 0 items</span>
+                            <div class="pagination-btns">
+                                <button class="page-btn"><span class="material-symbols-outlined">chevron_left</span></button>
+                                <button class="page-btn"><span class="material-symbols-outlined">chevron_right</span></button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                
+                <div class="right-column">
+                    <section class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Recent Feed Usage</h2>
+                        </div>
+                        <div class="usage-timeline" id="usageTimeline">
+                            <p class="text-center text-muted py-4">Loading...</p>
+                        </div>
+                        <button class="btn-view-all" data-bs-toggle="modal" data-bs-target="#usageModal">
+                            VIEW ALL ACTIVITY
+                        </button>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Add Stock Modal -->
+    <div class="modal fade" id="addStockModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Feed Stock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addStockForm">
+                        <div class="mb-3">
+                            <label class="form-label">Feed Name</label>
+                            <input type="text" class="form-control" name="feed_name" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Quantity (kg)</label>
+                                <input type="number" step="0.1" class="form-control" name="quantity" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Min Quantity (kg)</label>
+                                <input type="number" step="0.1" class="form-control" name="min_quantity" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Cost per kg ($)</label>
+                            <input type="number" step="0.01" class="form-control" name="cost_per_kg" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitAddStock()">Add Stock</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Usage Modal -->
+    <div class="modal fade" id="usageModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">All Feed Usage Activity</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-wrapper">
+                        <table class="stock-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Feed Type</th>
+                                    <th>Cattle</th>
+                                    <th>Quantity Used</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usageTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination-footer" id="usagePagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/feed.js') }}"></script>
+</body>
+</html>

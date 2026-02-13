@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cattle Herd - Cattle Cloud</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cattle.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <span class="material-symbols-outlined">grass</span>
+                </div>
+                <span class="sidebar-brand">Cattle-Cloud</span>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="/dashboard" class="nav-item">
+                    <span class="material-symbols-outlined nav-icon filled">dashboard</span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="/cattle" class="nav-item active">
+                    <span class="material-symbols-outlined nav-icon">pets</span>
+                    <span class="nav-text">Cattle Herd</span>
+                </a>
+                <a href="/milk" class="nav-item">
+                    <span class="material-symbols-outlined nav-icon">water_drop</span>
+                    <span class="nav-text">Production</span>
+                </a>
+		<a href="/feed" class="nav-item">
+                    <span class="material-symbols-outlined nav-icon">Feed</span>
+                    <span class="nav-text">Feed</span>
+                </a>
+                <a href="/expenses" class="nav-item">
+                    <span class="material-symbols-outlined nav-icon">account_balance_wallet</span>
+                    <span class="nav-text">Finances</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item">
+                    <span class="material-symbols-outlined nav-icon">settings</span>
+                    <span class="nav-text">Settings</span>
+                </a>
+                
+                <div class="user-profile">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPWkZjCgogEUATrDJQIusbvxGyyx9IIGNYh6W3Lew2sXZRXu816fbskZ54TpweLa5WI506LnIN_9M8ydY64TJYotY_5431t-o7tNNOWZABq2w3LAJWPUaj3sE6y_VGqTflnHAO9i5P92IKXzuBjI6YAYlLnqWAmrVe7Jhe1B-X3sjUpaAN4l3Z5UXjtVozMfEmXwxkr06CcoLzhZrGw9bUjycVZrA6tcUrG1m3cJmy1lGwQmLho5oL_d04sCZsmeFwSXTlt8TirpI" alt="Profile" class="profile-img">
+                    <div class="profile-info">
+                        <p class="profile-name">{{ user_name }}</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <div class="page-header">
+            <div class="header-left">
+                <h1 class="page-title">Cattle Herd</h1>
+                <p class="page-subtitle">Real-time overview of your livestock inventory</p>
+            </div>
+            <div class="header-actions">
+                <div class="search-container">
+                    <span class="material-symbols-outlined search-icon">search</span>
+                    <input type="text" 
+                           class="search-input" 
+                           id="searchInput" 
+                           placeholder="Search by ID, name or breed..." 
+                           value="{{ search_query }}">
+                </div>
+                <button class="btn-add-cattle" data-bs-toggle="modal" data-bs-target="#addCattleModal">
+                    <span class="material-symbols-outlined">add</span>
+                    Add New Cattle
+                </button>
+            </div>
+        </div>
+        
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <p class="stat-label">Total Population</p>
+                <div class="stat-value-row">
+                    <span class="stat-value">{{ total_population }}</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <p class="stat-label">Avg. Daily Yield</p>
+                <div class="stat-value-row">
+                    <span class="stat-value">{{ avg_daily_yield }}L</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <p class="stat-label">Active Alerts</p>
+                <div class="stat-value-row">
+                    <span class="stat-value critical">{{ active_alerts }}</span>
+                    <span class="stat-change neutral">In observation</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <p class="stat-label">Herd Efficiency</p>
+                <div class="stat-value-row">
+                    <span class="stat-value">{{ herd_efficiency }}%</span>
+                    <span class="stat-change optimal">Optimal</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="filter-tab {{ 'active' if filter_type == 'all' else '' }}" data-filter="all">All Herd</button>
+            <button class="filter-tab {{ 'active' if filter_type == 'lactating' else '' }}" data-filter="lactating">Lactating</button>
+            <button class="filter-tab {{ 'active' if filter_type == 'dry' else '' }}" data-filter="dry">Dry Period</button>
+            <button class="filter-tab {{ 'active' if filter_type == 'unhealthy' else '' }}" data-filter="unhealthy">Unhealthy</button>
+        </div>
+        
+        <!-- Cattle Grid -->
+        <div class="cattle-grid" id="cattleGrid">
+            {% for cattle in cattle_list %}
+            <div class="cattle-card">
+                <div class="card-header-section">
+                    <div class="cattle-avatar">
+                        <img src="{{ cattle.image_url }}" alt="{{ cattle.name }}">
+                    </div>
+                    <div class="status-badge badge-{{ cattle.badge_type }}">
+                        <span class="badge-dot"></span>
+                        {% if cattle.badge_type == 'healthy' %}Healthy{% endif %}
+                        {% if cattle.badge_type == 'warning' %}At Risk{% endif %}
+                        {% if cattle.badge_type == 'critical' %}Critical{% endif %}
+                        {% if cattle.badge_type == 'dry' %}Dry{% endif %}
+                    </div>
+                </div>
+                
+                <div class="card-info">
+                    <h3 class="cattle-id">#{{ cattle.tag_no or 'C-' + cattle.id|string }}</h3>
+                    <p class="cattle-details">{{ cattle.name }} • {{ cattle.breed }}</p>
+                </div>
+                
+                <div class="card-stats">
+                    <div class="stat-item">
+                        <p class="stat-label-small">Yield</p>
+                        <p class="stat-value-small">{{ cattle.daily_yield }} L/d</p>
+                    </div>
+                    <div class="stat-item text-end">
+                        <p class="stat-label-small">Status</p>
+                        <p class="stat-value-small status-{{ cattle.badge_type }}">{{ cattle.status }}</p>
+                    </div>
+                </div>
+                
+                <a href="/cattle/{{cattle.id}}" class="btn-view-profile">
+                    View Profile
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if total_pages > 1 %}
+        <div class="pagination-container">
+            <button class="pagination-arrow" 
+                    {% if current_page == 1 %}disabled{% endif %}
+                    onclick="changePage({{ current_page - 1 }})">
+                <span class="material-symbols-outlined">chevron_left</span>
+            </button>
+            
+            <div class="pagination-numbers">
+                {% for page_num in page_numbers %}
+                    {% if page_num == '...' %}
+                        <span class="pagination-ellipsis">...</span>
+                    {% else %}
+                        <button class="pagination-number {{ 'active' if page_num == current_page else '' }}"
+                                onclick="changePage({{ page_num }})">
+                            {{ page_num }}
+                        </button>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            
+            <button class="pagination-arrow" 
+                    {% if current_page == total_pages %}disabled{% endif %}
+                    onclick="changePage({{ current_page + 1 }})">
+                <span class="material-symbols-outlined">chevron_right</span>
+            </button>
+        </div>
+        {% endif %}
+    </main>
+    
+    <!-- Add Cattle Modal -->
+    <div class="modal fade" id="addCattleModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Cattle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addCattleForm">
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Breed</label>
+                            <select class="form-select" name="breed" required>
+                                <option value="">Select Breed</option>
+                                <option value="Gir">Gir</option>
+                                <option value="Jersey">Jersey</option>
+                                <option value="Holstein">Holstein</option>
+                                <option value="Sahiwal">Sahiwal</option>
+                                <option value="Red Sindhi">Red Sindhi</option>
+                                <option value="Crossbreed">Crossbreed</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Age (years)</label>
+                                <input type="number" class="form-control" name="age" min="1" max="20" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Gender</label>
+                                <select class="form-select" name="gender">
+                                    <option value="Female">Female</option>
+                                    <option value="Male">Male</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Health Status</label>
+                            <select class="form-select" name="health">
+                                <option value="Good">Good</option>
+                                <option value="Fair">Fair</option>
+                                <option value="Poor">Poor</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Purchase Date</label>
+                            <input type="date" class="form-control" name="purchase_date">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitCattle()">Add Cattle</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/cattle.js') }}"></script>
+    
+    <!-- Initialize with current filter -->
+    <script>
+        window.currentFilter = '{{ filter_type }}';
+        window.currentPage = {{ current_page }};
+        window.searchQuery = '{{ search_query }}';
+    </script>
+</body>
+</html>

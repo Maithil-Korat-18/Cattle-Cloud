@@ -3,247 +3,485 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ cattle.name }} - Cattle Details</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/common.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/cattle_detail.css') }}">
+    <title>{{ cattle.name }} - Cattle Detail</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cattle_detail.css') }}">
 </head>
 <body>
-<div id="pageData"
-     data-cattle-id="{{ cattle.id }}"
-     data-cattle-name="{{ cattle.name }}"
-     data-cattle-breed="{{ cattle.breed }}"
-     data-cattle-age="{{ cattle.age }}"
-     data-cattle-health="{{ cattle.health }}"
-     data-history='{{ default_history | tojson }}'>
-</div>
-    <!-- Navigation -->
-    <nav class="navbar navbar-dashboard" id="navbar">
-        <div class="nav-container">
-            <div class="nav-left">
-                <div class="logo">🐄</div>
-                <span class="brand-name">CattleTrack Pro</span>
-            </div>
-            <ul class="nav-menu" id="navMenu">
-                <li><a href="/home">Home</a></li>
-                <li><a href="/dashboard">Dashboard</a></li>
-<li><a href="/records" >Data & Report</a></li>
-                <li><a href="/breeds">Breeds</a></li>
-                <li><a href="/about">About</a></li>
-                <li><a href="/contact">Contact</a></li>
-            </ul>
-            <div class="profile-dropdown">
-                <button class="profile-btn" id="profileBtn">
-                    <div class="profile-avatar">{{ username[0].upper() }}</div>
-                    <span class="profile-name">{{ username }}</span>
-                    <span class="dropdown-arrow">▼</span>
-                </button>
-                <div class="dropdown-menu" id="dropdownMenu">
-                    <a href="/profile" class="dropdown-item">
-                        <span>👤</span>
-                        <span>My Profile</span>
-                    </a>
-                    <a href="{{ url_for('logout') }}" class="dropdown-item">
-                        <span>🚪</span>
-                        <span>Logout</span>
-                    </a>
-                </div>
-            </div>
-            <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">
+                <span class="material-symbols-outlined">agriculture</span>
             </div>
         </div>
-    </nav>
-<br><br><br>
-    <!-- Main Content -->
-    <div class="container">
-        <a href="/dashboard" class="back-link">← Back to Dashboard</a>
         
-        <div class="cattle-header" style="position: relative;">
-    <button class="edit-trigger-btn" onclick="openEditModal()" title="Edit Cow Details">✏️</button>
-    <h1 class="cattle-title">{{ cattle.name }}</h1>
-    <div class="info-grid">
-        <div class="info-item">
-            <div class="info-label">Breed</div>
-            <div class="info-value">{{ cattle.breed }}</div>
+        <nav class="sidebar-nav">
+            <a href="/dashboard" class="nav-item">
+                <span class="material-symbols-outlined nav-icon">dashboard</span>
+                <span class="nav-label">Dashboard</span>
+            </a>
+            <a href="/cattle" class="nav-item active">
+                <span class="material-symbols-outlined nav-icon">pets</span>
+                <span class="nav-label">Cattle Herd</span>
+            </a>
+            <a href="/milk" class="nav-item">
+                <span class="material-symbols-outlined nav-icon">monitoring</span>
+                <span class="nav-label">Production</span>
+            </a>
+<a href="/feed" class="nav-item">
+                    <span class="material-symbols-outlined nav-icon">Feed</span>
+                    <span class="nav-label">Feed</span>
+                </a>
+            <a href="/expenses" class="nav-item">
+                <span class="material-symbols-outlined nav-icon">payments</span>
+                <span class="nav-label">Finance</span>
+            </a>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <button class="nav-item settings-btn">
+                <span class="material-symbols-outlined nav-icon">settings</span>
+                <span class="nav-label">Settings</span>
+            </button>
+            <div class="user-profile">
+                <div class="profile-avatar">
+                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0cZBR9h5Fg-TsW729qKbmFzePRshukJZhMJVOJjQWskdIzJVA83WIpnf1CQR6LeWAHbaW63geEKcRqTlU7rGG_wHjy24_k_1DMHxzmlRoem6D8lfMdQSDT_Tq58JwfZlKP_p3cA3_Y6AZleeJDlhCeN4JEgXFzvY8dJ5AcJzNwcw6CkjX8tavq7KsefA6vVn-1vTmitSKuFY9BxZYEeQCZtyY4h9mGYgEJelJqJMdU97Ewt1lKnSyMK2ApwOlm_oNJBqSQVPfRpk" alt="User">
+                </div>
+                <span class="nav-label profile-name">{{ user_name }}</span>
+            </div>
         </div>
-        <div class="info-item">
-            <div class="info-label">Age</div>
-            <div class="info-value">{{ cattle.age }} years</div>
-        </div>
-        <div class="info-item">
-            <div class="info-label">Health Status</div>
-            <div class="info-value">{{ cattle.health }}</div>
-        </div>
-    </div>
-</div>
-
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">Edit Cow Details</h2>
-            <button class="close-btn" onclick="closeEditModal()">&times;</button>
-        </div>
-        <form id="editCattleForm">
-            <div class="form-group">
-                <label>Name</label>
-                <input type="text" id="editName" value="{{ cattle.name }}" required>
-            </div>
-            <div class="form-group">
-                <label>Breed</label>
-                <input type="text" id="editBreed" value="{{ cattle.breed }}" required>
-            </div>
-            <div class="form-group">
-                <label>Age (Years)</label>
-                <input type="number" id="editAge" value="{{ cattle.age }}" required>
-            </div>
-            <div class="form-group">
-                <label>Health Status</label>
-                <select id="editHealth">
-                    <option value="Healthy" {% if cattle.health == 'Healthy' %}selected{% endif %}>Healthy</option>
-                    <option value="Sick" {% if cattle.health == 'Sick' %}selected{% endif %}>Sick</option>
-                    <option value="Under Treatment" {% if cattle.health == 'Under Treatment' %}selected{% endif %}>Under Treatment</option>
-                    <option value="Recovering" {% if cattle.health == 'Recovering' %}selected{% endif %}>Recovering</option>
-                </select>
-            </div>
-            <button type="submit" class="save-changes-btn">Save Changes</button>
-        </form>
-    </div>
-</div>
-
-        <!-- Average Section -->
-        <div class="average-section">
-            <div class="average-label" id="averageLabel">Average Milk (Last 7 Days)</div>
-            <div class="average-value" id="averageValue">{{ avg_milk }} Liters/day</div>
-        </div>
-<div id="pageData"
-     data-cattle-id="{{ cattle.id }}"
-     data-history='{{ default_history | tojson }}'>
-</div>
-        <!-- Chart Section -->
-        <div class="chart-section">
-            <div class="chart-header">
-                <h2 class="chart-title" id="chartTitle">Milk Performance (Last 7 Days)</h2>
-                <button class="generate-report-btn" onclick="openReportModal()">Generate Cow Report</button>
-            </div>
-
-            <!-- View Options -->
-            <div class="view-options">
-                <button class="view-btn active" onclick="changeView(event,'last_7')">Last 7 Days</button>
-                <button class="view-btn" onclick="changeView(event,'all_time')">All Time</button>
-                <button class="view-btn" onclick="changeView(event,'custom')">Custom Range</button>
-            </div>
-
-            <!-- Custom Range Filter -->
-            <div class="custom-range" id="customRangeFilter">
-                <div class="range-inputs">
-                    <div class="range-group">
-                        <label>Start Date</label>
-                        <input type="date" id="startDate">
+    </aside>
+    
+    <!-- Main Content -->
+    <div class="page-wrapper">
+        <!-- Header Section -->
+        <header class="detail-header">
+            <div class="header-content">
+                <a href="/cattle" class="back-button">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    <span>Back to Herd</span>
+                </a>
+                
+                <div class="cattle-title-section">
+                    <div class="title-left">
+                        <h1 class="cattle-name">{{ cattle.name }}</h1>
+                        <div class="cattle-meta">
+                            <span class="cattle-id">ID: #{{ cattle.tag_no or cattle.id }}</span>
+                            <span class="meta-divider">•</span>
+                            <span class="cattle-breed">{{ cattle.breed }}</span>
+                        </div>
                     </div>
-                    <div class="range-group">
-                        <label>End Date</label>
-                        <input type="date" id="endDate">
-                    </div>
-                    <div>
-                        <button class="apply-filter-btn" onclick="applyCustomRange()">Apply Filter</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Chart -->
-            <div class="chart-container">
-    <div id="milkChart"></div>
-</div>
-        </div>
-    </div>
-
-    <!-- Report Modal -->
-    <div id="reportModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">Cow Report -  <span id="modalCattleName">{{ cattle.name }}</span></h2>
-                <button class="close-btn" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="report-grid">
-                <div class="report-item">
-                    <div class="report-label">Total Milk Produced</div>
-                    <div class="report-value" id="reportTotal">-</div>
-                </div>
-                <div class="report-item">
-                    <div class="report-label">Average Milk/Day</div>
-                    <div class="report-value" id="reportAverage">-</div>
-                </div>
-                <div class="report-item">
-                    <div class="report-label">Highest Production Day</div>
-                    <div class="report-value" id="reportHighest">-</div>
-                </div>
-                <div class="report-item">
-                    <div class="report-label">Records Analyzed</div>
-                    <div class="report-value" id="reportCount">-</div>
-                </div>
-            </div>
-            <button class="download-btn" onclick="downloadReport()">Download Report</button>
-        </div>
-    </div>
-<!-- Footer -->
-    <footer class="footer" id="contact">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>CattleTrack Pro</h3>
-                    <p>Modern cattle management solution for progressive farmers.</p>
-                    <div class="social-links">
-                        <a href="#" class="social-icon">📘</a>
-                        <a href="#" class="social-icon">🐦</a>
-                        <a href="#" class="social-icon">📷</a>
-                        <a href="#" class="social-icon">💼</a>
+                    
+                    <div class="health-badge health-{{ cattle.health.lower() }}">
+                        <span class="badge-dot"></span>
+                        <span class="badge-text">{{ cattle.health }}</span>
                     </div>
                 </div>
                 
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#dashboard">Dashboard</a></li>
-                        <li><a href="#breeds">Features</a></li>
-                        <li><a href="{{ url_for('login') }}">Login</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h4>Contact</h4>
-                    <ul>
-                        <li>📧 info@cattletrack.com</li>
-                        <li>📞 +1 (555) 123-4567</li>
-                        <li>📍 123 Farm Road, Agriculture City</li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h4>Support</h4>
-                    <ul>
-                        <li><a href="#about">FAQ</a></li>
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">Support Center</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                    </ul>
+                <div class="header-actions">
+                    <button class="btn-action" data-bs-toggle="modal" data-bs-target="#editCattleModal">
+                        <span class="material-symbols-outlined">edit</span>
+                        <span>Edit Profile</span>
+                    </button>
+                    <button class="btn-action" data-bs-toggle="modal" data-bs-target="#reportModal">
+                        <span class="material-symbols-outlined">description</span>
+                        <span>Generate Report</span>
+                    </button>
+                    <button class="btn-action btn-primary" data-bs-toggle="modal" data-bs-target="#addRecordModal">
+                        <span class="material-symbols-outlined">add</span>
+                        <span>Add Record</span>
+                    </button>
                 </div>
             </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="detail-content">
+            <!-- Info Cards Grid -->
+            <section class="info-cards-grid">
+                <div class="info-card">
+                    <div class="info-icon breed-icon">
+                        <span class="material-symbols-outlined">pets</span>
+                    </div>
+                    <div class="info-content">
+                        <p class="info-label">Breed</p>
+                        <p class="info-value">{{ cattle.breed }}</p>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-icon age-icon">
+                        <span class="material-symbols-outlined">calendar_today</span>
+                    </div>
+                    <div class="info-content">
+                        <p class="info-label">Age</p>
+                        <p class="info-value">{{ cattle.age }} years</p>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-icon gender-icon">
+                        <span class="material-symbols-outlined">{% if cattle.gender == 'Female' %}female{% else %}male{% endif %}</span>
+                    </div>
+                    <div class="info-content">
+                        <p class="info-label">Gender</p>
+                        <p class="info-value">{{ cattle.gender }}</p>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-icon health-icon">
+                        <span class="material-symbols-outlined">favorite</span>
+                    </div>
+                    <div class="info-content">
+                        <p class="info-label">Health Status</p>
+                        <p class="info-value status-{{ cattle.health.lower() }}">{{ cattle.health }}</p>
+                    </div>
+                </div>
+            </section>
             
-            <div class="footer-bottom">
-                <p>&copy; 2024 CattleTrack Pro. All rights reserved.</p>
+            <!-- Milk Production Chart -->
+            <section class="chart-section">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">Milk Production</h2>
+                        <p class="section-subtitle">Daily yield tracking and analytics</p>
+                    </div>
+                    <div class="chart-filters">
+                        <button class="filter-btn active" data-days="7">7 Days</button>
+                        <button class="filter-btn" data-days="30">30 Days</button>
+                        <button class="filter-btn" data-bs-toggle="modal" data-bs-target="#customRangeModal">Custom Range</button>
+                    </div>
+                </div>
+                
+                <div class="chart-stats-row">
+                    <div class="chart-stat">
+                        <p class="stat-label">Avg. Daily Yield</p>
+                        <p class="stat-value">{{ avg_yield }} L</p>
+                    </div>
+                    <div class="chart-stat">
+                        <p class="stat-label">Total Production</p>
+                        <p class="stat-value">{{ "%.1f"|format(milk_stats.total_milk) }} L</p>
+                    </div>
+                    <div class="chart-stat">
+                        <p class="stat-label">Total Income</p>
+                        <p class="stat-value">₹{{ "%.0f"|format(milk_stats.total_income) }}</p>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="milkChart"></canvas>
+                </div>
+            </section>
+            
+            <!-- Milk Records Table -->
+            <section class="table-section">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">Milk Records</h2>
+                        <p class="section-subtitle" id="recordsInfo">Showing entries 1-{{ milk_records|length }} of {{ milk_stats.total_records }}</p>
+                    </div>
+                    <div class="entries-selector">
+                        <label>Show</label>
+                        <select id="entriesPerPage" class="entries-select">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                        </select>
+                        <label>entries</label>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="records-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Morning (L)</th>
+                                <th>Evening (L)</th>
+                                <th>Total (L)</th>
+                                <th>Rate (₹/L)</th>
+                                <th>Income (₹)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="milkRecordsTable">
+                            {% for record in milk_records %}
+                            <tr>
+                                <td>{{ record.date.strftime('%b %d, %Y') if record.date else 'N/A' }}</td>
+                                <td>{{ "%.1f"|format(record.morning_liters) }}</td>
+                                <td>{{ "%.1f"|format(record.evening_liters) }}</td>
+                                <td class="highlight">{{ "%.1f"|format(record.milk_liters) }}</td>
+                                <td>₹{{ "%.2f"|format(record.rate) }}</td>
+                                <td class="income">₹{{ "%.0f"|format(record.income) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="table-pagination" id="milkPagination">
+                    <!-- Pagination will be inserted by JavaScript -->
+                </div>
+            </section>
+            
+            <!-- Health & Medical Logs -->
+            <section class="health-section">
+                <div class="section-header">
+                    <div>
+                        <h2 class="section-title">Health & Medical Logs</h2>
+                        <p class="section-subtitle">Treatment history and checkups</p>
+                    </div>
+                </div>
+                
+                <div class="health-timeline">
+                    {% for record in health_records %}
+                    <div class="health-record severity-{{ 'high' if 'fever' in record.issue.lower() or 'critical' in record.issue.lower() else 'medium' if 'sick' in record.issue.lower() else 'low' }}">
+                        <div class="record-dot"></div>
+                        <div class="record-content">
+                            <div class="record-header">
+                                <h4 class="record-issue">{{ record.issue }}</h4>
+                                <span class="record-date">{{ record.created_at.strftime('%b %d, %Y') if record.created_at else 'N/A' }}</span>
+                            </div>
+                            <div class="record-details">
+                                <div class="detail-item">
+                                    <span class="material-symbols-outlined">person</span>
+                                    <span>Vet: {{ record.vet_name }}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="material-symbols-outlined">medication</span>
+                                    <span>{{ record.treatment }}</span>
+                                </div>
+                                {% if record.next_checkup %}
+                                <div class="detail-item">
+                                    <span class="material-symbols-outlined">event</span>
+                                    <span>Next Checkup: {{ record.next_checkup.strftime('%b %d, %Y') }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- Edit Cattle Modal -->
+    <div class="modal fade" id="editCattleModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Cattle Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editCattleForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control" name="name" value="{{ cattle.name }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tag Number</label>
+                                <input type="text" class="form-control" name="tag_no" value="{{ cattle.tag_no }}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Breed</label>
+                                <select class="form-select" name="breed" required>
+                                    <option value="Gir" {{ 'selected' if cattle.breed == 'Gir' else '' }}>Gir</option>
+                                    <option value="Jersey" {{ 'selected' if cattle.breed == 'Jersey' else '' }}>Jersey</option>
+                                    <option value="Holstein" {{ 'selected' if cattle.breed == 'Holstein' else '' }}>Holstein</option>
+                                    <option value="Sahiwal" {{ 'selected' if cattle.breed == 'Sahiwal' else '' }}>Sahiwal</option>
+                                    <option value="Red Sindhi" {{ 'selected' if cattle.breed == 'Red Sindhi' else '' }}>Red Sindhi</option>
+                                    <option value="Crossbreed" {{ 'selected' if cattle.breed == 'Crossbreed' else '' }}>Crossbreed</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Age</label>
+                                <input type="number" class="form-control" name="age" value="{{ cattle.age }}" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Gender</label>
+                                <select class="form-select" name="gender" required>
+                                    <option value="Female" {{ 'selected' if cattle.gender == 'Female' else '' }}>Female</option>
+                                    <option value="Male" {{ 'selected' if cattle.gender == 'Male' else '' }}>Male</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Health Status</label>
+                                <select class="form-select" name="health" required>
+                                    <option value="Good" {{ 'selected' if cattle.health == 'Good' else '' }}>Good</option>
+                                    <option value="Fair" {{ 'selected' if cattle.health == 'Fair' else '' }}>Fair</option>
+                                    <option value="Poor" {{ 'selected' if cattle.health == 'Poor' else '' }}>Poor</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="updateCattle()">Save Changes</button>
+                </div>
             </div>
         </div>
-    </footer>
-
-    <!-- Success Message -->
-    <div id="successMessage" class="success-message"></div>
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>  
-    <script src="{{ url_for('static', filename='js/cattle_detail.js') }}">
-</script>
+    </div>
+    
+    <!-- Generate Report Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Generate Report</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="reportForm">
+                        <div class="mb-3">
+                            <label class="form-label">From Date</label>
+                            <input type="date" class="form-control" name="start_date" id="reportStartDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">To Date</label>
+                            <input type="date" class="form-control" name="end_date" id="reportEndDate" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="generateReport()">Generate PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Record Modal -->
+    <div class="modal fade" id="addRecordModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Record</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="record-type-tabs">
+                        <button class="record-tab active" data-type="milk">
+                            <span class="material-symbols-outlined">water_drop</span>
+                            <span>Milk Record</span>
+                        </button>
+                        <button class="record-tab" data-type="health">
+                            <span class="material-symbols-outlined">medical_services</span>
+                            <span>Health Record</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Milk Record Form -->
+                    <form id="addMilkForm" class="record-form active">
+                        <div class="mb-3">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-control" name="date" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Morning (Liters)</label>
+                                <input type="number" step="0.1" class="form-control" name="morning_liters" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Evening (Liters)</label>
+                                <input type="number" step="0.1" class="form-control" name="evening_liters" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Rate (₹/Liter)</label>
+                            <input type="number" step="0.01" class="form-control" name="rate" required>
+                        </div>
+                    </form>
+                    
+                    <!-- Health Record Form -->
+                    <form id="addHealthForm" class="record-form">
+                        <div class="mb-3">
+                            <label class="form-label">Issue</label>
+                            <input type="text" class="form-control" name="issue" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Treatment</label>
+                            <textarea class="form-control" name="treatment" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Veterinarian Name</label>
+                            <input type="text" class="form-control" name="vet_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Next Checkup Date</label>
+                            <input type="date" class="form-control" name="next_checkup">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="submitRecord()">Add Record</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Custom Range Modal -->
+    <div class="modal fade" id="customRangeModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Custom Date Range</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="customRangeForm">
+                        <div class="mb-3">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" class="form-control" name="start_date" id="customStartDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">End Date</label>
+                            <input type="date" class="form-control" name="end_date" id="customEndDate" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="applyCustomRange()">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Config Variables -->
+    <script>
+        const CATTLE_ID = {{ cattle.id }};
+        const INITIAL_CHART_DATA = {{ milk_chart_data | tojson }};
+        const TOTAL_RECORDS = {{ milk_stats.total_records }};
+    </script>
+    
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/cattle_detail.js') }}"></script>
 </body>
 </html>
