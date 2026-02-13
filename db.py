@@ -5,7 +5,7 @@ dbconfig = {
     "host": "localhost",
     "user": "root",
     "password": "",
-    "database": "cattle_management"
+    "database": "cattle_cloud"
 }
 
 cnxpool = pooling.MySQLConnectionPool(

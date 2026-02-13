@@ -1,657 +1,242 @@
-from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
 from db import get_db
-from datetime import date,datetime,timedelta
-import plotly.express as px
-import pandas as pd
-import os
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import cm
-from flask import send_file
-from collections import defaultdict
-from decimal import Decimal
+from datetime import datetime, timedelta
+cattle_bp = Blueprint("cattle", __name__)
+import math
 
+def get_breed_image(breed):
+    """Return appropriate image URL based on breed"""
+    breed_images = {
+        'Gir': 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4JJa-xHuUuplRJQ2Ns_c6zNRi8aNKFxWPSpmHVWTM15IMzRsoPp-gITVJc0pi_YA2Vx7ICmci9QkbCI-WfUzpjP0SD7uCbKzczHuBokskKwWRkfLL6S2FT-9L7h6wIrpwQ7UYKUguUPJGt2kPChbj_yhfsULkL3yVQlezVVhsz8qusjaenYlnnrjjo9FGqRooMXXbyDc9XndaRlWQCOQO-U1b-1VaDFuXDeKWsi07U-c6E8x-i_0AavlY46o4R-9WsxztHvt1JYw',
+        'Jersey': 'https://lh3.googleusercontent.com/aida-public/AB6AXuCxkKQZN0OmXfMcEoJyWfzH_NRhQa3MH6Ng6VvfZ7MYaYO7R3yKlQOVbR9EQr8lJ-4XGv9N5pN8JqR3_vK7NdJjBvHfR5UxKmRzQxLjCvKlRjBvFfZxRmJzNxLvRjCvNlHfR5UxRmJzCxLvRjBvNlHfZ5UxKmJzRxLvRjCvFl',
+        'Holstein': 'https://lh3.googleusercontent.com/aida-public/AB6AXuDjTvN5RnMxCvKlQxRjBvHfZxRmNzCxLvRjBvNl8F5UxKmJzQxLvRjCvKlHfR5UxRmJzNxLvRjCvNlHfZ5UxKmJzRxLvRjBvFlHfR5UxRmJzCxLvRjBvNlHfZ5UxKmJzRxLvRjCvFlHfR5UxRmJzCxLvRjBvNl',
+        'Sahiwal': 'https://lh3.googleusercontent.com/aida-public/AB6AXuBxRmNzCxLvRjBvNl8F5UxKmJzQxLvRjCvKlHfR5UxRmJzNxLvRjCvNlHfZ5UxKmJzRxLvRjBvFlHfR5UxRmJzCxLvRjBvNlHfZ5UxKmJzRxLvRjCvFlHfR5UxRmJzCxLvRjBvNlHfZ5UxKmJzRxLvRjCvFl',
+        'Red Sindhi': 'https://lh3.googleusercontent.com/aida-public/AB6AXuCxKmJzQxLvRjCvKlHfR5UxRmJzNxLvRjCvNlHfZ5UxKmJzRxLvRjBvFlHfR5UxRmJzCxLvRjBvNlHfZ5UxKmJzRxLvRjCvFlHfR5UxRmJzCxLvRjBvNlHfZ5UxKmJzRxLvRjCvFlHfR5UxRmJzCxLvRjBvNl',
+    }
+    # Default image if breed not found
+    return breed_images.get(breed, 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4JJa-xHuUuplRJQ2Ns_c6zNRi8aNKFxWPSpmHVWTM15IMzRsoPp-gITVJc0pi_YA2Vx7ICmci9QkbCI-WfUzpjP0SD7uCbKzczHuBokskKwWRkfLL6S2FT-9L7h6wIrpwQ7UYKUguUPJGt2kPChbj_yhfsULkL3yVQlezVVhsz8qusjaenYlnnrjjo9FGqRooMXXbyDc9XndaRlWQCOQO-U1b-1VaDFuXDeKWsi07U-c6E8x-i_0AavlY46o4R-9WsxztHvt1JYw')
 
-cattle_bp = Blueprint("cattle_bp", __name__)
-
-def login_required():
-    return "user_id" in session
-
-def generate_milk_chart(rows, cattle_id):
-    if not rows:
-        return None
-
-    import pandas as pd
-    import plotly.graph_objects as go
-    import os
-    from flask import url_for
-
-    df = pd.DataFrame(rows)
-
-    # 🔥 Merge duplicate dates
-##    df = df.groupby("date", as_index=False)["quantity"].sum()
-
-    # 🔥 Convert to datetime
-    df["date"] = pd.to_datetime(df["date"], errors="coerce")
-    df = df.sort_values("date")
-    fig = go.Figure()
-
-    # ✅ Smooth line chart
-    fig.add_scatter(
-        x=df["date"],
-        y=df["quantity"],
-        mode="lines+markers",
-        line=dict(
-            color="#4F46E5",   # Indigo
-            width=3,
-            shape="spline"
-        ),
-        marker=dict(
-            size=6,
-            color="#4F46E5",
-            line=dict(width=2, color="white")
-        ),
-        hovertemplate="<b>%{y} Liters</b><br>%{x|%d %b}<extra></extra>"
-    )
-
-    fig.update_layout(
-        height=380,
-        margin=dict(l=40, r=40, t=50, b=40),
-        title=dict(
-            text="Milk Production Trend",
-            x=0.02,
-            font=dict(size=18, color="#111827")
-        ),
-        xaxis=dict(
-            title="Date",
-            tickformat="%d %b",
-            showgrid=False,
-            tickfont=dict(size=12)
-        ),
-        yaxis=dict(
-            title="Liters",
-            showgrid=True,
-            gridcolor="rgba(0,0,0,0.08)",
-            tickfont=dict(size=12)
-        ),
-        plot_bgcolor="white",
-        paper_bgcolor="white",
-        hovermode="x unified",
-        font=dict(
-            family="Inter, system-ui, sans-serif",
-            color="#374151"
-        )
-    )
-
-    os.makedirs("static/charts", exist_ok=True)
-    file_path = f"static/charts/cattle_{cattle_id}.html"
-    fig.write_html(file_path, include_plotlyjs="cdn")
-
-    return url_for("static", filename=f"charts/cattle_{cattle_id}.html")
-
-
-
-# ================= CATTLE DETAIL PAGE =================
-@cattle_bp.route("/cattle/<int:cattle_id>")
-def cattle_detail(cattle_id):
-    if not login_required():
-        return redirect(url_for("login_page"))
-
-    user_id = session["user_id"]
-    conn = get_db()
-    cur = conn.cursor(dictionary=True)
-
-    # ---- Get cattle info ----
-    cur.execute("""
-        SELECT id, name, breed, age, health
-        FROM cattle
-        WHERE id=%s AND user_id=%s
-    """, (cattle_id, user_id))
-    cattle = cur.fetchone()
-
-    if not cattle:
-        cur.close()
-        conn.close()
-        return redirect(url_for("dashboard"))
-
-    # ---- Last 7 days milk ----
-    cur.execute("""
-        SELECT 
-            date,
-            SUM(milk_liters) AS quantity
-        FROM milk_records
-        WHERE cattle_id = %s
-          AND date >= CURDATE() - INTERVAL 6 DAY
-        GROUP BY date
-        ORDER BY date ASC
-    """, (cattle_id,))
-    rows = cur.fetchall()
-    for r in rows:
-        if isinstance(r["date"], date):
-            r["date"] = r["date"].strftime("%d %b")
-   
-
-
-    chart_path = generate_milk_chart(rows, cattle_id)
-
-
-    avg_milk = round(
-        sum(r["quantity"] for r in rows) / len(rows), 1
-    ) if rows else 0
-
-    cur.close()
-    conn.close()
-
-    return render_template(
-        "cattle_detail.html",
-        cattle=cattle,
-        default_history=rows,
-        avg_milk=avg_milk,
-        chart_path=chart_path,
-        username=session.get("full_name", "User")
-    )
-
-
-# ================= FILTER API =================
-@cattle_bp.route("/api/cattle/<int:cattle_id>/filter", methods=["POST"])
-def filter_cattle_data(cattle_id):
-    if not login_required():
-        return jsonify(success=False), 401
-
-    user_id = session["user_id"]
-    data = request.get_json()
-    view_type = data.get("view_type")
-
-    conn = get_db()
-    cur = conn.cursor(dictionary=True)
-
-    # Verify ownership
-    cur.execute(
-        "SELECT id FROM cattle WHERE id=%s AND user_id=%s",
-        (cattle_id, user_id)
-    )
-    if not cur.fetchone():
-        cur.close()
-        conn.close()
-        return jsonify(success=False), 403
-
-    # Build query
-    if view_type == "last_7":
-        query = """
-            SELECT date, milk_liters AS quantity
-            FROM milk_records
-            WHERE cattle_id=%s
-             AND date >= CURDATE() - INTERVAL 6 DAY
-            ORDER BY date
-        """
-        params = (cattle_id,)
-
-    elif view_type == "all_time":
-        query = """
-            SELECT date, milk_liters AS quantity
-            FROM milk_records
-            WHERE cattle_id=%s
-            ORDER BY date
-        """
-        params = (cattle_id,)
-
-    elif view_type == "custom":
-        query = """
-            SELECT date, milk_liters AS quantity
-            FROM milk_records
-            WHERE cattle_id=%s AND date BETWEEN %s AND %s
-            ORDER BY date
-        """
-        params = (cattle_id, data["start_date"], data["end_date"])
-
-    else:
-        cur.close()
-        conn.close()
-        return jsonify(success=False), 400
-
-    cur.execute(query, params)
-    raw_rows = cur.fetchall()
-
-    # ✅ GROUP + SORT PROPERLY
-    grouped = defaultdict(float)
-
-    for r in raw_rows:
-        qty = float(r["quantity"]) if isinstance(r["quantity"], Decimal) else float(r["quantity"])
-        grouped[r["date"]] += qty
-
-    rows = []
-    for d in sorted(grouped.keys()):  # ✅ real date sorting
-        rows.append({
-            "date": d.strftime("%d %b"),
-            "quantity": round(grouped[d], 2)
-        })
-        
-    if rows:
-        total_milk = sum(r["quantity"] for r in rows)
-        avg_milk = round(total_milk / len(rows), 1)
-        highest_day = max(rows, key=lambda x: x["quantity"])
-    else:
-        total_milk = avg_milk = 0
-        highest_day = {"date": "-", "quantity": 0}
-
-    cur.close()
-    conn.close()
-    chart_path = generate_milk_chart(rows, cattle_id)
-    return jsonify(
-        success=True,
-        chart_url=chart_path,
-        data={
-            "history": rows,
-            "total_milk": total_milk,
-            "avg_milk": avg_milk,
-            "highest_day": highest_day,
-            "record_count": len(rows)
-        }
-    )
-@cattle_bp.route("/api/cattle/<int:cattle_id>/edit", methods=["POST"])
-def edit_cattle(cattle_id):
-    if not login_required():
-        return jsonify(success=False), 401
-
-    data = request.get_json()
-    user_id = session["user_id"]
+def calculate_cattle_stats(cattle_id, user_id):
+    """Calculate daily yield and status for a cattle"""
+    connection = get_db()
+    if not connection:
+        return {'yield': 0.0, 'status': 'Unknown', 'badge': 'dry', 'health': 'Good'}
     
-    conn = get_db()
-    cur = conn.cursor()
+    cursor = connection.cursor(dictionary=True)
+    
+    # Get average daily yield from last 7 days
+    seven_days_ago = datetime.now().date() - timedelta(days=7)
+    cursor.execute("""
+        SELECT AVG(milk_liters) as avg_yield
+        FROM milk_records
+        WHERE cattle_id = %s AND user_id = %s AND date >= %s
+    """, (cattle_id, user_id, seven_days_ago))
+    
+    result = cursor.fetchone()
+    avg_yield = float(result['avg_yield']) if result and result['avg_yield'] else 0.0
+    
+    # Determine status based on yield and health
+    cursor.execute("""
+        SELECT health FROM cattle WHERE id = %s AND user_id = %s
+    """, (cattle_id, user_id))
+    
+    cattle_data = cursor.fetchone()
+    health = cattle_data['health'] if cattle_data else 'Good'
+    
+    # Status logic
+    if health == 'Poor':
+        status = 'Fever'
+        badge = 'critical'
+    elif avg_yield == 0:
+        status = 'Resting'
+        badge = 'dry'
+    elif avg_yield < 10:
+        status = 'Low'
+        badge = 'warning'
+    elif avg_yield >= 10 and avg_yield < 20:
+        status = 'Growth'
+        badge = 'healthy'
+    else:
+        status = 'Optimal'
+        badge = 'healthy'
+    
+    cursor.close()
+    connection.close()
+    return {
+        'yield': round(avg_yield, 1),
+        'status': status,
+        'badge': badge,
+        'health': health
+    }
+
+@cattle_bp.route('/cattle')
+def cattle_herd():
+    """Main cattle herd page with pagination"""
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('auth.login'))
+    
+    page = request.args.get('page', 1, type=int)
+    filter_type = request.args.get('filter', 'all')
+    search_query = request.args.get('search', '')
+    
+    per_page = 6  # Items per page to match grid layout
+    
+    connection = get_db()
+    if not connection:
+        return "Database connection error", 500
+    
+    cursor = connection.cursor(dictionary=True)
+    
+    # Build base query
+    base_query = "FROM cattle WHERE user_id = %s"
+    params = [user_id]
+    
+    # Add search filter
+    if search_query:
+        base_query += " AND (tag_no LIKE %s OR name LIKE %s OR breed LIKE %s)"
+        search_param = f"%{search_query}%"
+        params.extend([search_param, search_param, search_param])
+    
+    # Get all cattle (we'll filter after getting stats)
+    query = f"SELECT * {base_query} ORDER BY created_at DESC"
+    cursor.execute(query, params)
+    all_cattle = cursor.fetchall()
+    
+    # Enhance cattle data with stats and images
+    enhanced_cattle = []
+    for cattle in all_cattle:
+        stats = calculate_cattle_stats(cattle['id'], user_id)
+        cattle['daily_yield'] = stats['yield']
+        cattle['status'] = stats['status']
+        cattle['badge_type'] = stats['badge']
+        cattle['health_status'] = stats['health']
+        cattle['image_url'] = get_breed_image(cattle['breed'])
+        enhanced_cattle.append(cattle)
+    
+    # Apply filter after getting stats
+    if filter_type == 'lactating':
+        enhanced_cattle = [c for c in enhanced_cattle if c['daily_yield'] > 0]
+    elif filter_type == 'dry':
+        enhanced_cattle = [c for c in enhanced_cattle if c['daily_yield'] == 0]
+    elif filter_type == 'unhealthy':
+        enhanced_cattle = [c for c in enhanced_cattle if c['health_status'] == 'Poor']
+    
+    # Calculate pagination after filtering
+    total_cattle = len(enhanced_cattle)
+    total_pages = math.ceil(total_cattle / per_page) if total_cattle > 0 else 1
+    
+    # Make sure page is within bounds
+    if page > total_pages:
+        page = total_pages
+    if page < 1:
+        page = 1
+    
+    # Paginate the filtered results
+    start_idx = (page - 1) * per_page
+    end_idx = min(start_idx + per_page, total_cattle)
+    paginated_cattle = enhanced_cattle[start_idx:end_idx]
+    
+    # Calculate stats for header
+    cursor.execute("""
+        SELECT COUNT(*) as total FROM cattle WHERE user_id = %s
+    """, (user_id,))
+    total_population = cursor.fetchone()['total']
+    
+    # Calculate average daily yield across all cattle
+    total_yield = sum(c['daily_yield'] for c in enhanced_cattle)
+    avg_daily_yield = total_yield / len(enhanced_cattle) if enhanced_cattle else 0.0
+    
+    # Count active alerts (Poor health)
+    active_alerts = len([c for c in enhanced_cattle if c['health_status'] == 'Poor'])
+    
+    # Calculate herd efficiency (percentage of healthy cattle)
+    healthy_count = len([c for c in enhanced_cattle if c['health_status'] == 'Good'])
+    herd_efficiency = (healthy_count / len(enhanced_cattle) * 100) if enhanced_cattle else 0
+    
+    cursor.close()
+    connection.close()
+    
+    # Generate page numbers for pagination
+    page_numbers = []
+    if total_pages <= 7:
+        page_numbers = list(range(1, total_pages + 1))
+    else:
+        if page <= 3:
+            page_numbers = [1, 2, 3, '...', total_pages]
+        elif page >= total_pages - 2:
+            page_numbers = [1, '...', total_pages - 2, total_pages - 1, total_pages]
+        else:
+            page_numbers = [1, '...', page - 1, page, page + 1, '...', total_pages]
+    
+    return render_template('cattle.html',
+                         cattle_list=paginated_cattle,
+                         current_page=page,
+                         total_pages=total_pages,
+                         page_numbers=page_numbers,
+                         filter_type=filter_type,
+                         search_query=search_query,
+                         total_population=total_population,
+                         avg_daily_yield=round(avg_daily_yield, 1),
+                         active_alerts=active_alerts,
+                         herd_efficiency=round(herd_efficiency, 1),
+                         user_name=session.get('full_name', 'User'))
+
+@cattle_bp.route('/cattle/add', methods=['POST'])
+def add_cattle():
+    """Add new cattle via AJAX"""
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'success': False, 'message': 'Not logged in'}), 401
+    
+    connection = get_db()
+    if not connection:
+        return jsonify({'success': False, 'message': 'Database connection error'}), 500
+    
+    cursor = connection.cursor()
+    
+    # Get form data
+    name = request.form.get('name')
+    breed = request.form.get('breed')
+    age = request.form.get('age')
+    gender = request.form.get('gender', 'Female')
+    health = request.form.get('health', 'Good')
+    purchase_date = request.form.get('purchase_date')
+
+    # Generate tag number
+    cursor.execute("""
+        SELECT COUNT(*) FROM cattle WHERE user_id = %s and breed = %s
+    """, (user_id,breed))
+    count = cursor.fetchone()[0] + 1
+    tag_no = f"C-{count:02d}"
+    
+    # Validate required fields
+    if not name or not breed or not age:
+        cursor.close()
+        connection.close()
+        return jsonify({'success': False, 'message': 'Missing required fields'}), 400
     
     try:
-        cur.execute("""
-            UPDATE cattle 
-            SET name=%s, breed=%s, age=%s, health=%s
-            WHERE id=%s AND user_id=%s
-        """, (data['name'], data['breed'], data['age'], data['health'], cattle_id, user_id))
-        conn.commit()
-        success = True
-    except Exception as e:
-        print(f"Update error: {e}")
-        success = False
-    finally:
-        cur.close()
-        conn.close()
+        cursor.execute("""
+            INSERT INTO cattle (user_id, tag_no, name, breed, age, gender, health, purchase_date)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (user_id, tag_no, name, breed, age, gender, health, purchase_date if purchase_date else None))
         
-    return jsonify(success=success)
-
-def calculate_trend(rows):
-    if len(rows) < 4:
-        return "Insufficient data for trend analysis."
-
-    mid = len(rows) // 2
-    first = rows[:mid]
-    second = rows[mid:]
-
-    first_avg = sum(float(r["quantity"]) for r in first) / len(first)
-    second_avg = sum(float(r["quantity"]) for r in second) / len(second)
-
-    if first_avg == 0:
-        return "Insufficient data for trend analysis."
-
-    diff = round(((second_avg - first_avg) / first_avg) * 100, 1)
-
-    if diff > 5:
-        return f"Positive trend: Production increased by {diff}%."
-    elif diff < -5:
-        return f"Declining trend: Production decreased by {abs(diff)}%."
-    else:
-        return f"Stable: Production remained consistent ({abs(diff)}% variation)."
-
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import cm
-from reportlab.lib import colors
-from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
-from datetime import datetime
-import os
-
-def generate_cattle_pdf(cattle, rows, stats, trend_text):
-    """Generate an attractive, fast-loading PDF report"""
-    os.makedirs("static/reports", exist_ok=True)
-    report_date = datetime.now().strftime("%Y-%m-%d")
-    safe_name = cattle["name"].replace(" ", "_")
-    filename = f"{safe_name}_Report_{report_date}.pdf"
-    path = f"static/reports/{filename}"
-    
-    # Create document with metadata
-    doc = SimpleDocTemplate(
-        path, 
-        pagesize=A4,
-        rightMargin=2*cm,
-        leftMargin=2*cm,
-        topMargin=2*cm,
-        bottomMargin=2*cm,
-        title=f"{cattle['name']} Milk Report",
-        author="CattleTrack Pro"
-    )
-    
-    # Custom styles
-    styles = getSampleStyleSheet()
-    
-    # Title style
-    title_style = ParagraphStyle(
-        'CustomTitle',
-        parent=styles['Title'],
-        fontSize=24,
-        textColor=colors.HexColor('#1F2937'),
-        spaceAfter=6,
-        alignment=TA_CENTER,
-        fontName='Helvetica-Bold'
-    )
-    
-    # Subtitle style
-    subtitle_style = ParagraphStyle(
-        'Subtitle',
-        parent=styles['Heading2'],
-        fontSize=16,
-        textColor=colors.HexColor('#4B5563'),
-        spaceAfter=20,
-        alignment=TA_CENTER,
-        fontName='Helvetica'
-    )
-    
-    # Section header style
-    section_style = ParagraphStyle(
-        'SectionHeader',
-        parent=styles['Heading3'],
-        fontSize=14,
-        textColor=colors.HexColor('#1F2937'),
-        spaceAfter=8,
-        spaceBefore=12,
-        fontName='Helvetica-Bold',
-        textTransform='uppercase'
-    )
-    
-    # Info style
-    info_style = ParagraphStyle(
-        'InfoStyle',
-        parent=styles['Normal'],
-        fontSize=11,
-        textColor=colors.HexColor('#374151'),
-        spaceAfter=4,
-        fontName='Helvetica'
-    )
-    
-    # Date style
-    date_style = ParagraphStyle(
-        'DateStyle',
-        parent=styles['Normal'],
-        fontSize=10,
-        textColor=colors.HexColor('#6B7280'),
-        alignment=TA_CENTER,
-        spaceAfter=10
-    )
-    
-    story = []
-    
-    # ========== HEADER ==========
-    story.append(Paragraph("CATTLE TRACK PRO", title_style))
-    story.append(Paragraph("Milk Production Report", subtitle_style))
-    story.append(Paragraph(
-        f"Generated: {datetime.now().strftime('%B %d, %Y at %I:%M %p')}", 
-        date_style
-    ))
-    
-    # Divider line
-    story.append(Spacer(1, 0.3*cm))
-    story.append(Table(
-        [['']], 
-        colWidths=[17*cm], 
-        style=TableStyle([
-            ('LINEABOVE', (0,0), (-1,-1), 2, colors.HexColor('#E5E7EB'))
-        ])
-    ))
-    story.append(Spacer(1, 0.5*cm))
-    
-    # ========== CATTLE INFORMATION CARD ==========
-    story.append(Paragraph("Cattle Information", section_style))
-    
-    cattle_data = [
-        ["Name:", cattle['name']],
-        ["Breed:", cattle['breed']],
-        ["Age:", f"{cattle['age']} years"],
-        ["Health Status:", cattle['health']]
-    ]
-    
-    cattle_table = Table(cattle_data, colWidths=[4*cm, 13*cm])
-    cattle_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#F3F4F6')),
-        ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#1F2937')),
-        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-        ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, -1), 11),
-        ('ALIGN', (0, 0), (0, -1), 'LEFT'),
-        ('ALIGN', (1, 0), (1, -1), 'LEFT'),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#E5E7EB')),
-        ('ROWBACKGROUNDS', (0, 0), (-1, -1), [colors.white, colors.HexColor('#F9FAFB')]),
-        ('LEFTPADDING', (0, 0), (-1, -1), 12),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 12),
-        ('TOPPADDING', (0, 0), (-1, -1), 8),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
-    ]))
-    story.append(cattle_table)
-    story.append(Spacer(1, 0.7*cm))
-    
-    # ========== PERFORMANCE SUMMARY ==========
-    story.append(Paragraph("Performance Summary", section_style))
-    
-    # Determine trend emoji and color
-    if "Positive" in trend_text or "increased" in trend_text:
-        trend_emoji = "📈"
-        trend_color = colors.HexColor('#10B981')
-    elif "Declining" in trend_text or "decreased" in trend_text:
-        trend_emoji = "📉"
-        trend_color = colors.HexColor('#EF4444')
-    else:
-        trend_emoji = "📊"
-        trend_color = colors.HexColor('#6366F1')
-    
-    summary_data = [
-        ["Total Production", f"{stats['total']} Liters", "🥛"],
-        ["Daily Average", f"{stats['avg']} Liters", "📅"],
-        ["Peak Production", f"{stats['highest']['quantity']} L on {stats['highest']['date']}", "⭐"],
-        ["Trend", trend_text, trend_emoji]
-    ]
-    
-    summary_table = Table(summary_data, colWidths=[4.5*cm, 11*cm, 1.5*cm])
-    summary_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#EFF6FF')),
-        ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#1F2937')),
-        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
-        ('FONTNAME', (1, 0), (1, -1), 'Helvetica'),
-        ('FONTNAME', (2, 0), (2, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, -1), 11),
-        ('ALIGN', (0, 0), (0, -1), 'LEFT'),
-        ('ALIGN', (1, 0), (1, -1), 'LEFT'),
-        ('ALIGN', (2, 0), (2, -1), 'CENTER'),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#DBEAFE')),
-        ('LEFTPADDING', (0, 0), (-1, -1), 12),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 12),
-        ('TOPPADDING', (0, 0), (-1, -1), 10),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
-        # Highlight trend row
-        ('BACKGROUND', (0, 3), (-1, 3), trend_color),
-        ('TEXTCOLOR', (0, 3), (-1, 3), colors.white),
-    ]))
-    story.append(summary_table)
-    story.append(Spacer(1, 0.7*cm))
-    
-    # ========== PRODUCTION RECORDS ==========
-    story.append(Paragraph("Detailed Production Records", section_style))
-    
-    # Optimize: Only show data if reasonable amount
-    if len(rows) > 100:
-        story.append(Paragraph(
-            f"<i>Note: Showing summary for {len(rows)} records to optimize report size.</i>",
-            info_style
-        ))
-        # Group by week or month for large datasets
-        story.append(Spacer(1, 0.3*cm))
-    
-    # Table header
-    table_data = [["Date", "Production (Liters)"]]
-    
-    # Limit rows for performance (show first 50 and last 50 if more than 100)
-    if len(rows) <= 100:
-        display_rows = rows
-    else:
-        display_rows = rows[:50] + [{"date": "...", "quantity": "..."}] + rows[-50:]
-    
-    for r in display_rows:
-        table_data.append([str(r["date"]), str(r["quantity"])])
-    
-    production_table = Table(table_data, colWidths=[8.5*cm, 8.5*cm])
-    production_table.setStyle(TableStyle([
-        # Header styling
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#4F46E5')),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE', (0, 0), (-1, 0), 12),
-        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+        connection.commit()
+        cattle_id = cursor.lastrowid
         
-        # Data styling
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 1), (-1, -1), 10),
-        ('ALIGN', (0, 1), (0, -1), 'LEFT'),
-        ('ALIGN', (1, 1), (1, -1), 'RIGHT'),
-        ('TEXTCOLOR', (0, 1), (-1, -1), colors.HexColor('#374151')),
+        cursor.close()
+        connection.close()
         
-        # Grid and padding
-        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#E5E7EB')),
-        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#F9FAFB')]),
-        ('LEFTPADDING', (0, 0), (-1, -1), 12),
-        ('RIGHTPADDING', (0, 0), (-1, -1), 12),
-        ('TOPPADDING', (0, 0), (-1, -1), 8),
-        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
-        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-    ]))
-    story.append(production_table)
-    story.append(Spacer(1, 1*cm))
-    
-    # ========== FOOTER ==========
-    story.append(Table(
-        [['']], 
-        colWidths=[17*cm], 
-        style=TableStyle([
-            ('LINEABOVE', (0,0), (-1,-1), 1, colors.HexColor('#E5E7EB'))
-        ])
-    ))
-    story.append(Spacer(1, 0.3*cm))
-    
-    footer_style = ParagraphStyle(
-        'Footer',
-        parent=styles['Normal'],
-        fontSize=9,
-        textColor=colors.HexColor('#6B7280'),
-        alignment=TA_CENTER
-    )
-    
-    story.append(Paragraph(
-        "📧 info@cattletrack.com | 📞 +1 (555) 123-4567 | 🌐 www.cattletrack.com",
-        footer_style
-    ))
-    story.append(Paragraph(
-        f"Report ID: {cattle['id']}-{report_date} | © {datetime.now().year} CattleTrack Pro",
-        footer_style
-    ))
-    
-    # Build PDF (this is fast)
-    doc.build(story)
-    
-    return path
-
-
-# --------------------------------------------------
-# REPORT DOWNLOAD (FILTER AWARE)
-# --------------------------------------------------
-@cattle_bp.route("/cattle/<int:cattle_id>/report")
-def download_cattle_report(cattle_id):
-    if "user_id" not in session:
-        return redirect(url_for("login_page"))
-
-    user_id = session["user_id"]
-    view_type = request.args.get("view_type")
-    start_date = request.args.get("start_date")
-    end_date = request.args.get("end_date")
-
-    conn = get_db()
-    cur = conn.cursor(dictionary=True)
-
-    # cattle info
-    cur.execute("""
-        SELECT id, name, breed, age, health
-        FROM cattle
-        WHERE id=%s AND user_id=%s
-    """, (cattle_id, user_id))
-    cattle = cur.fetchone()
-
-    # query by selection
-    if view_type == "last_7":
-        query = """
-            SELECT date, milk_liters AS quantity
-            FROM milk_records
-            WHERE cattle_id=%s
-             AND date >= CURDATE() - INTERVAL 6 DAY
-            ORDER BY date
-        """
-        params = (cattle_id,)
-    elif view_type == "custom":
-        query = """
-            SELECT date, milk_liters AS quantity
-            FROM milk_records
-            WHERE cattle_id=%s AND date BETWEEN %s AND %s
-            ORDER BY date
-        """
-        params = (cattle_id, start_date, end_date)
-    else:
-        query = """
-            SELECT date, milk_liters AS quantity
-            FROM milk_records
-            WHERE cattle_id=%s
-            ORDER BY date
-        """
-        params = (cattle_id,)
-
-    cur.execute(query, params)
-    raw_rows = cur.fetchall()
-
-    # group by date + fix Decimal
-    grouped = defaultdict(float)
-    for r in raw_rows:
-        qty = float(r["quantity"]) if isinstance(r["quantity"], Decimal) else r["quantity"]
-        grouped[r["date"]] += qty
-
-    rows = []
-    for d, q in grouped.items():
-        rows.append({
-            "date": d.strftime("%d %b %Y") if isinstance(d, date) else d,
-            "quantity": round(q, 2)
+        return jsonify({
+            'success': True,
+            'message': 'Cattle added successfully',
+            'cattle_id': cattle_id
         })
-    rows.sort(key=lambda x: datetime.strptime(x["date"], "%d %b %Y"))
-
-    total = sum(float(r["quantity"]) for r in rows)
-    avg = round(total / len(rows), 1) if rows else 0
-    highest = max(rows, key=lambda x: x["quantity"]) if rows else {"date": "-", "quantity": 0}
-    trend_text = calculate_trend(rows)
-
-    cur.close()
-    conn.close()
-
-    pdf_path = generate_cattle_pdf(
-        cattle,
-        rows,
-        {"total": total, "avg": avg, "highest": highest},
-        trend_text
-    )
-
-    return send_file(
-        pdf_path,
-        as_attachment=True,
-        download_name=os.path.basename(pdf_path)
-    )
+    except Exception as e:
+        cursor.close()
+        connection.close()
+        return jsonify({
+            'success': False,
+            'message': str(e)
+        }), 400
