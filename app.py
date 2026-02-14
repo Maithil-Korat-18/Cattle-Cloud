@@ -5,7 +5,6 @@ from login import auth
 from dashboard import dashboard_bp
 from datetime import timedelta,datetime
 from cattle import cattle_bp
-from home import home_bp
 from profile import profile_bp
 from cattle_detail import cattle_detail_bp
 from milk_records import milk_bp
@@ -17,7 +16,6 @@ app.secret_key = "super_secret_key_123"
 app.register_blueprint(auth)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(cattle_bp)
-app.register_blueprint(home_bp)
 app.register_blueprint(profile_bp)
 app.register_blueprint(cattle_detail_bp)
 app.register_blueprint(milk_bp)
@@ -42,7 +40,7 @@ def login():
         if user_id in USERS and USERS[user_id] == password:
             session['user_id'] = user_id
             session['login_time'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            return redirect(url_for('home'))
+            return redirect(url_for('dashboard'))
         else:
             return render_template('login.html', error='Invalid credentials')
     
