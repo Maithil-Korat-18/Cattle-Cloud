@@ -3,218 +3,344 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feed Inventory - Cattle-Cloud</title>
-    
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <title>Feed Management - Cattle-Cloud</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/feed.css') }}">
 </head>
 <body>
-    <div class="page-container">
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-logo">
-                    <span class="material-symbols-outlined">grass</span>
-                </div>
-                <span class="sidebar-brand">Cattle-Cloud</span>
+<div class="app-container">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <span class="material-symbols-outlined">grass</span>
             </div>
-            
-            <nav class="sidebar-nav">
-                <a href="/dashboard" class="nav-item">
-                    <span class="material-symbols-outlined nav-icon">dashboard</span>
-                    <span class="nav-text">Dashboard</span>
-                </a>
-                <a href="/cattle" class="nav-item">
-                    <span class="material-symbols-outlined nav-icon">pets</span>
-                    <span class="nav-text">Cattle Herd</span>
-                </a>
-                <a href="/milk" class="nav-item">
-                    <span class="material-symbols-outlined nav-icon">water_drop</span>
-                    <span class="nav-text">Production</span>
-                </a>
-                <a href="/feed" class="nav-item active">
-                    <span class="material-symbols-outlined nav-icon filled">nutrition</span>
-                    <span class="nav-text">Feed</span>
-                </a>
-                <a href="/expenses" class="nav-item">
-                    <span class="material-symbols-outlined nav-icon">account_balance_wallet</span>
-                    <span class="nav-text">Finances</span>
-                </a>
-            </nav>
-            
-            <div class="sidebar-footer">
-                <a href="#" class="nav-item">
-                    <span class="material-symbols-outlined nav-icon">settings</span>
-                    <span class="nav-text">Settings</span>
-                </a>
-                
-                <div class="user-profile">
-                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPWkZjCgogEUATrDJQIusbvxGyyx9IIGNYh6W3Lew2sXZRXu816fbskZ54TpweLa5WI506LnIN_9M8ydY64TJYotY_5431t-o7tNNOWZABq2w3LAJWPUaj3sE6y_VGqTflnHAO9i5P92IKXzuBjI6YAYlLnqWAmrVe7Jhe1B-X3sjUpaAN4l3Z5UXjtVozMfEmXwxkr06CcoLzhZrGw9bUjycVZrA6tcUrG1m3cJmy1lGwQmLho5oL_d04sCZsmeFwSXTlt8TirpI" alt="Profile" class="profile-img">
-                    <div class="profile-info">
-                        <p class="profile-name">{{ user_name }}</p>
+            <span class="sidebar-brand">Cattle-Cloud</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/dashboard" class="nav-item">
+                <span class="material-symbols-outlined nav-icon">dashboard</span>
+                <span class="nav-text">Dashboard</span>
+            </a>
+            <a href="/cattle" class="nav-item">
+                <span class="material-symbols-outlined nav-icon">pets</span>
+                <span class="nav-text">Cattle Herd</span>
+            </a>
+            <a href="/milk" class="nav-item">
+                <span class="material-symbols-outlined nav-icon">water_drop</span>
+                <span class="nav-text">Production</span>
+            </a>
+            <a href="/feed" class="nav-item active">
+                <span class="material-symbols-outlined nav-icon filled">grass</span>
+                <span class="nav-text">Feed</span>
+            </a>
+            <a href="/expenses" class="nav-item">
+                <span class="material-symbols-outlined nav-icon">account_balance_wallet</span>
+                <span class="nav-text">Finances</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item">
+                <span class="material-symbols-outlined nav-icon">settings</span>
+                <span class="nav-text">Settings</span>
+            </a>
+            <div class="user-profile">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPWkZjCgogEUATrDJQIusbvxGyyx9IIGNYh6W3Lew2sXZRXu816fbskZ54TpweLa5WI506LnIN_9M8ydY64TJYotY_5431t-o7tNNOWZABq2w3LAJWPUaj3sE6y_VGqTflnHAO9i5P92IKXzuBjI6YAYlLnqWAmrVe7Jhe1B-X3sjUpaAN4l3Z5UXjtVozMfEmXwxkr06CcoLzhZrGw9bUjycVZrA6tcUrG1m3cJmy1lGwQmLho5oL_d04sCZsmeFwSXTlt8TirpI"
+                     alt="Profile" class="profile-img">
+                <div class="profile-info">
+                    <p class="profile-name">{{ session.get('user_name', 'User') }}</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Feed Management</h1>
+                <p class="page-subtitle">Track feed usage, cost and planning</p>
+            </div>
+            <div class="header-actions">
+                <!-- Date Range Selector -->
+                <div class="date-filter">
+                    <div>
+                        <label>From Date</label>
+                        <input type="date" id="rangeFrom">
                     </div>
+                    <div>
+                        <label>To Date</label>
+                        <input type="date" id="rangeTo">
+                    </div>
+                    <button id="applyRangeBtn">Apply</button>
                 </div>
-            </div>
-        </aside>
-        
-        <main class="main-content">
-            <header class="page-header">
-                <div>
-                    <h1 class="page-title">Feed Inventory</h1>
-                    <p class="page-subtitle">Monitor and manage your livestock feed stock levels.</p>
-                </div>
-                <button class="btn-gradient" data-bs-toggle="modal" data-bs-target="#addStockModal">
-                    <span class="material-symbols-outlined">add_circle</span>
-                    <span>Add Feed Stock</span>
+                <button class="btn btn-report" id="generateReportBtn">
+                    <span class="material-symbols-outlined">description</span>
+                    Generate Report
                 </button>
-            </header>
-            
-            <section class="summary-section">
-                <div class="summary-grid" id="summaryGrid">
-                    <div class="summary-card skeleton">
-                        <div class="skeleton-content"></div>
-                    </div>
-                    <div class="summary-card skeleton">
-                        <div class="skeleton-content"></div>
-                    </div>
-                    <div class="summary-card skeleton">
-                        <div class="skeleton-content"></div>
-                    </div>
-                    <div class="summary-card skeleton">
-                        <div class="skeleton-content"></div>
-                    </div>
+                <button class="btn btn-secondary" id="addFeedStockBtn">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    Add Feed Stock
+                </button>
+                <button class="btn btn-primary" id="addFeedBtn">
+                    <span class="material-symbols-outlined">add</span>
+                    Add Feed Entry
+                </button>
+            </div>
+        </div>
+
+        <!-- Metrics Grid -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-icon feed-used">
+                    <span class="material-symbols-outlined">agriculture</span>
                 </div>
-            </section>
-            
-            <div class="main-grid">
-                <div class="left-column">
-                    <section class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">Current Stock Details</h2>
-                            <div class="search-box">
-                                <span class="material-symbols-outlined">search</span>
-                                <input type="text" id="searchInput" placeholder="Search stock...">
-                            </div>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="stock-table">
-                                <thead>
-                                    <tr>
-                                        <th>Item Name</th>
-                                        <th>Category</th>
-                                        <th>Current Qty</th>
-                                        <th>Min. Level</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="stockTableBody">
-                                    <tr>
-                                        <td colspan="5" class="text-center py-4">Loading...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="table-footer">
-                            <span id="tableInfo">Showing 0 items</span>
-                            <div class="pagination-btns">
-                                <button class="page-btn"><span class="material-symbols-outlined">chevron_left</span></button>
-                                <button class="page-btn"><span class="material-symbols-outlined">chevron_right</span></button>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-                
-                <div class="right-column">
-                    <section class="card">
-                        <div class="card-header">
-                            <h2 class="card-title">Recent Feed Usage</h2>
-                        </div>
-                        <div class="usage-timeline" id="usageTimeline">
-                            <p class="text-center text-muted py-4">Loading...</p>
-                        </div>
-                        <button class="btn-view-all" data-bs-toggle="modal" data-bs-target="#usageModal">
-                            VIEW ALL ACTIVITY
-                        </button>
-                    </section>
+                <div class="metric-content">
+                    <p class="metric-label">Total Feed Used</p>
+                    <h3 class="metric-value" id="totalFeedUsed">0 kg</h3>
+                    <p class="metric-change positive">
+                        <span class="material-symbols-outlined">arrow_upward</span>
+                        <span id="feedUsedChange">This month</span>
+                    </p>
                 </div>
             </div>
-        </main>
-    </div>
-    
-    <!-- Add Stock Modal -->
-    <div class="modal fade" id="addStockModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add Feed Stock</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="metric-card">
+                <div class="metric-icon feed-cost">
+                    <span class="material-symbols-outlined">payments</span>
                 </div>
-                <div class="modal-body">
-                    <form id="addStockForm">
-                        <div class="mb-3">
-                            <label class="form-label">Feed Name</label>
-                            <input type="text" class="form-control" name="feed_name" required>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Quantity (kg)</label>
-                                <input type="number" step="0.1" class="form-control" name="quantity" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Min Quantity (kg)</label>
-                                <input type="number" step="0.1" class="form-control" name="min_quantity" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Cost per kg ($)</label>
-                            <input type="number" step="0.01" class="form-control" name="cost_per_kg" required>
-                        </div>
-                    </form>
+                <div class="metric-content">
+                    <p class="metric-label">Total Feed Cost</p>
+                    <h3 class="metric-value" id="totalFeedCost">₹0</h3>
+                    <p class="metric-change negative">
+                        <span class="material-symbols-outlined">arrow_downward</span>
+                        <span id="feedCostChange">This month</span>
+                    </p>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="submitAddStock()">Add Stock</button>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon avg-cattle">
+                    <span class="material-symbols-outlined">pets</span>
+                </div>
+                <div class="metric-content">
+                    <p class="metric-label">Avg Feed per Cattle</p>
+                    <h3 class="metric-value" id="avgPerCattle">0 kg</h3>
+                    <p class="metric-change neutral">
+                        <span class="material-symbols-outlined">remove</span>
+                        <span>Per cattle</span>
+                    </p>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon low-stock">
+                    <span class="material-symbols-outlined">error</span>
+                </div>
+                <div class="metric-content">
+                    <p class="metric-label">Low Stock Alerts</p>
+                    <h3 class="metric-value" id="lowStockAlerts">0</h3>
+                    <p class="metric-change warning">
+                        <span>Requires attention</span>
+                    </p>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Usage Modal -->
-    <div class="modal fade" id="usageModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">All Feed Usage Activity</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            <!-- Bar Chart: Feed Usage Timeline -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Feed Usage Timeline <span id="timelinePeriodLabel" class="period-label"></span></h3>
                 </div>
-                <div class="modal-body">
-                    <div class="table-wrapper">
-                        <table class="stock-table">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Feed Type</th>
-                                    <th>Cattle</th>
-                                    <th>Quantity Used</th>
-                                    <th>Time</th>
-                                </tr>
-                            </thead>
-                            <tbody id="usageTableBody">
-                                <tr>
-                                    <td colspan="5" class="text-center py-4">Loading...</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="chart-container" style="position:relative;">
+                    <canvas id="feedUsageChart" height="280"></canvas>
+                </div>
+            </div>
+
+            <!-- Pie Chart: Feed Type Distribution -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Feed Type Distribution <span id="piePeriodLabel" class="period-label"></span></h3>
+                </div>
+                <div class="chart-container pie-container">
+                    <div class="pie-chart-wrapper">
+                        <canvas id="feedTypeDonut"></canvas>
                     </div>
-                    <div class="pagination-footer" id="usagePagination"></div>
+                    <div id="donutLegend" class="pie-legend"></div>
                 </div>
             </div>
         </div>
+
+        <!-- Feed History Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h3 class="table-title">Feed History</h3>
+                <div class="table-filters">
+                    <select class="filter-select" id="filterFeedType">
+                        <option value="all">All Feed Types</option>
+                    </select>
+                    <select class="filter-select" id="filterCattle">
+                        <option value="all">All Cattle</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-container">
+                <table class="feed-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Cattle Name</th>
+                            <th>Feed Type</th>
+                            <th>Quantity (kg)</th>
+                            <th>Cost (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feedTableBody">
+                        <tr><td colspan="5" class="loading-cell">Loading feed history...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <div class="pagination-bar" id="paginationBar">
+                <span class="pagination-info" id="paginationInfo"></span>
+                <div class="pagination-controls" id="paginationControls"></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL: Add Feed Entry
+════════════════════════════════════════ -->
+<div class="modal" id="addFeedModal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Feed Entry</h3>
+            <button class="modal-close" id="closeModal">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <form id="feedForm">
+            <div class="form-group">
+                <label for="feedDate">Date</label>
+                <input type="date" id="feedDate" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="feedCattle">Cattle (Optional)</label>
+                <select id="feedCattle" class="form-control">
+                    <option value="">General Stock</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="feedType">Feed Type</label>
+                <select id="feedType" class="form-control" required>
+                    <option value="">Select feed type</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="feedQuantity">Quantity (kg)</label>
+                <input type="number" id="feedQuantity" class="form-control" placeholder="0.00" step="0.01" required>
+                <small class="form-hint" id="stockHint">Available: -- kg</small>
+            </div>
+            <div class="form-group">
+                <label>Estimated Cost</label>
+                <div class="cost-display" id="estimatedCost">₹0.00</div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                <button type="submit" class="btn btn-primary">Add Feed Entry</button>
+            </div>
+        </form>
     </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/feed.js') }}"></script>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL: Add Feed Stock
+════════════════════════════════════════ -->
+<div class="modal" id="addFeedStockModal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Feed Stock</h3>
+            <button class="modal-close" id="closeStockModal">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <form id="feedStockForm">
+            <div class="form-group">
+                <label for="stockFeedName">Feed Name</label>
+                <input type="text" id="stockFeedName" class="form-control" placeholder="e.g., Green Fodder, Wheat" required>
+            </div>
+            <div class="form-group">
+                <label for="stockQuantity">Quantity (kg)</label>
+                <input type="number" id="stockQuantity" class="form-control" placeholder="0.00" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label for="stockMinQuantity">Minimum Quantity (kg)</label>
+                <input type="number" id="stockMinQuantity" class="form-control" placeholder="0.00" step="0.01" required>
+                <small class="form-hint">Alert threshold for low stock</small>
+            </div>
+            <div class="form-group">
+                <label for="stockCostPerKg">Cost Per Kg (₹)</label>
+                <input type="number" id="stockCostPerKg" class="form-control" placeholder="0.00" step="0.01" required>
+            </div>
+            <div class="form-group">
+                <label>Total Cost</label>
+                <div class="cost-display" id="totalStockCost">₹0.00</div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="cancelStockBtn">Cancel</button>
+                <button type="submit" class="btn btn-primary">Add Stock</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MODAL: Generate Report
+════════════════════════════════════════ -->
+<div class="modal" id="reportModal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Generate Feed Report</h3>
+            <button class="modal-close" id="closeReportModal">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="report-form">
+            <p class="report-subtitle">Choose the date range for your feed usage PDF report.</p>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="reportFrom">From Date</label>
+                    <input type="date" id="reportFrom" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="reportTo">To Date</label>
+                    <input type="date" id="reportTo" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="cancelReportBtn">Cancel</button>
+                <button type="button" class="btn btn-report" id="downloadPdfBtn">
+                    <span class="material-symbols-outlined">picture_as_pdf</span>
+                    Download PDF
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jsPDF CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<!-- Chart.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<script src="{{ url_for('static', filename='js/feed.js') }}"></script>
 </body>
 </html>

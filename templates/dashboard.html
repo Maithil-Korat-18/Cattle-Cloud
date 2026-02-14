@@ -3,227 +3,393 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indigo & Violet Brand Dashboard</title>
-    
+    <title>Pashu Setu — Farm Dashboard</title>
+
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts -->
+
+    <!-- Google Fonts — Lexend only (matches all other pages) -->
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+
     <!-- Material Symbols -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-    
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-    
+
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="sidebar-logo">
-                    <span class="material-symbols-outlined">grass</span>
-                </div>
-                <span class="sidebar-brand">Cattle-Cloud</span>
+<div class="dashboard-container">
+
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <span class="material-symbols-outlined">grass</span>
             </div>
-            
-            <nav class="sidebar-nav">
-                <a href="/dashboard" class="nav-item active">
-                    <span class="material-symbols-outlined nav-icon filled">dashboard</span>
-                    <span class="nav-text">Dashboard</span>
-                </a>
-                <a href="/cattle" class="nav-item ">
-                    <span class="material-symbols-outlined nav-icon">pets</span>
-                    <span class="nav-text">Cattle Herd</span>
-                </a>
-                <a href="/milk" class="nav-item">
-                    <span class="material-symbols-outlined nav-icon">water_drop</span>
-                    <span class="nav-text">Production</span>
-                </a>
-		<a href="/feed" class="nav-item">
-                    <span class="material-symbols-outlined nav-icon">Feed</span>
-                    <span class="nav-text">Feed</span>
-                </a>
-                <a href="/expenses" class="nav-item">
-                    <span class="material-symbols-outlined nav-icon">account_balance_wallet</span>
-                    <span class="nav-text">Finances</span>
-                </a>
-            </nav>
-            
-            <div class="sidebar-footer">
-                <a href="#" class="nav-item">
-                    <span class="material-symbols-outlined nav-icon">settings</span>
-                    <span class="nav-text">Settings</span>
-                </a>
-                
-                <div class="user-profile">
-                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPWkZjCgogEUATrDJQIusbvxGyyx9IIGNYh6W3Lew2sXZRXu816fbskZ54TpweLa5WI506LnIN_9M8ydY64TJYotY_5431t-o7tNNOWZABq2w3LAJWPUaj3sE6y_VGqTflnHAO9i5P92IKXzuBjI6YAYlLnqWAmrVe7Jhe1B-X3sjUpaAN4l3Z5UXjtVozMfEmXwxkr06CcoLzhZrGw9bUjycVZrA6tcUrG1m3cJmy1lGwQmLho5oL_d04sCZsmeFwSXTlt8TirpI" alt="Profile" class="profile-img">
-                    <div class="profile-info">
-                        <p class="profile-name">{{ user_name }}</p>
+            <span class="sidebar-brand">Pashu Setu</span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="/dashboard" class="nav-item active">
+                <span class="material-symbols-outlined nav-icon filled">dashboard</span>
+                <span class="nav-text">Dashboard</span>
+            </a>
+            <a href="/cattle" class="nav-item">
+                <span class="material-symbols-outlined nav-icon">pets</span>
+                <span class="nav-text">Cattle Herd</span>
+            </a>
+            <a href="/milk" class="nav-item">
+                <span class="material-symbols-outlined nav-icon">water_drop</span>
+                <span class="nav-text">Production</span>
+            </a>
+            <a href="/feed" class="nav-item">
+                <span class="material-symbols-outlined nav-icon">grass</span>
+                <span class="nav-text">Feed</span>
+            </a>
+            <a href="/expenses" class="nav-item">
+                <span class="material-symbols-outlined nav-icon">account_balance_wallet</span>
+                <span class="nav-text">Finances</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="nav-item">
+                <span class="material-symbols-outlined nav-icon">settings</span>
+                <span class="nav-text">Settings</span>
+            </a>
+            <div class="user-profile">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPWkZjCgogEUATrDJQIusbvxGyyx9IIGNYh6W3Lew2sXZRXu816fbskZ54TpweLa5WI506LnIN_9M8ydY64TJYotY_5431t-o7tNNOWZABq2w3LAJWPUaj3sE6y_VGqTflnHAO9i5P92IKXzuBjI6YAYlLnqWAmrVe7Jhe1B-X3sjUpaAN4l3Z5UXjtVozMfEmXwxkr06CcoLzhZrGw9bUjycVZrA6tcUrG1m3cJmy1lGwQmLho5oL_d04sCZsmeFwSXTlt8TirpI"
+                     alt="Profile" class="profile-img">
+                <div class="profile-info">
+                    <p class="profile-name">{{ user_name }}</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ── Main Content ── -->
+    <main class="main-content">
+
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-left">
+                <h1 class="page-title">Good Morning, {{ user_name }}</h1>
+                <p class="page-subtitle">
+                    <span class="material-symbols-outlined">calendar_today</span>
+                    {{ now.strftime('%A, %b %d') }}
+                </p>
+            </div>
+            <div class="header-actions">
+                <div class="search-box">
+                    <span class="material-symbols-outlined search-icon">search</span>
+                    <input type="text" class="form-control" placeholder="Search records...">
+                </div>
+                <!-- Overview Report -->
+                <button class="btn btn-outline" onclick="openReportModal()">
+                    <span class="material-symbols-outlined">description</span>
+                    Generate Report
+                </button>
+                <!-- Quick Record — opens modal -->
+                <button class="btn btn-primary-gradient" data-bs-toggle="modal" data-bs-target="#quickRecordModal">
+                    <span class="material-symbols-outlined">add</span>
+                    Quick Record
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <p class="stat-label">Total Cattle</p>
+                <div class="stat-value-row">
+                    <h3 class="stat-value">{{ total_cattle }}</h3>
+                    <span class="stat-change {{ 'positive' if cattle_change > 0 else 'negative' }}">
+                        <span class="material-symbols-outlined">{{ 'arrow_upward' if cattle_change > 0 else 'arrow_downward' }}</span>
+                        {{ cattle_change }}%
+                    </span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <p class="stat-label">Milk Yield Today</p>
+                <div class="stat-value-row">
+                    <h3 class="stat-value">{{ "%.0f"|format(milk_today) }} <span class="stat-unit">L</span></h3>
+                    <span class="stat-change {{ 'positive' if milk_change > 0 else 'negative' }}">
+                        <span class="material-symbols-outlined">{{ 'arrow_upward' if milk_change > 0 else 'arrow_downward' }}</span>
+                        {{ milk_change|abs }}%
+                    </span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <p class="stat-label">Monthly Revenue</p>
+                <div class="stat-value-row">
+                    <h3 class="stat-value">₹{{ "%.0f"|format(monthly_revenue) }}</h3>
+                    <span class="stat-change {{ 'positive' if revenue_change > 0 else 'negative' }}">
+                        <span class="material-symbols-outlined">{{ 'arrow_upward' if revenue_change > 0 else 'arrow_downward' }}</span>
+                        {{ revenue_change }}%
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+
+            <!-- Left Column -->
+            <div class="content-left">
+
+                <!-- Production Trends -->
+                <div class="card chart-card">
+                    <div class="card-header-flex">
+                        <div>
+                            <h2 class="card-title">Production Trends</h2>
+                            <p class="card-subtitle">Weekly milk output performance</p>
+                        </div>
+                        <div class="chart-tabs">
+                            <button class="chart-tab active" data-period="daily">Daily</button>
+                            <button class="chart-tab" data-period="weekly">Weekly</button>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="productionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Activity — includes milk, health, feed, expense -->
+                <div class="card activity-card">
+                    <div class="card-header-flex">
+                        <div>
+                            <h2 class="card-title">Recent Activity</h2>
+                            <p class="card-subtitle">Latest farm log entries</p>
+                        </div>
+                        <a href="/cattle" class="view-all-btn">View All</a>
+                    </div>
+                    <div class="activity-list">
+                        {% for activity in recent_activities %}
+                        <div class="activity-item" onclick="window.location.href='{{ activity.link }}'" style="cursor:pointer">
+                            <div class="activity-icon activity-icon-{{ activity.color }}">
+                                <span class="material-symbols-outlined">{{ activity.icon }}</span>
+                            </div>
+                            <div class="activity-content">
+                                <p class="activity-title">{{ activity.title }}</p>
+                                <p class="activity-description">{{ activity.description }}</p>
+                            </div>
+                            <span class="activity-time">{{ activity.time }}</span>
+                        </div>
+                        {% endfor %}
+                        {% if not recent_activities %}
+                        <div class="empty-activity">
+                            <span class="material-symbols-outlined">inbox</span>
+                            <p>No recent activity yet</p>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
-        </aside>
-        
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Header -->
-            <header class="page-header">
-                <div class="header-left">
-                    <h1 class="page-title">Good Morning, {{ user_name }}</h1>
-                    <p class="page-subtitle">
-                        <span class="material-symbols-outlined">calendar_today</span>
-                        {{ now.strftime('%A, %b %d') }} 
-                    </p>
-                </div>
-                <div class="header-actions">
-                    <div class="search-box">
-                        <span class="material-symbols-outlined search-icon">search</span>
-                        <input type="text" class="form-control" placeholder="Search records...">
+
+            <!-- Right Column — Alerts only when genuine alerts exist -->
+            <div class="content-right">
+                {% if alerts %}
+                <div class="card alerts-card">
+                    <div class="card-header-flex">
+                        <h3 class="alerts-title">
+                            <span class="material-symbols-outlined">notification_important</span>
+                            Alerts & Reminders
+                        </h3>
+                        <span class="alerts-badge">{{ alerts|length }} Active</span>
                     </div>
-                    <button class="btn btn-outline">
-                        <span class="material-symbols-outlined">description</span>
-                        Generate Report
+                    <div class="alerts-list">
+                        {% for alert in alerts %}
+                        <div class="alert-item alert-{{ alert.type }}"
+                             onclick="window.location.href='{{ alert.link }}'"
+                             style="cursor:pointer"
+                             title="Click to view details">
+                            <div class="alert-dot alert-dot-{{ alert.dot_color }}"></div>
+                            <div class="alert-content">
+                                <p class="alert-title">{{ alert.title }}</p>
+                                <p class="alert-description">{{ alert.description }}</p>
+                            </div>
+                            <span class="material-symbols-outlined alert-arrow">arrow_forward_ios</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile FAB -->
+    <button class="mobile-fab" data-bs-toggle="modal" data-bs-target="#quickRecordModal">
+        <span class="material-symbols-outlined">add</span>
+    </button>
+</div>
+
+<!-- ════════════════════════════════════════════
+     QUICK RECORD MODAL
+     3 tabs: Milk / Health / Feed
+     Cattle dropdown auto-loads all user cattle
+════════════════════════════════════════════ -->
+<div class="modal fade" id="quickRecordModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="qr-modal-title">
+                    <span class="material-symbols-outlined" style="color:var(--primary-indigo);font-size:22px">edit_note</span>
+                    <h5 class="modal-title">Quick Record</h5>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+
+                <!-- Tab switcher -->
+                <div class="qr-tabs">
+                    <button class="qr-tab active" data-type="milk">
+                        <span class="material-symbols-outlined">water_drop</span>
+                        <span>Milk</span>
                     </button>
-                    <button class="btn btn-primary-gradient">
-                        <span class="material-symbols-outlined">add</span>
-                        Quick Record
+                    <button class="qr-tab" data-type="health">
+                        <span class="material-symbols-outlined">medical_services</span>
+                        <span>Health</span>
+                    </button>
+                    <button class="qr-tab" data-type="feed">
+                        <span class="material-symbols-outlined">grass</span>
+                        <span>Feed</span>
                     </button>
                 </div>
-            </header>
-            
-            <!-- Stats Cards -->
-            <section class="stats-grid">
-                <div class="stat-card">
-                    <p class="stat-label">Total Cattle</p>
-                    <div class="stat-value-row">
-                        <h3 class="stat-value">{{ total_cattle }}</h3>
-                        <span class="stat-change {{ 'positive' if cattle_change > 0 else 'negative' }}">
-                            <span class="material-symbols-outlined">{{ 'arrow_upward' if cattle_change > 0 else 'arrow_downward' }}</span>
-                            {{ cattle_change }}%
-                        </span>
-                    </div>
+
+                <!-- Cattle selector — shared across all tabs -->
+                <div class="mb-3">
+                    <label class="form-label">Select Cattle</label>
+                    <select class="form-select" id="qrCattleSelect">
+                        <option value="">Loading cattle...</option>
+                    </select>
                 </div>
-                
-                <div class="stat-card">
-                    <p class="stat-label">Milk Yield Today</p>
-                    <div class="stat-value-row">
-                        <h3 class="stat-value">{{ "%.0f"|format(milk_today) }} <span class="stat-unit">L</span></h3>
-                        <span class="stat-change {{ 'positive' if milk_change > 0 else 'negative' }}">
-                            <span class="material-symbols-outlined">{{ 'arrow_upward' if milk_change > 0 else 'arrow_downward' }}</span>
-                            {{ milk_change|abs }}%
-                        </span>
+
+                <!-- ── MILK FORM ── -->
+                <form id="qrMilkForm" class="qr-form active">
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-control" id="qrMilkDate" required>
                     </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Morning (Liters)</label>
+                            <input type="number" step="0.1" min="0" class="form-control" id="qrMilkMorning" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Evening (Liters)</label>
+                            <input type="number" step="0.1" min="0" class="form-control" id="qrMilkEvening" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Rate (₹/Liter)</label>
+                        <input type="number" step="0.01" min="0" class="form-control" id="qrMilkRate" required>
+                    </div>
+                </form>
+
+                <!-- ── HEALTH FORM ── -->
+                <form id="qrHealthForm" class="qr-form">
+                    <div class="mb-3">
+                        <label class="form-label">Issue / Diagnosis</label>
+                        <input type="text" class="form-control" id="qrHealthIssue" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Treatment</label>
+                        <textarea class="form-control" id="qrHealthTreatment" rows="3" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Veterinarian Name</label>
+                            <input type="text" class="form-control" id="qrHealthVet" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Next Checkup Date</label>
+                            <input type="date" class="form-control" id="qrHealthNextCheckup">
+                        </div>
+                    </div>
+                </form>
+
+                <!-- ── FEED FORM ── -->
+                <form id="qrFeedForm" class="qr-form">
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-control" id="qrFeedDate" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Feed Type</label>
+                        <select class="form-select" id="qrFeedTypeSelect" required>
+                            <option value="">Loading available feeds...</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Quantity Used (kg)</label>
+                        <input type="number" step="0.1" min="0.1" class="form-control" id="qrFeedQty" required>
+                    </div>
+                    <div class="qr-stock-info" id="qrStockInfo">
+                        <span class="material-symbols-outlined">inventory_2</span>
+                        <span id="qrStockText">Select a feed to see available stock</span>
+                    </div>
+                </form>
+
+                <!-- Error banner -->
+                <div class="qr-error-bar" id="qrErrorBar" style="display:none">
+                    <span class="material-symbols-outlined">error_outline</span>
+                    <span id="qrErrorMsg"></span>
                 </div>
-                
-                <div class="stat-card">
-                    <p class="stat-label">Monthly Revenue</p>
-                    <div class="stat-value-row">
-                        <h3 class="stat-value">₹{{ "%.0f"|format(monthly_revenue) }}</h3>
-                        <span class="stat-change {{ 'positive' if revenue_change > 0 else 'negative' }}">
-                            <span class="material-symbols-outlined">{{ 'arrow_upward' if revenue_change > 0 else 'arrow_downward' }}</span>
-                            {{ revenue_change }}%
-                        </span>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Main Content Grid -->
-            <div class="content-grid">
-                <!-- Left Column - Charts and Activity -->
-                <div class="content-left">
-                    <!-- Production Trends Chart -->
-                    <div class="card chart-card">
-                        <div class="card-header-flex">
-                            <div>
-                                <h2 class="card-title">Production Trends</h2>
-                                <p class="card-subtitle">Weekly milk output performance</p>
-                            </div>
-                            <div class="chart-tabs">
-                                <button class="chart-tab active">Daily</button>
-                                <button class="chart-tab">Weekly</button>
-                            </div>
-                        </div>
-                        <div class="chart-container">
-                            <canvas id="productionChart"></canvas>
-                        </div>
-                    </div>
-                    
-                    <!-- Recent Activity -->
-                    <div class="card activity-card">
-                        <div class="card-header-flex">
-                            <div>
-                                <h2 class="card-title">Recent Activity</h2>
-                                <p class="card-subtitle">Latest farm log entries</p>
-                            </div>
-                            <button class="view-all-btn">View All</button>
-                        </div>
-                        <div class="activity-list">
-                            {% for activity in recent_activities %}
-                            <div class="activity-item">
-                                <div class="activity-icon activity-icon-{{ activity.color }}">
-                                    <span class="material-symbols-outlined">{{ activity.icon }}</span>
-                                </div>
-                                <div class="activity-content">
-                                    <p class="activity-title">{{ activity.title }}</p>
-                                    <p class="activity-description">{{ activity.description }}</p>
-                                </div>
-                                <span class="activity-time">{{ activity.time }}</span>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Right Column - Alerts -->
-                <div class="content-right">
-                    <div class="card alerts-card">
-                        <div class="card-header-flex">
-                            <h3 class="alerts-title">
-                                <span class="material-symbols-outlined">notification_important</span>
-                                Alerts & Reminders
-                            </h3>
-                            <span class="alerts-badge">Active</span>
-                        </div>
-                        <div class="alerts-list">
-                            {% for alert in alerts[:3] %}
-                            <div class="alert-item alert-{{ alert.type }}">
-                                <div class="alert-dot alert-dot-{{ alert.dot_color }}"></div>
-                                <div class="alert-content">
-                                    <p class="alert-title">{{ alert.title }}</p>
-                                    <p class="alert-description">{{ alert.description }}</p>
-                                </div>
-                                <span class="material-symbols-outlined alert-arrow">arrow_forward_ios</span>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        <button class="btn btn-outline btn-block">Manage Notifications</button>
-                    </div>
-                </div>
+
             </div>
-        </main>
-        
-        <!-- Mobile FAB -->
-        <button class="mobile-fab">
-            <span class="material-symbols-outlined">add</span>
-        </button>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary-gradient" id="qrSaveBtn" onclick="submitQuickRecord()">
+                    <span class="material-symbols-outlined">save</span>
+                    Save Record
+                </button>
+            </div>
+        </div>
     </div>
-    
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Custom JS -->
-    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-    
-    <!-- Initialize Chart with Data -->
-    <script>
-        // Pass weekly milk data from Flask to JavaScript
-        const weeklyMilkData = {{ weekly_milk_data | tojson }};
-        initializeChart(weeklyMilkData);
-    </script>
+</div>
+
+<!-- Report Range Modal -->
+<div class="modal fade" id="reportRangeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:400px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Generate Overview Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">From Date</label>
+                    <input type="date" class="form-control" id="rptStart">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">To Date</label>
+                    <input type="date" class="form-control" id="rptEnd">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary-gradient" onclick="downloadOverviewReport()">
+                    <span class="material-symbols-outlined">download</span>Download PDF
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom JS -->
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+<!-- Initialize chart with Flask data -->
+<script>
+    const weeklyMilkData = {{ weekly_milk_data | tojson }};
+    initializeChart(weeklyMilkData);
+</script>
 </body>
 </html>
