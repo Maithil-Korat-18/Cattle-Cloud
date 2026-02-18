@@ -365,7 +365,7 @@
 
             googleLoginAPI(userInfo.email, userInfo.name, userInfo.sub).then(result => {
                 if (result.success) {
-                    window.location.href = '/home';
+                    window.location.href = '/dashboard';
                 } else {
                     showMessage('error', result.message);
                 }
@@ -439,7 +439,7 @@
             const result = await loginUser(emailOrPhone, password);
             
             if (result.success) {
-                window.location.href = '/home';
+                window.location.href = '/dashboard';
             } else {
                 showMessage('error', result.message);
                 submitBtn.disabled = false;
