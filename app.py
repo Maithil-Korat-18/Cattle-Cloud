@@ -1,22 +1,19 @@
-import os
 from flask import Flask, render_template, redirect, session, request, url_for, jsonify
 from flask_cors import CORS
 from login import auth
-from dashboard import dashboard_bp
+from routes.dashboard import dashboard_bp
 from datetime import timedelta,datetime
-from cattle import cattle_bp
-from profile import profile_bp
-from cattle_detail import cattle_detail_bp
-from milk_records import milk_bp
-from feed import feed_bp
-from expenses import expenses_bp
+from routes.cattle import cattle_bp
+from routes.cattle_detail import cattle_detail_bp
+from routes.milk_records import milk_bp
+from routes.feed import feed_bp
+from routes.expenses import expenses_bp
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key_123"
 app.register_blueprint(auth)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(cattle_bp)
-app.register_blueprint(profile_bp)
 app.register_blueprint(cattle_detail_bp)
 app.register_blueprint(milk_bp)
 app.register_blueprint(feed_bp)
