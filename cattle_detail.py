@@ -125,7 +125,7 @@ def get_milk_chart_data(id):
     end_date   = request.args.get('end_date')
     conn = get_db(); cur = conn.cursor(dictionary=True)
     try:
-        q = "SELECT date, milk_liters, income FROM milk_records WHERE cattle_id=%s AND user_id=%s"
+        q = "SELECT date, milk_liters, income, morning_liters, evening_liters, rate FROM milk_records WHERE cattle_id=%s AND user_id=%s"
         params = [id, user_id]
         if start_date and end_date:
             q += " AND date BETWEEN %s AND %s"; params += [start_date, end_date]
@@ -148,7 +148,6 @@ def get_milk_chart_data(id):
 
 # ─────────────────────────────────────────────
 # FEED USAGE — for scatter chart
-# Personal rows + equally divided general (cattle_id IS NULL) rows
 # ─────────────────────────────────────────────
 @cattle_detail_bp.route('/cattle/<int:id>/feed-usage')
 def get_feed_usage(id):
@@ -172,7 +171,6 @@ def get_feed_usage(id):
         else:
             date_clause = " AND fu.usage_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)"
 
-        # Personal
         cur.execute(f"""
             SELECT fu.usage_date, SUM(fu.quantity_used) AS qty
             FROM feed_usage fu
@@ -181,7 +179,6 @@ def get_feed_usage(id):
         """, p_personal)
         personal_map = {str(r['usage_date']): float(r['qty']) for r in cur.fetchall()}
 
-        # General (divided equally)
         cur.execute("SELECT COUNT(*) AS cnt FROM cattle WHERE user_id=%s", (user_id,))
         n_cattle = cur.fetchone()['cnt'] or 1
 
@@ -205,7 +202,7 @@ def get_feed_usage(id):
 
 
 # ─────────────────────────────────────────────
-# FEED RECORDS TABLE (personal only for display)
+# FEED RECORDS TABLE
 # ─────────────────────────────────────────────
 @cattle_detail_bp.route('/cattle/<int:id>/feed-records')
 def get_feed_records(id):
@@ -243,71 +240,98 @@ def get_feed_records(id):
 
 
 # ─────────────────────────────────────────────
-# FINANCIAL SUMMARY
+# FINANCIAL SUMMARY — accepts start/end params
+# Returns real health costs from health_records table
 # ─────────────────────────────────────────────
 @cattle_detail_bp.route('/cattle/<int:id>/summary')
 def get_summary(id):
-    user_id = session.get('user_id')
-    days    = request.args.get('days', 30, type=int)
+    user_id    = session.get('user_id')
+    start_date = request.args.get('start')
+    end_date   = request.args.get('end')
+
+    # Fallback: if old ?days= param used, convert to date range
+    days = request.args.get('days', type=int)
+    if not start_date and days is not None:
+        from datetime import date, timedelta
+        end_dt   = date.today()
+        start_dt = end_dt - timedelta(days=days) if days > 0 else None
+        end_date   = end_dt.strftime('%Y-%m-%d')
+        start_date = start_dt.strftime('%Y-%m-%d') if start_dt else None
+
     conn = get_db(); cur = conn.cursor(dictionary=True)
     try:
-        date_filter     = "" if days == 0 else "AND date >= DATE_SUB(CURDATE(), INTERVAL %s DAY)"
-        date_filter_ts  = "" if days == 0 else "AND DATE(created_at) >= DATE_SUB(CURDATE(), INTERVAL %s DAY)"
-        date_filter_fu  = "" if days == 0 else "AND fu.usage_date >= DATE_SUB(CURDATE(), INTERVAL %s DAY)"
-        params_d = (id, user_id, days) if days else (id, user_id)
+        # Build date conditions
+        if start_date and end_date:
+            milk_cond   = "AND date BETWEEN %s AND %s"
+            health_cond = "AND DATE(created_at) BETWEEN %s AND %s"
+            feed_cond   = "AND fu.usage_date BETWEEN %s AND %s"
+            date_params = (start_date, end_date)
+        else:
+            milk_cond   = ""
+            health_cond = ""
+            feed_cond   = ""
+            date_params = ()
 
-        # Milk income
+        # ── Milk income ──
         cur.execute(f"""
-            SELECT COALESCE(SUM(income),0) AS income,
+            SELECT COALESCE(SUM(income),0)      AS income,
                    COALESCE(SUM(milk_liters),0) AS total_liters
-            FROM milk_records WHERE cattle_id=%s AND user_id=%s {date_filter}
-        """, params_d)
+            FROM milk_records
+            WHERE cattle_id=%s AND user_id=%s {milk_cond}
+        """, (id, user_id) + date_params)
         milk_row = cur.fetchone()
 
-        # Feed cost (personal + share of general)
+        # ── Feed cost (personal + share of general) ──
         cur.execute("SELECT COUNT(*) AS cnt FROM cattle WHERE user_id=%s", (user_id,))
         n_cattle = cur.fetchone()['cnt'] or 1
 
-        params_feed_p = (id, user_id, days) if days else (id, user_id)
-        params_feed_g = (user_id, days) if days else (user_id,)
-        date_fu_p = date_filter_fu.replace('fu.usage_date', 'fu.usage_date') if days else ""
-        date_fu_g = date_filter_fu.replace('fu.usage_date', 'fu.usage_date') if days else ""
-
         cur.execute(f"""
-            SELECT COALESCE(SUM(fu.quantity_used * fs.cost_per_kg),0) AS feed_cost,
-                   COALESCE(SUM(fu.quantity_used),0) AS feed_kg
-            FROM feed_usage fu JOIN feed_stock fs ON fu.feed_id=fs.id
-            WHERE fu.cattle_id=%s AND fu.user_id=%s {date_fu_p}
-        """, params_feed_p)
+            SELECT COALESCE(SUM(fu.quantity_used * fs.cost_per_kg), 0) AS feed_cost,
+                   COALESCE(SUM(fu.quantity_used), 0)                   AS feed_kg
+            FROM feed_usage fu
+            JOIN feed_stock fs ON fu.feed_id = fs.id
+            WHERE fu.cattle_id=%s AND fu.user_id=%s {feed_cond}
+        """, (id, user_id) + date_params)
         personal_feed = cur.fetchone()
 
         cur.execute(f"""
-            SELECT COALESCE(SUM(fu.quantity_used * fs.cost_per_kg),0) AS feed_cost,
-                   COALESCE(SUM(fu.quantity_used),0) AS feed_kg
-            FROM feed_usage fu JOIN feed_stock fs ON fu.feed_id=fs.id
-            WHERE fu.cattle_id IS NULL AND fu.user_id=%s {date_fu_g}
-        """, params_feed_g)
+            SELECT COALESCE(SUM(fu.quantity_used * fs.cost_per_kg), 0) AS feed_cost,
+                   COALESCE(SUM(fu.quantity_used), 0)                   AS feed_kg
+            FROM feed_usage fu
+            JOIN feed_stock fs ON fu.feed_id = fs.id
+            WHERE fu.cattle_id IS NULL AND fu.user_id=%s {feed_cond}
+        """, (user_id,) + date_params)
         general_feed = cur.fetchone()
 
         total_feed_cost = float(personal_feed['feed_cost']) + float(general_feed['feed_cost']) / n_cattle
         total_feed_kg   = float(personal_feed['feed_kg'])   + float(general_feed['feed_kg'])   / n_cattle
 
-        # Health records count (cost tracking can be extended later)
-        params_h = (id, user_id, days) if days else (id, user_id)
+        # ── Health / vet cost — sum treatment_cost from health_records ──
         cur.execute(f"""
-            SELECT COUNT(*) AS cnt FROM health_records
-            WHERE cattle_id=%s AND user_id=%s {date_filter_ts}
-        """, params_h)
-        health_count = cur.fetchone()['cnt']
+            SELECT COALESCE(SUM(treatment_cost), 0) AS health_cost,
+                   COUNT(*) AS health_count
+            FROM health_records
+            WHERE cattle_id=%s AND user_id=%s {health_cond}
+        """, (id, user_id) + date_params)
+        health_row = cur.fetchone()
+
+        health_cost  = float(health_row['health_cost'])
+        health_count = int(health_row['health_count'])
+
+        income      = float(milk_row['income'])
+        total_liters = float(milk_row['total_liters'])
+        total_expenses = total_feed_cost + health_cost
+        net_profit  = income - total_expenses
 
         return jsonify({
-            'success':         True,
-            'income':          float(milk_row['income']),
-            'total_liters':    float(milk_row['total_liters']),
-            'feed_cost':       round(total_feed_cost, 2),
-            'feed_kg':         round(total_feed_kg, 2),
-            'health_cost':     0,          # extend if you track vet costs
-            'health_records':  health_count,
+            'success':        True,
+            'income':         round(income, 2),
+            'total_liters':   round(total_liters, 2),
+            'feed_cost':      round(total_feed_cost, 2),
+            'feed_kg':        round(total_feed_kg, 2),
+            'health_cost':    round(health_cost, 2),
+            'health_records': health_count,
+            'net_profit':     round(net_profit, 2),
         })
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -396,8 +420,7 @@ def delete_milk_record(id, record_id):
 
 
 # ─────────────────────────────────────────────
-# ADD FEED RECORD (always personal cattle_id)
-# Also decrements feed_stock quantity
+# ADD FEED RECORD
 # ─────────────────────────────────────────────
 @cattle_detail_bp.route('/cattle/<int:id>/add-feed', methods=['POST'])
 def add_feed_record(id):
@@ -409,13 +432,10 @@ def add_feed_record(id):
         use_date = data.get('usage_date')
 
         conn = get_db(); cur = conn.cursor(dictionary=True)
-
-        # Verify cattle
         cur.execute("SELECT id FROM cattle WHERE id=%s AND user_id=%s", (id, user_id))
         if not cur.fetchone():
             return jsonify({'success': False, 'error': 'Cattle not found'}), 404
 
-        # Verify feed & check stock
         cur.execute("SELECT id, quantity FROM feed_stock WHERE id=%s AND user_id=%s", (feed_id, user_id))
         feed = cur.fetchone()
         if not feed:
@@ -423,14 +443,11 @@ def add_feed_record(id):
         if float(feed['quantity']) < qty:
             return jsonify({'success': False, 'error': f'Insufficient stock. Available: {float(feed["quantity"]):.1f} kg'}), 400
 
-        # Insert usage
         cur2 = conn.cursor()
         cur2.execute("""
             INSERT INTO feed_usage (user_id, feed_id, cattle_id, quantity_used, usage_date)
             VALUES (%s, %s, %s, %s, %s)
         """, (user_id, feed_id, id, qty, use_date))
-
-        # Decrement stock
         cur2.execute("UPDATE feed_stock SET quantity = quantity - %s WHERE id=%s AND user_id=%s", (qty, feed_id, user_id))
         conn.commit()
         return jsonify({'success': True, 'message': 'Feed record added'})
@@ -445,7 +462,6 @@ def add_feed_record(id):
 
 # ─────────────────────────────────────────────
 # UPDATE FEED RECORD
-# Adjusts feed_stock delta (old qty restored, new qty deducted)
 # ─────────────────────────────────────────────
 @cattle_detail_bp.route('/cattle/<int:id>/update-feed/<int:record_id>', methods=['POST'])
 def update_feed_record(id, record_id):
@@ -457,8 +473,6 @@ def update_feed_record(id, record_id):
         use_date = data.get('usage_date')
 
         conn = get_db(); cur = conn.cursor(dictionary=True)
-
-        # Get old record
         cur.execute("SELECT * FROM feed_usage WHERE id=%s AND cattle_id=%s AND user_id=%s", (record_id, id, user_id))
         old = cur.fetchone()
         if not old:
@@ -468,21 +482,15 @@ def update_feed_record(id, record_id):
         old_feed = int(old['feed_id'])
 
         cur2 = conn.cursor()
-
-        # Restore old stock
         cur2.execute("UPDATE feed_stock SET quantity = quantity + %s WHERE id=%s AND user_id=%s", (old_qty, old_feed, user_id))
 
-        # Check new stock
         cur.execute("SELECT quantity FROM feed_stock WHERE id=%s AND user_id=%s", (new_feed, user_id))
         stock = cur.fetchone()
         if not stock or float(stock['quantity']) + (old_qty if old_feed == new_feed else 0) < new_qty:
             conn.rollback()
             return jsonify({'success': False, 'error': 'Insufficient stock for new quantity'}), 400
 
-        # Deduct new stock
         cur2.execute("UPDATE feed_stock SET quantity = quantity - %s WHERE id=%s AND user_id=%s", (new_qty, new_feed, user_id))
-
-        # Update record
         cur2.execute("""
             UPDATE feed_usage SET usage_date=%s, feed_id=%s, quantity_used=%s
             WHERE id=%s AND cattle_id=%s AND user_id=%s
@@ -499,8 +507,7 @@ def update_feed_record(id, record_id):
 
 
 # ─────────────────────────────────────────────
-# DELETE FEED RECORD
-# Restores stock quantity
+# DELETE FEED RECORD — restores stock
 # ─────────────────────────────────────────────
 @cattle_detail_bp.route('/cattle/<int:id>/delete-feed/<int:record_id>', methods=['POST'])
 def delete_feed_record(id, record_id):
@@ -513,7 +520,6 @@ def delete_feed_record(id, record_id):
             return jsonify({'success': False, 'error': 'Record not found'}), 404
 
         cur2 = conn.cursor()
-        # Restore stock
         cur2.execute("UPDATE feed_stock SET quantity = quantity + %s WHERE id=%s AND user_id=%s",
                      (float(rec['quantity_used']), rec['feed_id'], user_id))
         cur2.execute("DELETE FROM feed_usage WHERE id=%s AND cattle_id=%s AND user_id=%s", (record_id, id, user_id))
@@ -529,21 +535,39 @@ def delete_feed_record(id, record_id):
 
 
 # ─────────────────────────────────────────────
-# ADD HEALTH RECORD
+# ADD HEALTH RECORD — auto-logs expense if cost > 0
 # ─────────────────────────────────────────────
 @cattle_detail_bp.route('/cattle/<int:id>/add-health', methods=['POST'])
 def add_health_record(id):
     user_id = session.get('user_id')
     try:
         data = request.get_json()
-        conn = get_db(); cur = conn.cursor()
-        cur.execute("SELECT id FROM cattle WHERE id=%s AND user_id=%s", (id, user_id))
-        if not cur.fetchone():
+        conn = get_db(); cur = conn.cursor(dictionary=True)
+        cur.execute("SELECT id, name FROM cattle WHERE id=%s AND user_id=%s", (id, user_id))
+        cattle = cur.fetchone()
+        if not cattle:
             return jsonify({'success': False, 'error': 'Cattle not found'}), 404
+
+        treatment_cost = float(data.get('treatment_cost') or 0)
+        today = datetime.now().strftime('%Y-%m-%d')
+
         cur.execute("""
-            INSERT INTO health_records (user_id,cattle_id,issue,treatment,vet_name,next_checkup)
-            VALUES (%s,%s,%s,%s,%s,%s)
-        """, (user_id, id, data.get('issue'), data.get('treatment'), data.get('vet_name'), data.get('next_checkup')))
+            INSERT INTO health_records
+                (user_id, cattle_id, issue, treatment, vet_name, next_checkup, treatment_cost)
+            VALUES (%s,%s,%s,%s,%s,%s,%s)
+        """, (user_id, id,
+              data.get('issue'), data.get('treatment'),
+              data.get('vet_name'), data.get('next_checkup') or None,
+              treatment_cost))
+
+        # Auto-log expense when cost > 0
+        if treatment_cost > 0:
+            desc = f"Vet: {data.get('vet_name', '')} — {data.get('issue', '')} ({cattle['name']})"
+            cur.execute("""
+                INSERT INTO expenses (user_id, date, amount, category, description)
+                VALUES (%s, %s, %s, %s, %s)
+            """, (user_id, today, treatment_cost, 'Health', desc[:200]))
+
         conn.commit()
         return jsonify({'success': True, 'message': 'Health record added'})
     except Exception as e:
@@ -621,15 +645,14 @@ def generate_pdf(id):
         """, (id, user_id, start_date, end_date))
         stats = cur.fetchone()
 
-        # Build PDF
         buf = io.BytesIO()
         doc = SimpleDocTemplate(buf, pagesize=A4, topMargin=0.5*inch, bottomMargin=0.5*inch)
         styles = getSampleStyleSheet()
         title_style = ParagraphStyle('T', parent=styles['Heading1'], fontSize=22,
                                      textColor=colors.HexColor('#667eea'), alignment=TA_CENTER,
                                      spaceAfter=20, fontName='Helvetica-Bold')
-        h2 = ParagraphStyle('H2', parent=styles['Heading2'], fontSize=14,
-                             textColor=colors.HexColor('#1f2937'), spaceAfter=10, spaceBefore=18)
+        h2   = ParagraphStyle('H2', parent=styles['Heading2'], fontSize=14,
+                              textColor=colors.HexColor('#1f2937'), spaceAfter=10, spaceBefore=18)
         norm = ParagraphStyle('N', parent=styles['Normal'], fontSize=10, textColor=colors.HexColor('#374151'))
 
         story = [Paragraph(f"Cattle Report — {cattle['name']}", title_style),
@@ -653,7 +676,6 @@ def generate_pdf(id):
             ]))
             return t
 
-        # Cattle info
         story.append(Paragraph("Cattle Information", h2))
         story.append(make_table([
             ['Field','Value'],
@@ -663,7 +685,6 @@ def generate_pdf(id):
             ['Health', cattle['health']],
         ], [2*inch, 4*inch], '#667eea'))
 
-        # Production stats
         story.append(Paragraph("Production Statistics", h2))
         story.append(make_table([
             ['Metric','Value'],
@@ -673,7 +694,6 @@ def generate_pdf(id):
             ['Total Records',    str(stats['total_records'])],
         ], [3*inch, 3*inch], '#667eea'))
 
-        # Milk records
         if milk_records:
             story.append(Paragraph("Milk Production Records", h2))
             rows = [['Date','Morning (L)','Evening (L)','Total (L)','Rate (₹)','Income (₹)']]
@@ -683,7 +703,6 @@ def generate_pdf(id):
                               f"{float(r['milk_liters']):.1f}", f"₹{float(r['rate']):.2f}", f"₹{float(r['income']):.2f}"])
             story.append(make_table(rows, [1.3*inch,1*inch,1*inch,1*inch,1.1*inch,1.1*inch], '#22c55e'))
 
-        # Feed records
         if feed_records:
             story.append(Paragraph("Feed Records", h2))
             rows = [['Date','Feed Type','Qty (kg)','Cost/kg (₹)','Total Cost (₹)']]
@@ -693,13 +712,14 @@ def generate_pdf(id):
                 rows.append([ds, r['feed_name'], f"{qty:.1f}", f"₹{cpk:.2f}", f"₹{qty*cpk:.2f}"])
             story.append(make_table(rows, [1.3*inch,1.5*inch,1*inch,1.2*inch,1.2*inch], '#f59e0b'))
 
-        # Health records
         if health_records:
             story.append(PageBreak())
             story.append(Paragraph("Health & Medical Records", h2))
             for i, r in enumerate(health_records):
                 ds = r['created_at'].strftime('%b %d, %Y') if isinstance(r['created_at'], datetime) else str(r['created_at'])
                 txt = f"<b>Date:</b> {ds}<br/><b>Issue:</b> {r['issue']}<br/><b>Treatment:</b> {r['treatment']}<br/><b>Vet:</b> {r['vet_name']}"
+                if r.get('treatment_cost') and float(r['treatment_cost']) > 0:
+                    txt += f"<br/><b>Cost:</b> ₹{float(r['treatment_cost']):.2f}"
                 if r.get('next_checkup'):
                     nd = r['next_checkup'].strftime('%b %d, %Y') if isinstance(r['next_checkup'], datetime) else str(r['next_checkup'])
                     txt += f"<br/><b>Next Checkup:</b> {nd}"
@@ -714,5 +734,63 @@ def generate_pdf(id):
                          mimetype='application/pdf')
     except Exception as e:
         return f"Error: {str(e)}", 500
+    finally:
+        cur.close(); conn.close()
+
+@cattle_detail_bp.route('/cattle/<int:id>/health-records')
+def get_health_records(id):
+    user_id    = session.get('user_id')
+    page       = request.args.get('page', 1, type=int)
+    per_page   = request.args.get('per_page', 50, type=int)
+    start_date = request.args.get('start_date')
+    end_date   = request.args.get('end_date')
+
+    conn = get_db(); cur = conn.cursor(dictionary=True)
+    try:
+        # Build date condition
+        if start_date and end_date:
+            date_cond   = "AND DATE(created_at) BETWEEN %s AND %s"
+            date_params = (start_date, end_date)
+        else:
+            date_cond   = ""
+            date_params = ()
+
+        # Count
+        cur.execute(
+            f"SELECT COUNT(*) AS total FROM health_records "
+            f"WHERE cattle_id=%s AND user_id=%s {date_cond}",
+            (id, user_id) + date_params
+        )
+        total = cur.fetchone()['total']
+
+        # Records
+        cur.execute(
+            f"""SELECT id, issue, treatment, vet_name,
+                       treatment_cost, next_checkup, created_at
+                FROM health_records
+                WHERE cattle_id=%s AND user_id=%s {date_cond}
+                ORDER BY created_at DESC
+                LIMIT %s OFFSET %s""",
+            (id, user_id) + date_params + (per_page, (page - 1) * per_page)
+        )
+        records = cur.fetchall()
+
+        # Serialize datetimes
+        for r in records:
+            if isinstance(r.get('created_at'), datetime):
+                r['created_at'] = r['created_at'].strftime('%Y-%m-%dT%H:%M:%S')
+            if isinstance(r.get('next_checkup'), datetime):
+                r['next_checkup'] = r['next_checkup'].strftime('%Y-%m-%d')
+
+        return jsonify({
+            'success':     True,
+            'records':     records,
+            'total':       total,
+            'page':        page,
+            'per_page':    per_page,
+            'total_pages': (total + per_page - 1) // per_page
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
     finally:
         cur.close(); conn.close()
