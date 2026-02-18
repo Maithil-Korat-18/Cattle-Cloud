@@ -1,1341 +1,649 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cattle Cloud - Smart Farm Management Platform</title>
-   <style> /* ============================================
-   CSS VARIABLES - THEME SYSTEM
-   ============================================ */
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cattle Cloud - Smarter Farming</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style>
+  :root {
+    --primary-indigo: #667eea;
+    --primary-violet: #764ba2;
+    --brand-bg: #f8f9fc;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --status-success: #22c55e;
+    --status-warning: #f59e0b;
+    --status-danger: #ef4444;
+    --white: #ffffff;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --border-color: #e5e7eb;
+  }
 
-:root {
-    /* Light Mode Colors */
-    --color-primary: #10b981;
-    --color-primary-dark: #059669;
-    --color-primary-light: #34d399;
-    
-    --color-secondary: #6366f1;
-    --color-secondary-dark: #4f46e5;
-    --color-secondary-light: #818cf8;
-    
-    --color-accent: #f59e0b;
-    --color-accent-dark: #d97706;
-    
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #10b981 0%, #059669 100%);
-    --gradient-hero: linear-gradient(135deg, #10b981 0%, #6366f1 100%);
-    --gradient-card: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%);
-    
-    /* Neutral Colors - Light Mode */
-    --color-bg-primary: #ffffff;
-    --color-bg-secondary: #f9fafb;
-    --color-bg-tertiary: #f3f4f6;
-    
-    --color-text-primary: #111827;
-    --color-text-secondary: #6b7280;
-    --color-text-tertiary: #9ca3af;
-    
-    --color-border: #e5e7eb;
-    --color-border-light: #f3f4f6;
-    
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.3);
-    
-    /* Effects */
-    --blur-glass: blur(12px);
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-fast: all 0.15s ease;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Dark Mode Colors */
-[data-theme="dark"] {
-    --color-bg-primary: #0f172a;
-    --color-bg-secondary: #1e293b;
-    --color-bg-tertiary: #334155;
-    
-    --color-text-primary: #f1f5f9;
-    --color-text-secondary: #cbd5e1;
-    --color-text-tertiary: #94a3b8;
-    
-    --color-border: #334155;
-    --color-border-light: #1e293b;
-    
-    --gradient-card: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
-    
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 10px 10px -5px rgba(0, 0, 0, 0.5);
-    --shadow-glow: 0 0 30px rgba(16, 185, 129, 0.4);
-}
-
-/* ============================================
-   RESET & BASE STYLES
-   ============================================ */
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, Oxygen, Ubuntu, sans-serif;
-    line-height: 1.6;
-    color: var(--color-text-primary);
-    background: var(--color-bg-primary);
-    transition: background-color 0.3s ease, color 0.3s ease;
+  body {
+    font-family: 'Lexend', sans-serif;
+    background-color: var(--brand-bg);
+    color: var(--text-primary);
     overflow-x: hidden;
-}
+    font-weight: 400;
+  }
 
-.container {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 0 24px;
-}
+  .brand-gradient { background: linear-gradient(135deg, var(--primary-indigo) 0%, var(--primary-violet) 100%); }
 
-/* ============================================
-   THEME TOGGLE SWITCH
-   ============================================ */
-
-.theme-toggle {
-    position: fixed;
-    top: 90px;
-    right: 24px;
-    z-index: 10000;
-    background: var(--color-bg-primary);
-    border: 2px solid var(--color-border);
-    border-radius: 50px;
-    padding: 8px;
-    box-shadow: var(--shadow-lg);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: var(--transition-smooth);
-}
-
-.theme-toggle:hover {
-    transform: scale(1.05);
-    box-shadow: var(--shadow-xl);
-}
-
-.theme-toggle-track {
-    width: 56px;
-    height: 28px;
-    background: var(--color-bg-tertiary);
-    border-radius: 50px;
-    position: relative;
-    transition: var(--transition-smooth);
-}
-
-.theme-toggle-thumb {
-    position: absolute;
-    width: 22px;
-    height: 22px;
-    background: var(--gradient-hero);
-    border-radius: 50%;
-    top: 3px;
-    left: 3px;
-    transition: var(--transition-smooth);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-}
-
-[data-theme="dark"] .theme-toggle-thumb {
-    left: 31px;
-}
-
-.theme-icon {
-    font-size: 14px;
-}
-
-/* ============================================
-   NAVIGATION BAR
-   ============================================ */
-
-.navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 9999;
-    transition: var(--transition-smooth);
-}
-
-.navbar.scrolled {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: var(--blur-glass);
-    -webkit-backdrop-filter: var(--blur-glass);
-    box-shadow: var(--shadow-md);
-}
-
-[data-theme="dark"] .navbar.scrolled {
-    background: rgba(15, 23, 42, 0.9);
-}
-
-.nav-container {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 20px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.nav-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--color-text-primary);
-    transition: var(--transition-fast);
-}
-
-.nav-brand:hover {
-    transform: scale(1.05);
-}
-
-.brand-icon {
-    font-size: 32px;
-    filter: drop-shadow(0 2px 4px rgba(16, 185, 129, 0.3));
-}
-
-.brand-text {
-    background: var(--gradient-hero);
+  .text-gradient {
+    background: linear-gradient(135deg, var(--primary-indigo) 0%, var(--primary-violet) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-}
-
-.nav-menu {
-    display: flex;
-    list-style: none;
-    gap: 8px;
-    align-items: center;
-}
-
-.nav-link {
-    padding: 10px 18px;
-    text-decoration: none;
-    color: var(--color-text-secondary);
-    font-weight: 500;
-    font-size: 15px;
-    border-radius: 12px;
-    transition: var(--transition-smooth);
-    position: relative;
-    overflow: hidden;
-}
-
-.nav-link::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--gradient-card);
-    transform: scaleX(0);
-    transform-origin: right;
-    transition: transform 0.3s ease;
-    z-index: -1;
-}
-
-.nav-link:hover {
-    color: var(--color-primary);
-}
-
-.nav-link:hover::before {
-    transform: scaleX(1);
-    transform-origin: left;
-}
-
-.nav-link.active {
-    color: var(--color-primary);
-    background: var(--gradient-card);
-}
-
-/* ============================================
-   BUTTONS
-   ============================================ */
-
-.btn {
-    padding: 12px 28px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 15px;
-    transition: var(--transition-smooth);
-    border: none;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-
-.btn:hover::before {
-    width: 300px;
-    height: 300px;
-}
-
-.btn-primary {
-    background: var(--gradient-primary);
-    color: white;
-    box-shadow: var(--shadow-md);
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-glow);
-}
-
-.btn-secondary {
-    background: var(--color-bg-primary);
-    color: var(--color-text-primary);
-    border: 2px solid var(--color-border);
-}
-
-.btn-secondary:hover {
-    border-color: var(--color-primary);
-    background: var(--gradient-card);
-}
-
-.btn-large {
-    padding: 16px 36px;
-    font-size: 16px;
-}
-
-/* ============================================
-   HERO SECTION
-   ============================================ */
-
-.hero {
-    padding: 140px 24px 100px;
-    position: relative;
-    overflow: hidden;
-    background-image: url('https://images.unsplash.com/photo-1500595046743-cd271d694d30?q=80&w=2074');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-}
-
-.hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.92) 100%);
-    z-index: 1;
-}
-
-[data-theme="dark"] .hero::before {
-    background: linear-gradient(135deg, rgba(15, 23, 42, 0.92) 0%, rgba(30, 41, 59, 0.95) 100%);
-}
-
-.hero::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -20%;
-    width: 800px;
-    height: 800px;
-    background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
-    animation: float 20s ease-in-out infinite;
-    z-index: 2;
-}
-
-@keyframes float {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    33% { transform: translate(30px, -30px) rotate(120deg); }
-    66% { transform: translate(-20px, 20px) rotate(240deg); }
-}
-
-.hero-content {
-    position: relative;
-    z-index: 3;
-    max-width: 900px;
-    margin: 0 auto;
-    text-align: center;
-    animation: fadeInUp 0.8s ease-out;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 20px;
-    background: var(--color-bg-primary);
-    border: 2px solid var(--color-border);
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--color-primary);
-    margin-bottom: 24px;
-    box-shadow: var(--shadow-md);
-}
-
-.hero-badge span {
-    font-size: 18px;
-}
-
-.hero-title {
-    font-size: 64px;
-    font-weight: 800;
-    line-height: 1.1;
-    margin-bottom: 24px;
-    background: var(--gradient-hero);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -0.02em;
-}
-
-.hero-subtitle {
-    font-size: 20px;
-    color: var(--color-text-secondary);
-    margin-bottom: 40px;
-    line-height: 1.6;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.hero-buttons {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.hero-stats {
-    display: flex;
-    justify-content: center;
-    gap: 60px;
-    margin-top: 80px;
-    flex-wrap: wrap;
-}
-
-.stat-item {
-    text-align: center;
-}
-
-.stat-number {
-    font-size: 36px;
-    font-weight: 800;
-    background: var(--gradient-hero);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.stat-label {
-    font-size: 14px;
-    color: var(--color-text-tertiary);
-    margin-top: 4px;
-}
-
-/* ============================================
-   FEATURES SECTION
-   ============================================ */
-
-.features {
-    padding: 100px 24px;
-    background: var(--color-bg-primary);
-}
-
-.section-header {
-    text-align: center;
-    max-width: 700px;
-    margin: 0 auto 60px;
-}
-
-.section-badge {
-    display: inline-block;
-    padding: 6px 16px;
-    background: var(--gradient-card);
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--color-primary);
-    margin-bottom: 16px;
-}
-
-.section-title {
-    font-size: 48px;
-    font-weight: 800;
-    line-height: 1.2;
-    margin-bottom: 16px;
-    color: var(--color-text-primary);
-}
-
-.section-subtitle {
-    font-size: 18px;
-    color: var(--color-text-secondary);
-    line-height: 1.6;
-}
-
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 32px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.feature-card {
-    background: var(--color-bg-primary);
-    border: 2px solid var(--color-border);
-    border-radius: 24px;
-    padding: 36px;
-    transition: var(--transition-smooth);
-    position: relative;
-    overflow: hidden;
-}
-
-.feature-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: var(--gradient-card);
-    opacity: 0;
-    transition: var(--transition-smooth);
-}
-
-.feature-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--shadow-xl);
-    border-color: var(--color-primary);
-}
-
-.feature-card:hover::before {
-    opacity: 1;
-}
-
-.feature-card > * {
-    position: relative;
-    z-index: 1;
-}
-
-.feature-icon {
-    width: 56px;
-    height: 56px;
-    background: var(--gradient-hero);
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    margin-bottom: 20px;
-    box-shadow: var(--shadow-md);
-}
-
-.feature-title {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 12px;
-    color: var(--color-text-primary);
-}
-
-.feature-description {
-    font-size: 15px;
-    color: var(--color-text-secondary);
-    line-height: 1.6;
-}
-
-/* ============================================
-   TESTIMONIALS SECTION
-   ============================================ */
-
-.testimonials {
-    padding: 100px 24px;
-    background: var(--color-bg-secondary);
-}
-
-.testimonials-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 32px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.testimonial-card {
-    background: var(--color-bg-primary);
-    border: 2px solid var(--color-border);
-    border-radius: 20px;
-    padding: 32px;
-    transition: var(--transition-smooth);
-    animation: fadeInUp 0.6s ease-out;
-    animation-fill-mode: both;
-}
-
-.testimonial-card:nth-child(1) { animation-delay: 0.1s; }
-.testimonial-card:nth-child(2) { animation-delay: 0.2s; }
-.testimonial-card:nth-child(3) { animation-delay: 0.3s; }
-
-.testimonial-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--color-primary-light);
-}
-
-.testimonial-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 20px;
-}
-
-.testimonial-avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    border: 3px solid var(--color-primary);
-    box-shadow: var(--shadow-md);
-}
-
-.testimonial-name {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--color-text-primary);
-}
-
-.testimonial-role {
-    font-size: 14px;
-    color: var(--color-text-tertiary);
-}
-
-.testimonial-stars {
-    color: var(--color-accent);
-    font-size: 18px;
-    margin-bottom: 16px;
-}
-
-.testimonial-text {
-    font-size: 15px;
-    color: var(--color-text-secondary);
-    line-height: 1.7;
-    font-style: italic;
-}
-
-/* ============================================
-   FAQ SECTION
-   ============================================ */
-
-.faq {
-    padding: 100px 24px;
-    background: var(--color-bg-primary);
-}
-
-.faq-container {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.faq-item {
-    background: var(--color-bg-primary);
-    border: 2px solid var(--color-border);
-    border-radius: 16px;
-    margin-bottom: 16px;
-    overflow: hidden;
-    transition: var(--transition-smooth);
-}
-
-.faq-item:hover {
-    border-color: var(--color-primary-light);
-}
-
-.faq-item.active {
-    border-color: var(--color-primary);
-    box-shadow: var(--shadow-md);
-}
-
-.faq-question {
-    padding: 24px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    user-select: none;
-}
-
-.faq-question-text {
-    font-size: 17px;
-    font-weight: 600;
-    color: var(--color-text-primary);
-}
-
-.faq-icon {
-    width: 32px;
-    height: 32px;
-    background: var(--gradient-card);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    color: var(--color-primary);
-    transition: var(--transition-smooth);
-    flex-shrink: 0;
-}
-
-.faq-item.active .faq-icon {
-    transform: rotate(45deg);
-    background: var(--gradient-primary);
-    color: white;
-}
-
-.faq-answer {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s ease;
-}
-
-.faq-item.active .faq-answer {
-    max-height: 500px;
-    padding: 0 24px 24px 24px;
-}
-
-.faq-answer-text {
-    font-size: 15px;
-    color: var(--color-text-secondary);
-    line-height: 1.7;
-}
-
-/* ============================================
-   FOOTER
-   ============================================ */
-
-footer {
-    background: var(--color-bg-secondary);
-    padding: 80px 24px 32px;
-    border-top: 2px solid var(--color-border);
-}
-
-.footer-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 48px;
-    max-width: 1200px;
-    margin: 0 auto 48px;
-}
-
-.footer-brand h3 {
-    font-size: 24px;
-    font-weight: 800;
-    margin-bottom: 12px;
-    background: var(--gradient-hero);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.footer-brand p {
-    color: var(--color-text-secondary);
-    line-height: 1.6;
-    margin-bottom: 20px;
-}
-
-.social-links {
-    display: flex;
-    gap: 12px;
-}
-
-.social-icon {
-    width: 44px;
-    height: 44px;
-    background: var(--color-bg-primary);
-    border: 2px solid var(--color-border);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    transition: var(--transition-smooth);
-    text-decoration: none;
-}
-
-.social-icon:hover {
-    background: var(--gradient-hero);
-    border-color: var(--color-primary);
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-glow);
-}
-
-.footer-section h4 {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    color: var(--color-text-primary);
-}
-
-.footer-links {
-    list-style: none;
-}
-
-.footer-links a {
-    color: var(--color-text-secondary);
-    text-decoration: none;
-    font-size: 15px;
-    line-height: 2.2;
-    transition: var(--transition-fast);
-    display: inline-block;
-}
-
-.footer-links a:hover {
-    color: var(--color-primary);
-    transform: translateX(4px);
-}
-
-.footer-bottom {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding-top: 32px;
-    border-top: 2px solid var(--color-border);
-    text-align: center;
-    color: var(--color-text-tertiary);
-    font-size: 14px;
-}
-
-/* ============================================
-   RESPONSIVE DESIGN
-   ============================================ */
-
-@media (max-width: 768px) {
-    .theme-toggle {
-        top: 80px;
-        right: 16px;
-        padding: 6px;
-    }
-    
-    .nav-menu {
-        display: none;
-    }
-    
-    .hero {
-        padding: 120px 24px 60px;
-        background-attachment: scroll;
-    }
-    
-    .hero-title {
-        font-size: 40px;
-    }
-    
-    .hero-subtitle {
-        font-size: 18px;
-    }
-    
-    .hero-buttons {
-        flex-direction: column;
-    }
-    
-    .hero-stats {
-        gap: 40px;
-    }
-    
-    .section-title {
-        font-size: 36px;
-    }
-    
-    .features-grid,
-    .testimonials-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ============================================
-   SCROLL ANIMATIONS
-   ============================================ */
-
-.fade-in {
-    opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-}
-
-.fade-in.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
+  }
+
+  /* Blobs */
+  .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .12; pointer-events: none; }
+
+  /* Nav */
+  .nav-link { position: relative; text-decoration: none; }
+  .nav-link::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: var(--primary-indigo); transition: width .25s; }
+  .nav-link:hover::after { width: 100%; }
+
+  /* Feature card */
+  .feature-card {
+    background: var(--white); border: 1px solid var(--border-color);
+    border-radius: 16px; padding: 32px; cursor: default;
+    transition: transform .3s, box-shadow .3s, border-color .3s;
+  }
+  .feature-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(102,126,234,.12); border-color: rgba(102,126,234,.35); }
+
+  /* Carousel */
+  .carousel-track {
+    display: flex; gap: 1.5rem; overflow-x: auto;
+    scroll-snap-type: x mandatory; scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; -ms-overflow-style: none;
+  }
+  .carousel-track::-webkit-scrollbar { display: none; }
+  .carousel-card { scroll-snap-align: start; flex: 0 0 min(360px, 85vw); }
+
+  /* Stars */
+  .star-filled { font-variation-settings: 'FILL' 1, 'wght' 400; color: var(--status-warning); }
+
+  /* FAQ */
+  details summary { list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+  .faq-arrow { transition: transform .3s; }
+  details[open] .faq-arrow { transform: rotate(180deg); }
+
+  /* Reveal */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* Mobile menu */
+  #mobile-menu { display: none; }
+  #mobile-menu.open { display: flex; }
+
+  /* Progress bar */
+  @keyframes prog { from { width: 0 } to { width: 75% } }
+  .progress-bar { animation: prog 1.4s ease-out forwards; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 7px; }
+  ::-webkit-scrollbar-track { background: var(--brand-bg); }
+  ::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+  /* Grid layouts */
+  .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+  /* Container */
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+  .container-sm { max-width: 760px; margin: 0 auto; padding: 0 1.5rem; }
+  .container-md { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* Section padding */
+  .section { padding: 96px 0; }
+
+  /* Buttons */
+  .btn-primary {
+    display: inline-block; padding: 14px 32px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary-indigo), var(--primary-violet));
+    color: #fff; font-weight: 700; font-size: 1rem; text-decoration: none;
+    box-shadow: 0 8px 24px rgba(102,126,234,.35);
+    transition: transform .2s, box-shadow .2s; font-family: 'Lexend', sans-serif;
+    border: none; cursor: pointer;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(102,126,234,.5); }
+
+  .btn-outline {
+    display: inline-block; padding: 14px 28px; border-radius: 12px;
+    color: var(--primary-indigo); font-weight: 700; font-size: 1rem;
+    text-decoration: none; border: 2px solid var(--primary-indigo);
+    transition: background .2s, color .2s; font-family: 'Lexend', sans-serif;
+  }
+  .btn-outline:hover { background: var(--primary-indigo); color: #fff; }
+
+  /* Review card */
+  .review-card {
+    background: var(--white); padding: 32px; border-radius: 20px;
+    border: 1px solid var(--border-color);
+    display: flex; flex-direction: column; gap: 18px; height: 100%;
+    transition: box-shadow .2s;
+  }
+  .review-card:hover { box-shadow: 0 12px 32px rgba(102,126,234,.12); }
+
+  /* FAQ item */
+  .faq-item {
+    background: var(--brand-bg); border: 1px solid var(--border-color);
+    border-radius: 16px; overflow: hidden; transition: all .3s;
+  }
+  .faq-item[open] { background: var(--white); border-color: rgba(102,126,234,.3); box-shadow: 0 4px 20px rgba(102,126,234,.1); }
+
+  /* Footer */
+  .footer-bg { background: linear-gradient(160deg, #1e1b4b 0%, #312e81 40%, #4c1d95 100%); color: #fff; }
+
+  /* CTA */
+  .cta-card {
+    background: linear-gradient(135deg, var(--primary-indigo) 0%, var(--primary-violet) 100%);
+    border-radius: 28px; padding: 64px 48px; text-align: center; color: #fff;
+    position: relative; overflow: hidden;
+    box-shadow: 0 24px 60px rgba(102,126,234,.35);
+  }
+
+  /* Responsive */
+  @media (max-width: 1023px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 767px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .hide-mobile { display: none !important; }
+    .show-mobile { display: flex !important; }
+    #menu-toggle { display: flex !important; }
+    .section { padding: 64px 0; }
+    .cta-card { padding: 40px 24px; }
+  }
+  @media (max-width: 480px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 768px) {
+    .show-mobile { display: none !important; }
+    #menu-toggle { display: none !important; }
+  }
 </style>
 </head>
 <body>
-    
-    <!-- Theme Toggle -->
-    <div class="theme-toggle" id="themeToggle">
-        <div class="theme-toggle-track">
-            <div class="theme-toggle-thumb">
-                <span class="theme-icon" id="themeIcon">☀️</span>
-            </div>
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border-color);box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;height:72px;">
+      <a href="#" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <div class="brand-gradient" style="width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(102,126,234,0.25);">
+          <span style="font-size:20px;">🐄</span>
         </div>
+        <span style="font-size:1.25rem;font-weight:800;color:var(--text-primary);letter-spacing:-.02em;">Cattle-<span style="color:var(--primary-indigo);">Cloud</span></span>
+      </a>
+
+      <nav class="hide-mobile" style="display:flex;align-items:center;gap:2rem;">
+        <a href="#" class="nav-link" style="color:var(--text-secondary);font-weight:500;font-size:0.9375rem;">Home</a>
+        <a href="#features" class="nav-link" style="color:var(--text-secondary);font-weight:500;font-size:0.9375rem;">Features</a>
+        <a href="#reviews" class="nav-link" style="color:var(--text-secondary);font-weight:500;font-size:0.9375rem;">Reviews</a>
+        <a href="#faq" class="nav-link" style="color:var(--text-secondary);font-weight:500;font-size:0.9375rem;">FAQ</a>
+      </nav>
+
+      <div style="display:flex;align-items:center;gap:12px;">
+        <a href="/login" class="btn-primary hide-mobile" style="padding:10px 24px;font-size:0.875rem;">Login / Sign Up</a>
+        <button id="menu-toggle" onclick="document.getElementById('mobile-menu').classList.toggle('open')" style="width:40px;height:40px;border-radius:10px;border:1px solid var(--border-color);background:#fff;align-items:center;justify-content:center;cursor:pointer;">
+          <span class="material-symbols-outlined" style="font-size:22px;color:var(--text-secondary);">menu</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="mobile-menu" style="flex-direction:column;gap:4px;padding:12px 16px 16px;background:#fff;border-top:1px solid var(--border-color);">
+    <a href="#" style="display:block;padding:10px 12px;font-weight:500;color:var(--text-primary);text-decoration:none;border-radius:8px;">Home</a>
+    <a href="#features" style="display:block;padding:10px 12px;font-weight:500;color:var(--text-primary);text-decoration:none;border-radius:8px;">Features</a>
+    <a href="#reviews" style="display:block;padding:10px 12px;font-weight:500;color:var(--text-primary);text-decoration:none;border-radius:8px;">Reviews</a>
+    <a href="#faq" style="display:block;padding:10px 12px;font-weight:500;color:var(--text-primary);text-decoration:none;border-radius:8px;">FAQ</a>
+    <a href="/login" class="btn-primary" style="display:block;text-align:center;margin-top:8px;">Login / Sign Up</a>
+  </div>
+</header>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section style="position:relative;padding:80px 0 112px;overflow:hidden;">
+  <div class="blob" style="width:600px;height:600px;background:#667eea;top:-250px;left:-200px;"></div>
+  <div class="blob" style="width:400px;height:400px;background:#764ba2;bottom:-150px;right:-150px;"></div>
+  <div class="container" style="position:relative;z-index:10;">
+    <div class="hero-grid">
+      <!-- Left -->
+      <div class="reveal" style="display:flex;flex-direction:column;gap:28px;">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(102,126,234,0.1);border:1px solid rgba(102,126,234,0.25);color:var(--primary-indigo);font-size:0.8125rem;font-weight:700;padding:8px 16px;border-radius:999px;width:fit-content;letter-spacing:.01em;">
+          <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1;">verified</span>
+          Trusted by 500+ farms across India
+        </div>
+        <h1 style="font-size:clamp(2.5rem,5vw,4rem);font-weight:900;line-height:1.08;letter-spacing:-.03em;color:var(--text-primary);">
+          Smarter Farming,<br/>
+          <span class="text-gradient">Better Results</span>
+        </h1>
+        <p style="font-size:1.0625rem;color:var(--text-secondary);line-height:1.75;max-width:480px;font-weight:400;">
+          Optimize your herd's performance with data-driven insights. Join the future of cattle management and maximize your yield effortlessly.
+        </p>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;">
+          <a href="/login" class="btn-primary">Get Started Free →</a>
+          <a href="#features" class="btn-outline">See Features</a>
+        </div>
+        <div class="stats-grid" style="padding-top:28px;border-top:1px solid var(--border-color);">
+          <div>
+            <p style="font-size:2rem;font-weight:900;color:var(--primary-indigo);line-height:1;">500+</p>
+            <p style="font-size:0.8125rem;font-weight:500;color:var(--text-secondary);margin-top:4px;">Active Farms</p>
+          </div>
+          <div>
+            <p style="font-size:2rem;font-weight:900;color:var(--primary-indigo);line-height:1;">98%</p>
+            <p style="font-size:0.8125rem;font-weight:500;color:var(--text-secondary);margin-top:4px;">Satisfaction Rate</p>
+          </div>
+          <div>
+            <p style="font-size:2rem;font-weight:900;color:var(--primary-indigo);line-height:1;">24/7</p>
+            <p style="font-size:0.8125rem;font-weight:500;color:var(--text-secondary);margin-top:4px;">Support</p>
+          </div>
+        </div>
+      </div>
+      <!-- Right image -->
+      <div class="reveal" style="position:relative;display:flex;align-items:center;justify-content:center;">
+        <div style="position:absolute;inset:-24px;background:linear-gradient(135deg,rgba(102,126,234,0.2),rgba(118,75,162,0.15));border-radius:50%;filter:blur(60px);"></div>
+        <div style="position:relative;width:100%;aspect-ratio:1;max-width:480px;border-radius:24px;overflow:hidden;box-shadow:0 24px 60px rgba(102,126,234,0.2);transform:rotate(1.5deg);transition:transform .6s ease;background-image:url('https://lh3.googleusercontent.com/aida-public/AB6AXuASIHtUtE57X4mcd6gWkXcdF9v8uQsPUAYioMloNbeZYbnFoyOnuDw8Ud5zsS-SvACnuxFWOsq1stpedqJWNo_igE9DScdvdlNpW7um583HGrkGByAlBQdZ4diDVEG7nB_PwaJecENPYTRv964oBNl0XUO6RrECT1cMbCmtGfvWSYA0vVStYHTM4HpGyNhLb3pqI6XtHMGXlAwHq3uNdZbRUo_gNPIVILt-BUJNo-rGc-WKYZrKY9qIPlTw-dLoUHP7IBBiSlZQ-JQ');background-size:cover;background-position:center;" onmouseover="this.style.transform='rotate(0deg)'" onmouseout="this.style.transform='rotate(1.5deg)'">
+          <div style="position:absolute;bottom:28px;left:24px;background:rgba(255,255,255,0.96);backdrop-filter:blur(8px);padding:14px 16px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.12);max-width:200px;transform:rotate(-1.5deg);">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <div style="background:rgba(34,197,94,0.12);padding:8px;border-radius:10px;">
+                <span class="material-symbols-outlined" style="font-size:18px;color:var(--status-success);font-variation-settings:'FILL' 1;">trending_up</span>
+              </div>
+              <div>
+                <p style="font-size:0.6875rem;color:var(--text-secondary);font-weight:500;margin:0;">Milk Yield</p>
+                <p style="font-size:0.8125rem;font-weight:800;color:var(--text-primary);margin:0;">+12.5% Today</p>
+              </div>
+            </div>
+            <div style="height:8px;background:var(--gray-100);border-radius:999px;overflow:hidden;">
+              <div class="progress-bar" style="height:100%;background:linear-gradient(90deg,var(--primary-indigo),var(--primary-violet));border-radius:999px;"></div>
+            </div>
+          </div>
+          <div style="position:absolute;top:24px;right:20px;background:rgba(255,255,255,0.96);backdrop-filter:blur(8px);padding:10px 14px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.12);transform:rotate(1.5deg);">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="material-symbols-outlined" style="color:var(--status-success);font-variation-settings:'FILL' 1;">check_circle</span>
+              <p style="font-size:0.8125rem;font-weight:800;color:var(--text-primary);margin:0;">Herd Healthy</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FEATURES ═══════════════ -->
+<section id="features" class="section" style="background:#fff;position:relative;">
+  <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--border-color),transparent);"></div>
+  <div class="container">
+    <div class="reveal" style="text-align:center;max-width:680px;margin:0 auto 56px;">
+      <span style="color:var(--primary-indigo);font-weight:700;letter-spacing:.15em;text-transform:uppercase;font-size:0.75rem;display:block;margin-bottom:12px;">Platform Features</span>
+      <h2 style="font-size:clamp(2rem,4vw,2.75rem);font-weight:900;color:var(--text-primary);letter-spacing:-.02em;margin-bottom:16px;line-height:1.1;">Everything you need to<br/>manage your herd</h2>
+      <p style="font-size:1.0625rem;color:var(--text-secondary);line-height:1.7;font-weight:400;">From milk production analytics to health monitoring, we've got you covered.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="brand-gradient" style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 6px 16px rgba(102,126,234,0.3);">
+          <span class="material-symbols-outlined" style="color:#fff;font-size:24px;font-variation-settings:'FILL' 1;">water_drop</span>
+        </div>
+        <h3 style="font-size:1.0625rem;font-weight:800;color:var(--text-primary);margin-bottom:10px;letter-spacing:-.01em;">Milk Production</h3>
+        <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;font-weight:400;">Track daily yields and quality metrics per cow with precision analytics and trend reporting.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="brand-gradient" style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 6px 16px rgba(102,126,234,0.3);">
+          <span class="material-symbols-outlined" style="color:#fff;font-size:24px;font-variation-settings:'FILL' 1;">monitor_heart</span>
+        </div>
+        <h3 style="font-size:1.0625rem;font-weight:800;color:var(--text-primary);margin-bottom:10px;letter-spacing:-.01em;">Health Monitoring</h3>
+        <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;font-weight:400;">Early detection of illness with smart alerts, behavioral tracking, and vet scheduling.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="brand-gradient" style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 6px 16px rgba(102,126,234,0.3);">
+          <span class="material-symbols-outlined" style="color:#fff;font-size:24px;font-variation-settings:'FILL' 1;">payments</span>
+        </div>
+        <h3 style="font-size:1.0625rem;font-weight:800;color:var(--text-primary);margin-bottom:10px;letter-spacing:-.01em;">Expense Tracking</h3>
+        <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;font-weight:400;">Monitor feed costs, veterinary expenses, and calculate ROI per animal effortlessly.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="brand-gradient" style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 6px 16px rgba(102,126,234,0.3);">
+          <span class="material-symbols-outlined" style="color:#fff;font-size:24px;font-variation-settings:'FILL' 1;">calendar_month</span>
+        </div>
+        <h3 style="font-size:1.0625rem;font-weight:800;color:var(--text-primary);margin-bottom:10px;letter-spacing:-.01em;">Breeding Mgmt</h3>
+        <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;font-weight:400;">Optimize reproduction cycles, insemination dates, and maintain complete calving records.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ REVIEWS ═══════════════ -->
+<section id="reviews" class="section" style="background:var(--brand-bg);overflow:hidden;">
+  <div class="container">
+    <div class="reveal" style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:48px;flex-wrap:wrap;gap:20px;">
+      <div>
+        <span style="color:var(--primary-indigo);font-weight:700;letter-spacing:.15em;text-transform:uppercase;font-size:0.75rem;display:block;margin-bottom:10px;">Customer Reviews</span>
+        <h2 style="font-size:clamp(1.75rem,4vw,2.75rem);font-weight:900;color:var(--text-primary);letter-spacing:-.02em;line-height:1.1;margin-bottom:10px;">Trusted by modern farmers</h2>
+        <p style="color:var(--text-secondary);font-size:1rem;font-weight:400;">See what our community has to say about Cattle Cloud.</p>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button onclick="scrollCarousel(-1)" id="prev-btn" style="width:48px;height:48px;border-radius:50%;border:2px solid var(--primary-indigo);background:#fff;color:var(--primary-indigo);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <button onclick="scrollCarousel(1)" id="next-btn" class="brand-gradient" style="width:48px;height:48px;border-radius:50%;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px rgba(102,126,234,0.4);transition:all .2s;">
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+      </div>
     </div>
 
-    <!-- Navigation -->
-    <nav class="navbar" id="navbar">
-        <div class="nav-container">
-            <a href="#" class="nav-brand">
-                <span class="brand-icon">🐄</span>
-                <span class="brand-text">Cattle Cloud</span>
-            </a>
-            <ul class="nav-menu">
-                <li><a href="#home" class="nav-link active">Home</a></li>
-                <li><a href="#features" class="nav-link">Features</a></li>
-                <li><a href="#testimonials" class="nav-link">Reviews</a></li>
-                <li><a href="#faq" class="nav-link">FAQ</a></li>
-                <li><a href="/login" class="btn btn-primary">Login</a></li>
-            </ul>
+    <div class="carousel-track" id="carousel">
+      <!-- Card 1 -->
+      <div class="carousel-card"><div class="review-card">
+        <div style="display:flex;gap:3px;">
+          <span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span>
         </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="hero" id="home">
-        <div class="hero-content">
-            <div class="hero-badge">
-                <span>🚀</span>
-                Cloud-Based Farm Management
-            </div>
-            <h1 class="hero-title">
-                Smarter Farming,<br>Better Results
-            </h1>
-            <p class="hero-subtitle">
-                Transform your cattle farm with intelligent monitoring, predictive analytics, 
-                and automated insights. Join 10,000+ farmers modernizing their operations.
-            </p>
-            <div class="hero-buttons">
-                <a href="/login" class="btn btn-primary btn-large">
-                    Get Started
-                    <span>→</span>
-                </a>
-            </div>
-            <div class="hero-stats">
-                <div class="stat-item">
-                    <div class="stat-number">10K+</div>
-                    <div class="stat-label">Active Farms</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">98%</div>
-                    <div class="stat-label">Satisfaction Rate</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">24/7</div>
-                    <div class="stat-label">Support Available</div>
-                </div>
-            </div>
+        <p style="color:#374151;line-height:1.75;flex-grow:1;font-size:0.9375rem;font-weight:400;">"This app saved me 10 hours a week on paperwork. The milk production insights helped us optimize our feed strategy significantly."</p>
+        <div style="display:flex;align-items:center;gap:14px;padding-top:14px;border-top:1px solid var(--gray-100);">
+          <div style="width:44px;height:44px;border-radius:10px;flex-shrink:0;background:var(--gray-200);background-image:url('https://lh3.googleusercontent.com/aida-public/AB6AXuCrDlcQXPa_E8uO5SnUhRBkMB4vPoJgYkILe28e8ANviuTrkONS94SdyK2isalulgCM6NL2NBGM3xzHmwuABkB3Ypxsio94XTX7EEAafU6zG6SkI0Nh4dM2JZvo4ic5_IfUIm15w5LjouCOaavS8-ZlPD-7YEsAOTpGRtZOybMEslu37I9Z3lVKd7OAU7pWfa0wLuWX6coL6NDLG_Ox1qaTYdmt5eIK6D1NBQramP2RzML-ZfqNnMELYSFLDQQXYsjhw8cu03ZlnKM');background-size:cover;"></div>
+          <div><h4 style="font-weight:800;color:var(--text-primary);margin:0;font-size:0.9375rem;">John D.</h4><p style="font-size:0.8125rem;color:var(--primary-indigo);font-weight:600;margin:0;">Dairy Farmer, Gujarat</p></div>
         </div>
-    </section>
+      </div></div>
 
-    <!-- Features Section -->
-    <section class="features fade-in" id="features">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-badge">✨ Features</span>
-                <h2 class="section-title">Everything You Need to Succeed</h2>
-                <p class="section-subtitle">
-                    Comprehensive tools designed for modern cattle farming, 
-                    powered by cutting-edge technology.
-                </p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">💧</div>
-                    <h3 class="feature-title">Milk Production</h3>
-                    <p class="feature-description">
-                        Log daily yields and monitor quality control. Identify top performers and optimize production with advanced data analytics and historical trends.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🏥</div>
-                    <h3 class="feature-title">Health Monitoring</h3>
-                    <p class="feature-description">
-                        Manage vaccination schedules and receive automated vet alerts for sick animals. Stay ahead of outbreaks and ensure animal welfare.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">💰</div>
-                    <h3 class="feature-title">Expense Management</h3>
-                    <p class="feature-description">
-                        Track feed costs, medication, and labor to calculate profitability per head instantly. Understand your margins with precision.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📱</div>
-                    <h3 class="feature-title">Mobile Access</h3>
-                    <p class="feature-description">
-                        Manage your farm from anywhere. iOS and Android apps with offline support and instant notifications for critical events.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3 class="feature-title">Real-Time Reports</h3>
-                    <p class="feature-description">
-                        Generate comprehensive reports on production, health, and finances. Export data in multiple formats for easy sharing.
-                    </p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🌾</div>
-                    <h3 class="feature-title">Inventory Tracking</h3>
-                    <p class="feature-description">
-                        Keep track of feed inventory, medications, and supplies. Get automated alerts when stock runs low to prevent shortages.
-                    </p>
-                </div>
-            </div>
+      <!-- Card 2 -->
+      <div class="carousel-card"><div class="review-card">
+        <div style="display:flex;gap:3px;">
+          <span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span>
         </div>
-    </section>
-
-    <!-- Testimonials Section -->
-    <section class="testimonials fade-in" id="testimonials">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-badge">💚 Testimonials</span>
-                <h2 class="section-title">Loved by Farmers Worldwide</h2>
-                <p class="section-subtitle">
-                    Don't just take our word for it. Here's what our community has to say.
-                </p>
-            </div>
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-header">
-                        <img src="https://avatar.vercel.sh/rajesh" alt="Rajesh Kumar" class="testimonial-avatar">
-                        <div>
-                            <div class="testimonial-name">Rajesh Kumar</div>
-                            <div class="testimonial-role">150-Cow Dairy Farm, Punjab</div>
-                        </div>
-                    </div>
-                    <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-                    <p class="testimonial-text">
-                        "I've been using Cattle Cloud for 8 months now. The milk production tracking alone has helped me identify my best producers. I increased my monthly yield by 15% just by adjusting feed based on the reports. Worth every rupee!"
-                    </p>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-header">
-                        <img src="https://avatar.vercel.sh/meena" alt="Meena Desai" class="testimonial-avatar">
-                        <div>
-                            <div class="testimonial-name">Meena Desai</div>
-                            <div class="testimonial-role">Organic Farm, Gujarat</div>
-                        </div>
-                    </div>
-                    <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-                    <p class="testimonial-text">
-                        "As a woman running a farm, I needed something simple yet powerful. Cattle Cloud's mobile app lets me check everything while I'm at the market or with my family. The vaccination reminders saved me twice already!"
-                    </p>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-header">
-                        <img src="https://avatar.vercel.sh/arjun" alt="Arjun Patel" class="testimonial-avatar">
-                        <div>
-                            <div class="testimonial-name">Arjun Patel</div>
-                            <div class="testimonial-role">300+ Cattle Ranch, Maharashtra</div>
-                        </div>
-                    </div>
-                    <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
-                    <p class="testimonial-text">
-                        "Managing 300+ cattle was chaos before Cattle Cloud. Now everything is organized - health records, breeding schedules, milk production. My workers can update data from their phones. Game changer for large operations!"
-                    </p>
-                </div>
-            </div>
+        <p style="color:#374151;line-height:1.75;flex-grow:1;font-size:0.9375rem;font-weight:400;">"Best investment for our cattle health tracking. The early warning system caught an infection before it spread to the entire herd."</p>
+        <div style="display:flex;align-items:center;gap:14px;padding-top:14px;border-top:1px solid var(--gray-100);">
+          <div style="width:44px;height:44px;border-radius:10px;flex-shrink:0;background:var(--gray-200);background-image:url('https://lh3.googleusercontent.com/aida-public/AB6AXuCmrKueMwr37qDAbb8ZK8HRf9qv-asC6zGqCH2-p42l_-qR1_b06a2llRiLDcBslWRTB4aWdehJ3sW_TIJA0oIOePcAaas6gVa1-H1y9nWZudTWq-sG_GII6Q_SlBtT5iQbMGJhWOaSSJ1HMROYLoPSu9sF8YaSn6kJA67S699nrQveBqV29YP7DXCcdcCjkbjf6AvqpYjnQHtZZ6XAxEeYFfH0_2jNegnLADBjTsNWrPB1l6-ZBBDn_msI5HgQpVlo8bqkQk5uIEQ');background-size:cover;"></div>
+          <div><h4 style="font-weight:800;color:var(--text-primary);margin:0;font-size:0.9375rem;">Sarah M.</h4><p style="font-size:0.8125rem;color:var(--primary-indigo);font-weight:600;margin:0;">Ranch Owner, Rajasthan</p></div>
         </div>
-    </section>
+      </div></div>
 
-    <!-- FAQ Section -->
-    <section class="faq fade-in" id="faq">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-badge">❓ FAQ</span>
-                <h2 class="section-title">Frequently Asked Questions</h2>
-                <p class="section-subtitle">
-                    Everything you need to know about Cattle Cloud.
-                </p>
-            </div>
-            <div class="faq-container">
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span class="faq-question-text">Can I track individual cattle or just the whole herd?</span>
-                        <div class="faq-icon">+</div>
-                    </div>
-                    <div class="faq-answer">
-                        <p class="faq-answer-text">
-                            You can track each animal individually! Every cow gets a unique ID where you can record milk production, health history, breeding dates, and more. You can also view herd-level statistics to see overall performance trends.
-                        </p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span class="faq-question-text">Does the app work without internet connection?</span>
-                        <div class="faq-icon">+</div>
-                    </div>
-                    <div class="faq-answer">
-                        <p class="faq-answer-text">
-                            Yes! Our mobile app has full offline functionality. You can record milk yields, health observations, and expenses even without internet. All data automatically syncs when you're back online, so nothing gets lost.
-                        </p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span class="faq-question-text">How much time does it take to log daily data?</span>
-                        <div class="faq-icon">+</div>
-                    </div>
-                    <div class="faq-answer">
-                        <p class="faq-answer-text">
-                            Most farmers spend just 5-10 minutes per day logging milk production and health checks. Our quick-entry interface is designed for speed - just tap the cow ID and enter numbers. Many users actually save time compared to paper records.
-                        </p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span class="faq-question-text">Can multiple people access the same farm account?</span>
-                        <div class="faq-icon">+</div>
-                    </div>
-                    <div class="faq-answer">
-                        <p class="faq-answer-text">
-                            Absolutely! You can add farm workers, family members, or managers with different permission levels. Everyone sees real-time updates, making teamwork much easier. Great for larger operations or when you're traveling.
-                        </p>
-                    </div>
-                </div>
-                <div class="faq-item">
-                    <div class="faq-question">
-                        <span class="faq-question-text">What if I need help setting things up?</span>
-                        <div class="faq-icon">+</div>
-                    </div>
-                    <div class="faq-answer">
-                        <p class="faq-answer-text">
-                            We provide free onboarding support for all new users! Our team will help you set up your account, add your cattle, and learn the features via video call or phone. We also have Hindi, Gujarati, and Marathi support available.
-                        </p>
-                    </div>
-                </div>
-            </div>
+      <!-- Card 3 -->
+      <div class="carousel-card"><div class="review-card">
+        <div style="display:flex;gap:3px;">
+          <span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span>
         </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <h3>🐄 Cattle Cloud</h3>
-                    <p>
-                        Empowering farmers with cloud-driven insights for smarter, 
-                        more profitable cattle farming.
-                    </p>
-                    <div class="social-links">
-                        <a href="#" class="social-icon">📧</a>
-                        <a href="#" class="social-icon">📱</a>
-                        <a href="#" class="social-icon">💬</a>
-                    </div>
-                </div>
-                <div class="footer-section">
-                    <h4>Product</h4>
-                    <ul class="footer-links">
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#pricing">Pricing</a></li>
-                        <li><a href="#integrations">Integrations</a></li>
-                        <li><a href="#changelog">Changelog</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Resources</h4>
-                    <ul class="footer-links">
-                        <li><a href="#docs">Documentation</a></li>
-                        <li><a href="#guides">Guides</a></li>
-                        <li><a href="#blog">Blog</a></li>
-                        <li><a href="#support">Support</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Company</h4>
-                    <ul class="footer-links">
-                        <li><a href="#about">About Us</a></li>
-                        <li><a href="#careers">Careers</a></li>
-                        <li><a href="#contact">Contact</a></li>
-                        <li><a href="#privacy">Privacy</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>© 2025 Cattle Cloud. Built with 💚 for farmers worldwide.</p>
-            </div>
+        <p style="color:#374151;line-height:1.75;flex-grow:1;font-size:0.9375rem;font-weight:400;">"The breeding management module is outstanding. We've improved calving rates by 18% since switching to Cattle Cloud."</p>
+        <div style="display:flex;align-items:center;gap:14px;padding-top:14px;border-top:1px solid var(--gray-100);">
+          <div style="width:44px;height:44px;border-radius:10px;flex-shrink:0;background:var(--gray-200);background-image:url('https://lh3.googleusercontent.com/aida-public/AB6AXuCVPvN1Ax4MTVFjZBBImRE1PrLSPn7tatWf_HG5Xl74D-fz6fBSB723FyeJ3g5Rgtts5qOWkm4Is7dK1dZ8ZEtBAVxpHK8TfY8UsgLnxHWdeC31oXLRr5XNiiw83uJEhEiEorFsQ4Wdn-9yaV__jbC875qr6L82ZK-M8ZAoWuB5YDDJNFrBAKSqxP5FKTDUVvEeevgZwEqUA7ELmBikovuuduNXSIhQqpgPZBMbGNgZFfq_LjKmz_xwkH6z_4d4aMU8aKFXgZpw4MU');background-size:cover;"></div>
+          <div><h4 style="font-weight:800;color:var(--text-primary);margin:0;font-size:0.9375rem;">Mike T.</h4><p style="font-size:0.8125rem;color:var(--primary-indigo);font-weight:600;margin:0;">Livestock Manager, Punjab</p></div>
         </div>
-    </footer>
+      </div></div>
 
-    <script>// ============================================
-// THEME TOGGLE FUNCTIONALITY
-// ============================================
+      <!-- Card 4 -->
+      <div class="carousel-card"><div class="review-card">
+        <div style="display:flex;gap:3px;">
+          <span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span>
+        </div>
+        <p style="color:#374151;line-height:1.75;flex-grow:1;font-size:0.9375rem;font-weight:400;">"Expense tracking per animal changed how we think about profitability. We cut costs by 22% in the first quarter alone."</p>
+        <div style="display:flex;align-items:center;gap:14px;padding-top:14px;border-top:1px solid var(--gray-100);">
+          <div style="width:44px;height:44px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,var(--primary-indigo),var(--primary-violet));display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-weight:800;font-size:1rem;">A</span></div>
+          <div><h4 style="font-weight:800;color:var(--text-primary);margin:0;font-size:0.9375rem;">Amrita K.</h4><p style="font-size:0.8125rem;color:var(--primary-indigo);font-weight:600;margin:0;">Farm Owner, Maharashtra</p></div>
+        </div>
+      </div></div>
 
-const themeToggle = document.getElementById('themeToggle');
-const themeIcon = document.getElementById('themeIcon');
-const html = document.documentElement;
+      <!-- Card 5 -->
+      <div class="carousel-card"><div class="review-card">
+        <div style="display:flex;gap:3px;">
+          <span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span>
+        </div>
+        <p style="color:#374151;line-height:1.75;flex-grow:1;font-size:0.9375rem;font-weight:400;">"Importing our existing herd data was seamless. The CSV import took 10 minutes and our whole team was productive from day one."</p>
+        <div style="display:flex;align-items:center;gap:14px;padding-top:14px;border-top:1px solid var(--gray-100);">
+          <div style="width:44px;height:44px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-weight:800;font-size:1rem;">R</span></div>
+          <div><h4 style="font-weight:800;color:var(--text-primary);margin:0;font-size:0.9375rem;">Rajesh P.</h4><p style="font-size:0.8125rem;color:var(--primary-indigo);font-weight:600;margin:0;">Dairy Co-op Manager, UP</p></div>
+        </div>
+      </div></div>
 
-// Load saved theme or default to light
-const currentTheme = localStorage.getItem('theme') || 'light';
-html.setAttribute('data-theme', currentTheme);
-updateThemeIcon(currentTheme);
+      <!-- Card 6 -->
+      <div class="carousel-card"><div class="review-card">
+        <div style="display:flex;gap:3px;">
+          <span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span>
+          <span class="material-symbols-outlined" style="font-size:22px;font-variation-settings:'FILL' 0;color:var(--status-warning);">star</span>
+        </div>
+        <p style="color:#374151;line-height:1.75;flex-grow:1;font-size:0.9375rem;font-weight:400;">"Very reliable platform. The dashboard gives me an instant overview of my entire operation. Would love a dark mode but overall excellent."</p>
+        <div style="display:flex;align-items:center;gap:14px;padding-top:14px;border-top:1px solid var(--gray-100);">
+          <div style="width:44px;height:44px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-weight:800;font-size:1rem;">P</span></div>
+          <div><h4 style="font-weight:800;color:var(--text-primary);margin:0;font-size:0.9375rem;">Priya N.</h4><p style="font-size:0.8125rem;color:var(--primary-indigo);font-weight:600;margin:0;">Cattle Breeder, Karnataka</p></div>
+        </div>
+      </div></div>
+    </div>
 
-themeToggle.addEventListener('click', () => {
-    const currentTheme = html.getAttribute('data-theme');
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    
-    html.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-    updateThemeIcon(newTheme);
-});
+    <div id="dots" style="display:flex;justify-content:center;gap:8px;margin-top:32px;"></div>
+  </div>
+</section>
 
-function updateThemeIcon(theme) {
-    themeIcon.textContent = theme === 'light' ? '☀️' : '🌙';
-}
+<!-- ═══════════════ FAQ ═══════════════ -->
+<section id="faq" class="section" style="background:#fff;">
+  <div class="container-sm">
+    <div class="reveal" style="text-align:center;margin-bottom:52px;">
+      <span style="color:var(--primary-indigo);font-weight:700;letter-spacing:.15em;text-transform:uppercase;font-size:0.75rem;display:block;margin-bottom:12px;">Help Center</span>
+      <h2 style="font-size:clamp(1.75rem,4vw,2.75rem);font-weight:900;color:var(--text-primary);letter-spacing:-.02em;line-height:1.1;">Frequently Asked Questions</h2>
+    </div>
+    <div class="reveal" style="display:flex;flex-direction:column;gap:14px;">
 
-// ============================================
-// NAVBAR SCROLL EFFECT
-// ============================================
+      <details class="faq-item">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;">
+          <h3 style="font-weight:700;font-size:0.9375rem;color:var(--text-primary);margin:0;">How do I add and manage my cattle records?</h3>
+          <span class="material-symbols-outlined faq-arrow" style="color:var(--text-secondary);flex-shrink:0;font-size:22px;">expand_more</span>
+        </summary>
+        <div style="padding:0 24px 20px;color:var(--text-secondary);line-height:1.75;font-size:0.9rem;font-weight:400;">You can add individual animals through the "Add Cattle" form on your dashboard. Each record stores breed, date of birth, weight history, health notes, and milk data. You can also bulk import existing records using our CSV template.</div>
+      </details>
 
-const navbar = document.getElementById('navbar');
-let lastScroll = 0;
+      <details class="faq-item">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;">
+          <h3 style="font-weight:700;font-size:0.9375rem;color:var(--text-primary);margin:0;">Can I track milk production for individual cows?</h3>
+          <span class="material-symbols-outlined faq-arrow" style="color:var(--text-secondary);flex-shrink:0;font-size:22px;">expand_more</span>
+        </summary>
+        <div style="padding:0 24px 20px;color:var(--text-secondary);line-height:1.75;font-size:0.9rem;font-weight:400;">Absolutely. Cattle Cloud lets you log morning and evening yields per cow, track fat and protein percentages, and view weekly and monthly trend charts. Alerts notify you when a cow's production drops below your set threshold.</div>
+      </details>
 
-window.addEventListener('scroll', () => {
-    const currentScroll = window.pageYOffset;
-    
-    if (currentScroll > 50) {
-        navbar.classList.add('scrolled');
-    } else {
-        navbar.classList.remove('scrolled');
-    }
-    
-    lastScroll = currentScroll;
-});
+      <details class="faq-item">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;">
+          <h3 style="font-weight:700;font-size:0.9375rem;color:var(--text-primary);margin:0;">How does the health monitoring and alert system work?</h3>
+          <span class="material-symbols-outlined faq-arrow" style="color:var(--text-secondary);flex-shrink:0;font-size:22px;">expand_more</span>
+        </summary>
+        <div style="padding:0 24px 20px;color:var(--text-secondary);line-height:1.75;font-size:0.9rem;font-weight:400;">Our system monitors behavioral and production patterns and flags anomalies automatically. You receive email or dashboard alerts when unusual patterns are detected. You can also log vaccinations, treatments, and vet visits against each animal's profile.</div>
+      </details>
 
-// ============================================
-// FAQ ACCORDION
-// ============================================
+      <details class="faq-item">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;">
+          <h3 style="font-weight:700;font-size:0.9375rem;color:var(--text-primary);margin:0;">Can I track feed and veterinary expenses per animal?</h3>
+          <span class="material-symbols-outlined faq-arrow" style="color:var(--text-secondary);flex-shrink:0;font-size:22px;">expand_more</span>
+        </summary>
+        <div style="padding:0 24px 20px;color:var(--text-secondary);line-height:1.75;font-size:0.9rem;font-weight:400;">Yes. You can allocate costs — feed, medicine, vet visits, supplements — to individual animals or groups. This gives you a clear picture of the cost-per-litre of milk and overall profitability per head.</div>
+      </details>
 
-const faqItems = document.querySelectorAll('.faq-item');
+      <details class="faq-item">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;">
+          <h3 style="font-weight:700;font-size:0.9375rem;color:var(--text-primary);margin:0;">How do I import my existing herd data?</h3>
+          <span class="material-symbols-outlined faq-arrow" style="color:var(--text-secondary);flex-shrink:0;font-size:22px;">expand_more</span>
+        </summary>
+        <div style="padding:0 24px 20px;color:var(--text-secondary);line-height:1.75;font-size:0.9rem;font-weight:400;">We offer a simple CSV import tool under Settings → Import Data. Download our template, fill in your herd details, and upload it. Our team can also assist with migration from other farm management software.</div>
+      </details>
 
-faqItems.forEach(item => {
-    const question = item.querySelector('.faq-question');
-    
-    question.addEventListener('click', () => {
-        const isActive = item.classList.contains('active');
-        
-        // Close all other items
-        faqItems.forEach(otherItem => {
-            otherItem.classList.remove('active');
-        });
-        
-        // Toggle current item
-        if (!isActive) {
-            item.classList.add('active');
-        }
+      <details class="faq-item">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;">
+          <h3 style="font-weight:700;font-size:0.9375rem;color:var(--text-primary);margin:0;">Is my farm data secure and private?</h3>
+          <span class="material-symbols-outlined faq-arrow" style="color:var(--text-secondary);flex-shrink:0;font-size:22px;">expand_more</span>
+        </summary>
+        <div style="padding:0 24px 20px;color:var(--text-secondary);line-height:1.75;font-size:0.9rem;font-weight:400;">Your data is encrypted at rest and in transit using industry-standard TLS and AES-256. We never share or sell your farm data. You can export or delete your data at any time from account settings.</div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CTA ═══════════════ -->
+<section class="section" style="background:var(--brand-bg);">
+  <div class="container-md">
+    <div class="reveal cta-card">
+      <div style="position:absolute;top:-80px;right:-80px;width:240px;height:240px;background:rgba(255,255,255,0.08);border-radius:50%;"></div>
+      <div style="position:absolute;bottom:-60px;left:-60px;width:180px;height:180px;background:rgba(0,0,0,0.08);border-radius:50%;"></div>
+      <span style="display:inline-block;background:rgba(255,255,255,0.2);font-size:0.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:8px 18px;border-radius:999px;margin-bottom:20px;">Start Free Today</span>
+      <h2 style="font-size:clamp(1.75rem,4vw,3rem);font-weight:900;letter-spacing:-.02em;margin-bottom:16px;position:relative;z-index:1;">Ready to modernize your farm?</h2>
+      <p style="color:rgba(255,255,255,0.85);font-size:1.0625rem;margin-bottom:36px;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.7;font-weight:400;position:relative;z-index:1;">Join 500+ farmers making smarter decisions with data. Start your 14-day free trial — no credit card required.</p>
+      <a href="/login" style="display:inline-block;background:#fff;color:var(--primary-violet);padding:14px 40px;border-radius:14px;font-weight:800;font-size:1rem;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,0.15);transition:transform .2s;position:relative;z-index:1;font-family:'Lexend',sans-serif;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='none'">Get Started Now →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="footer-bg">
+  <div style="width:100%;overflow:hidden;line-height:0;">
+    <svg viewBox="0 0 1440 56" preserveAspectRatio="none" style="width:100%;height:40px;display:block;" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,28 C480,56 960,0 1440,28 L1440,0 L0,0 Z" fill="#f8f9fc"/>
+    </svg>
+  </div>
+  <div class="container" style="padding-top:32px;padding-bottom:48px;">
+    <div class="footer-grid" style="margin-bottom:40px;">
+      <!-- Brand -->
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <div style="width:36px;height:36px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;"><span style="font-size:18px;">🐄</span></div>
+          <span style="font-size:1.125rem;font-weight:800;letter-spacing:-.01em;color:#fff;">Cattle<span style="color:#a5b4fc;">Cloud</span></span>
+        </div>
+        <p style="color:rgba(255,255,255,0.6);font-size:0.875rem;line-height:1.75;max-width:260px;font-weight:400;margin-bottom:20px;">Empowering farmers across India with smart tools to manage herds, track production, and grow profitability.</p>
+        <div style="display:flex;gap:10px;">
+          <a href="#" style="width:36px;height:36px;background:rgba(255,255,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .2s;color:#fff;" onmouseover="this.style.background='rgba(102,126,234,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><svg style="width:15px;height:15px;" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
+          <a href="#" style="width:36px;height:36px;background:rgba(255,255,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .2s;color:#fff;" onmouseover="this.style.background='rgba(102,126,234,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><svg style="width:15px;height:15px;" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+          <a href="#" style="width:36px;height:36px;background:rgba(255,255,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .2s;color:#fff;" onmouseover="this.style.background='rgba(102,126,234,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><svg style="width:15px;height:15px;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+          <a href="#" style="width:36px;height:36px;background:rgba(255,255,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .2s;color:#fff;" onmouseover="this.style.background='rgba(102,126,234,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><svg style="width:15px;height:15px;" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+        </div>
+      </div>
+      <!-- Product -->
+      <div>
+        <h4 style="font-weight:800;font-size:0.75rem;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,0.45);margin-bottom:18px;">Product</h4>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;">
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Features</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Dashboard</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">API Access</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Changelog</a></li>
+        </ul>
+      </div>
+      <!-- Company -->
+      <div>
+        <h4 style="font-weight:800;font-size:0.75rem;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,0.45);margin-bottom:18px;">Company</h4>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;">
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">About Us</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Careers</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Blog</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Contact</a></li>
+        </ul>
+      </div>
+      <!-- Legal -->
+      <div>
+        <h4 style="font-weight:800;font-size:0.75rem;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,0.45);margin-bottom:18px;">Legal</h4>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;">
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Privacy Policy</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Terms of Service</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Cookie Policy</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Security</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Contact bar -->
+    <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:28px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:20px;">
+      <div style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.55);font-size:0.875rem;">
+        <span class="material-symbols-outlined" style="font-size:16px;color:#a5b4fc;font-variation-settings:'FILL' 1;">mail</span>
+        <a href="mailto:support@cattlecloud.in" style="color:rgba(255,255,255,0.55);text-decoration:none;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.55)'">support@cattlecloud.in</a>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.55);font-size:0.875rem;">
+        <span class="material-symbols-outlined" style="font-size:16px;color:#a5b4fc;font-variation-settings:'FILL' 1;">call</span>
+        <span>+91 99990 00000</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.55);font-size:0.875rem;">
+        <span class="material-symbols-outlined" style="font-size:16px;color:#a5b4fc;font-variation-settings:'FILL' 1;">location_on</span>
+        <span>Ahmedabad, Gujarat, India</span>
+      </div>
+    </div>
+
+    <!-- Bottom -->
+    <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <p style="color:rgba(255,255,255,0.35);font-size:0.8125rem;font-weight:400;">© 2024 Cattle Cloud Inc. All rights reserved. Built with ❤️ for Indian farmers.</p>
+      <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);padding:8px 16px;border-radius:999px;">
+        <span class="material-symbols-outlined" style="font-size:14px;color:#a5b4fc;font-variation-settings:'FILL' 1;">verified</span>
+        <span style="color:rgba(255,255,255,0.5);font-size:0.75rem;font-weight:500;">SSL Secured · GDPR Compliant</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Reveal on scroll
+  const obs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }), { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Carousel
+  const track = document.getElementById('carousel');
+  const cards = track.querySelectorAll('.carousel-card');
+  const dotsEl = document.getElementById('dots');
+  let idx = 0;
+
+  cards.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.style.cssText = `height:8px;border:none;cursor:pointer;padding:0;border-radius:9999px;transition:all .3s;${i===0?'background:var(--primary-indigo);width:24px;':'background:var(--gray-200);width:8px;'}`;
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  });
+
+  function getVisible() { return window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1; }
+
+  function goTo(i) {
+    const max = Math.max(0, cards.length - getVisible());
+    idx = Math.max(0, Math.min(i, max));
+    track.scrollTo({ left: idx * (cards[0].offsetWidth + 24), behavior: 'smooth' });
+    updateDots();
+  }
+
+  function updateDots() {
+    dotsEl.querySelectorAll('button').forEach((d, i) => {
+      d.style.background = i === idx ? 'var(--primary-indigo)' : 'var(--gray-200)';
+      d.style.width = i === idx ? '24px' : '8px';
     });
-});
+  }
 
-// ============================================
-// SMOOTH SCROLL
-// ============================================
+  window.scrollCarousel = dir => goTo(idx + dir);
+  track.addEventListener('scroll', () => {
+    idx = Math.round(track.scrollLeft / (cards[0].offsetWidth + 24));
+    updateDots();
+  });
 
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        const href = this.getAttribute('href');
-        if (href !== '#' && href !== '#login') {
-            e.preventDefault();
-            const target = document.querySelector(href);
-            if (target) {
-                const navbarHeight = navbar.offsetHeight;
-                const targetPosition = target.offsetTop - navbarHeight;
-                window.scrollTo({
-                    top: targetPosition,
-                    behavior: 'smooth'
-                });
-            }
-        }
+  // FAQ open styling
+  document.querySelectorAll('.faq-item').forEach(d => {
+    d.addEventListener('toggle', () => {
+      const h = d.querySelector('h3');
+      const arr = d.querySelector('.faq-arrow');
+      if (d.open) {
+        d.style.background = '#fff';
+        d.style.borderColor = 'rgba(102,126,234,0.3)';
+        d.style.boxShadow = '0 4px 20px rgba(102,126,234,0.1)';
+        h.style.color = 'var(--primary-indigo)';
+        arr.style.color = 'var(--primary-indigo)';
+      } else {
+        d.style.background = 'var(--brand-bg)';
+        d.style.borderColor = 'var(--border-color)';
+        d.style.boxShadow = 'none';
+        h.style.color = 'var(--text-primary)';
+        arr.style.color = 'var(--text-secondary)';
+      }
     });
-});
+  });
 
-// ============================================
-// INTERSECTION OBSERVER FOR ANIMATIONS
-// ============================================
-
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-        }
-    });
-}, observerOptions);
-
-document.querySelectorAll('.fade-in').forEach(el => {
-    observer.observe(el);
-});
-
-// ============================================
-// ACTIVE NAV LINK ON SCROLL
-// ============================================
-
-const sections = document.querySelectorAll('section[id]');
-const navLinks = document.querySelectorAll('.nav-link');
-
-window.addEventListener('scroll', () => {
-    let current = '';
-    
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop;
-        const sectionHeight = section.clientHeight;
-        if (pageYOffset >= (sectionTop - navbar.offsetHeight - 100)) {
-            current = section.getAttribute('id');
-        }
-    });
-    
-    navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === `#${current}`) {
-            link.classList.add('active');
-        }
-    });
-});</script>
+  // Prev arrow hover
+  const prevBtn = document.getElementById('prev-btn');
+  prevBtn.addEventListener('mouseover', () => { prevBtn.style.background = 'var(--primary-indigo)'; prevBtn.style.color = '#fff'; });
+  prevBtn.addEventListener('mouseout', () => { prevBtn.style.background = '#fff'; prevBtn.style.color = 'var(--primary-indigo)'; });
+</script>
 </body>
 </html>
