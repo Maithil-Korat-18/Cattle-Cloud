@@ -202,22 +202,5 @@ http://localhost:5000
 
 ---
 
-## 👨‍💻 Author
-
-**Maithil**
-B.Tech Computer Engineering Student
-
----
-
-## 📜 License
-
-This project is created for **educational purposes**.
-You are free to use and modify it.
-
----
-
-## ⭐ Support
-
-If you like this project, give it a ⭐ on GitHub and share it!
 
 ---
