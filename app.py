@@ -8,7 +8,7 @@ from routes.cattle_detail import cattle_detail_bp
 from routes.milk_records import milk_bp
 from routes.feed import feed_bp
 from routes.expenses import expenses_bp
-
+import os
 app = Flask(__name__)
 app.secret_key = "super_secret_key_123"
 app.register_blueprint(auth)
@@ -95,4 +95,6 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
+
