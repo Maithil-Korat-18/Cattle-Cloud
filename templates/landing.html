@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cattle Cloud - Smarter Farming</title>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<style>
+  :root {
+    --primary-indigo: #667eea;
+    --primary-violet: #764ba2;
+    --brand-bg: #f8f9fc;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --status-success: #22c55e;
+    --status-warning: #f59e0b;
+    --status-danger: #ef4444;
+    --white: #ffffff;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --border-color: #e5e7eb;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lexend', sans-serif;
+    background-color: var(--brand-bg);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    font-weight: 400;
+  }
+
+  .brand-gradient { background: linear-gradient(135deg, var(--primary-indigo) 0%, var(--primary-violet) 100%); }
+
+  .text-gradient {
+    background: linear-gradient(135deg, var(--primary-indigo) 0%, var(--primary-violet) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Blobs */
+  .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: .12; pointer-events: none; }
+
+  /* Nav */
+  .nav-link { position: relative; text-decoration: none; }
+  .nav-link::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 0; height: 2px; background: var(--primary-indigo); transition: width .25s; }
+  .nav-link:hover::after { width: 100%; }
+
+  /* Feature card */
+  .feature-card {
+    background: var(--white); border: 1px solid var(--border-color);
+    border-radius: 16px; padding: 32px; cursor: default;
+    transition: transform .3s, box-shadow .3s, border-color .3s;
+  }
+  .feature-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(102,126,234,.12); border-color: rgba(102,126,234,.35); }
+
+  /* Carousel */
+  .carousel-track {
+    display: flex; gap: 1.5rem; overflow-x: auto;
+    scroll-snap-type: x mandatory; scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; -ms-overflow-style: none;
+  }
+  .carousel-track::-webkit-scrollbar { display: none; }
+  .carousel-card { scroll-snap-align: start; flex: 0 0 min(360px, 85vw); }
+
+  /* Stars */
+  .star-filled { font-variation-settings: 'FILL' 1, 'wght' 400; color: var(--status-warning); }
+
+  /* FAQ */
+  details summary { list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+  .faq-arrow { transition: transform .3s; }
+  details[open] .faq-arrow { transform: rotate(180deg); }
+
+  /* Reveal */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* Mobile menu */
+  #mobile-menu { display: none; }
+  #mobile-menu.open { display: flex; }
+
+  /* Progress bar */
+  @keyframes prog { from { width: 0 } to { width: 75% } }
+  .progress-bar { animation: prog 1.4s ease-out forwards; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 7px; }
+  ::-webkit-scrollbar-track { background: var(--brand-bg); }
+  ::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+  /* Grid layouts */
+  .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+  /* Container */
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 1.5rem; }
+  .container-sm { max-width: 760px; margin: 0 auto; padding: 0 1.5rem; }
+  .container-md { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* Section padding */
+  .section { padding: 96px 0; }
+
+  /* Buttons */
+  .btn-primary {
+    display: inline-block; padding: 14px 32px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary-indigo), var(--primary-violet));
+    color: #fff; font-weight: 700; font-size: 1rem; text-decoration: none;
+    box-shadow: 0 8px 24px rgba(102,126,234,.35);
+    transition: transform .2s, box-shadow .2s; font-family: 'Lexend', sans-serif;
+    border: none; cursor: pointer;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(102,126,234,.5); }
+
+  .btn-outline {
+    display: inline-block; padding: 14px 28px; border-radius: 12px;
+    color: var(--primary-indigo); font-weight: 700; font-size: 1rem;
+    text-decoration: none; border: 2px solid var(--primary-indigo);
+    transition: background .2s, color .2s; font-family: 'Lexend', sans-serif;
+  }
+  .btn-outline:hover { background: var(--primary-indigo); color: #fff; }
+
+  /* Review card */
+  .review-card {
+    background: var(--white); padding: 32px; border-radius: 20px;
+    border: 1px solid var(--border-color);
+    display: flex; flex-direction: column; gap: 18px; height: 100%;
+    transition: box-shadow .2s;
+  }
+  .review-card:hover { box-shadow: 0 12px 32px rgba(102,126,234,.12); }
+
+  /* FAQ item */
+  .faq-item {
+    background: var(--brand-bg); border: 1px solid var(--border-color);
+    border-radius: 16px; overflow: hidden; transition: all .3s;
+  }
+  .faq-item[open] { background: var(--white); border-color: rgba(102,126,234,.3); box-shadow: 0 4px 20px rgba(102,126,234,.1); }
+
+  /* Footer */
+  .footer-bg { background: linear-gradient(160deg, #1e1b4b 0%, #312e81 40%, #4c1d95 100%); color: #fff; }
+
+  /* CTA */
+  .cta-card {
+    background: linear-gradient(135deg, var(--primary-indigo) 0%, var(--primary-violet) 100%);
+    border-radius: 28px; padding: 64px 48px; text-align: center; color: #fff;
+    position: relative; overflow: hidden;
+    box-shadow: 0 24px 60px rgba(102,126,234,.35);
+  }
+
+  /* Responsive */
+  @media (max-width: 1023px) { .footer-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 767px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .hide-mobile { display: none !important; }
+    .show-mobile { display: flex !important; }
+    #menu-toggle { display: flex !important; }
+    .section { padding: 64px 0; }
+    .cta-card { padding: 40px 24px; }
+  }
+  @media (max-width: 480px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 768px) {
+    .show-mobile { display: none !important; }
+    #menu-toggle { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HEADER ═══════════════ -->
+<header style="position:sticky;top:0;z-index:50;background:rgba(255,255,255,0.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border-color);box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+  <div class="container">
+    <div style="display:flex;align-items:center;justify-content:space-between;height:72px;">
+      <a href="#" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+        <div class="brand-gradient" style="width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(102,126,234,0.25);">
+          <span style="font-size:20px;">🐄</span>
+        </div>
+        <span style="font-size:1.25rem;font-weight:800;color:var(--text-primary);letter-spacing:-.02em;">Cattle-<span style="color:var(--primary-indigo);">Cloud</span></span>
+      </a>
+
+      <nav class="hide-mobile" style="display:flex;align-items:center;gap:2rem;">
+        <a href="#" class="nav-link" style="color:var(--text-secondary);font-weight:500;font-size:0.9375rem;">Home</a>
+        <a href="#features" class="nav-link" style="color:var(--text-secondary);font-weight:500;font-size:0.9375rem;">Features</a>
+        <a href="#reviews" class="nav-link" style="color:var(--text-secondary);font-weight:500;font-size:0.9375rem;">Reviews</a>
+        <a href="#faq" class="nav-link" style="color:var(--text-secondary);font-weight:500;font-size:0.9375rem;">FAQ</a>
+      </nav>
+
+      <div style="display:flex;align-items:center;gap:12px;">
+        <a href="/login" class="btn-primary hide-mobile" style="padding:10px 24px;font-size:0.875rem;">Login / Sign Up</a>
+        <button id="menu-toggle" onclick="document.getElementById('mobile-menu').classList.toggle('open')" style="width:40px;height:40px;border-radius:10px;border:1px solid var(--border-color);background:#fff;align-items:center;justify-content:center;cursor:pointer;">
+          <span class="material-symbols-outlined" style="font-size:22px;color:var(--text-secondary);">menu</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="mobile-menu" style="flex-direction:column;gap:4px;padding:12px 16px 16px;background:#fff;border-top:1px solid var(--border-color);">
+    <a href="#" style="display:block;padding:10px 12px;font-weight:500;color:var(--text-primary);text-decoration:none;border-radius:8px;">Home</a>
+    <a href="#features" style="display:block;padding:10px 12px;font-weight:500;color:var(--text-primary);text-decoration:none;border-radius:8px;">Features</a>
+    <a href="#reviews" style="display:block;padding:10px 12px;font-weight:500;color:var(--text-primary);text-decoration:none;border-radius:8px;">Reviews</a>
+    <a href="#faq" style="display:block;padding:10px 12px;font-weight:500;color:var(--text-primary);text-decoration:none;border-radius:8px;">FAQ</a>
+    <a href="/login" class="btn-primary" style="display:block;text-align:center;margin-top:8px;">Login / Sign Up</a>
+  </div>
+</header>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section style="position:relative;padding:80px 0 112px;overflow:hidden;">
+  <div class="blob" style="width:600px;height:600px;background:#667eea;top:-250px;left:-200px;"></div>
+  <div class="blob" style="width:400px;height:400px;background:#764ba2;bottom:-150px;right:-150px;"></div>
+  <div class="container" style="position:relative;z-index:10;">
+    <div class="hero-grid">
+      <!-- Left -->
+      <div class="reveal" style="display:flex;flex-direction:column;gap:28px;">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(102,126,234,0.1);border:1px solid rgba(102,126,234,0.25);color:var(--primary-indigo);font-size:0.8125rem;font-weight:700;padding:8px 16px;border-radius:999px;width:fit-content;letter-spacing:.01em;">
+          <span class="material-symbols-outlined" style="font-size:16px;font-variation-settings:'FILL' 1;">verified</span>
+          Trusted by 500+ farms across India
+        </div>
+        <h1 style="font-size:clamp(2.5rem,5vw,4rem);font-weight:900;line-height:1.08;letter-spacing:-.03em;color:var(--text-primary);">
+          Smarter Farming,<br/>
+          <span class="text-gradient">Better Results</span>
+        </h1>
+        <p style="font-size:1.0625rem;color:var(--text-secondary);line-height:1.75;max-width:480px;font-weight:400;">
+          Optimize your herd's performance with data-driven insights. Join the future of cattle management and maximize your yield effortlessly.
+        </p>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;">
+          <a href="/login" class="btn-primary">Get Started Free →</a>
+          <a href="#features" class="btn-outline">See Features</a>
+        </div>
+        <div class="stats-grid" style="padding-top:28px;border-top:1px solid var(--border-color);">
+          <div>
+            <p style="font-size:2rem;font-weight:900;color:var(--primary-indigo);line-height:1;">500+</p>
+            <p style="font-size:0.8125rem;font-weight:500;color:var(--text-secondary);margin-top:4px;">Active Farms</p>
+          </div>
+          <div>
+            <p style="font-size:2rem;font-weight:900;color:var(--primary-indigo);line-height:1;">98%</p>
+            <p style="font-size:0.8125rem;font-weight:500;color:var(--text-secondary);margin-top:4px;">Satisfaction Rate</p>
+          </div>
+          <div>
+            <p style="font-size:2rem;font-weight:900;color:var(--primary-indigo);line-height:1;">24/7</p>
+            <p style="font-size:0.8125rem;font-weight:500;color:var(--text-secondary);margin-top:4px;">Support</p>
+          </div>
+        </div>
+      </div>
+      <!-- Right image -->
+      <div class="reveal" style="position:relative;display:flex;align-items:center;justify-content:center;">
+        <div style="position:absolute;inset:-24px;background:linear-gradient(135deg,rgba(102,126,234,0.2),rgba(118,75,162,0.15));border-radius:50%;filter:blur(60px);"></div>
+        <div style="position:relative;width:100%;aspect-ratio:1;max-width:480px;border-radius:24px;overflow:hidden;box-shadow:0 24px 60px rgba(102,126,234,0.2);transform:rotate(1.5deg);transition:transform .6s ease;background-image:url('https://lh3.googleusercontent.com/aida-public/AB6AXuASIHtUtE57X4mcd6gWkXcdF9v8uQsPUAYioMloNbeZYbnFoyOnuDw8Ud5zsS-SvACnuxFWOsq1stpedqJWNo_igE9DScdvdlNpW7um583HGrkGByAlBQdZ4diDVEG7nB_PwaJecENPYTRv964oBNl0XUO6RrECT1cMbCmtGfvWSYA0vVStYHTM4HpGyNhLb3pqI6XtHMGXlAwHq3uNdZbRUo_gNPIVILt-BUJNo-rGc-WKYZrKY9qIPlTw-dLoUHP7IBBiSlZQ-JQ');background-size:cover;background-position:center;" onmouseover="this.style.transform='rotate(0deg)'" onmouseout="this.style.transform='rotate(1.5deg)'">
+          <div style="position:absolute;bottom:28px;left:24px;background:rgba(255,255,255,0.96);backdrop-filter:blur(8px);padding:14px 16px;border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,0.12);max-width:200px;transform:rotate(-1.5deg);">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <div style="background:rgba(34,197,94,0.12);padding:8px;border-radius:10px;">
+                <span class="material-symbols-outlined" style="font-size:18px;color:var(--status-success);font-variation-settings:'FILL' 1;">trending_up</span>
+              </div>
+              <div>
+                <p style="font-size:0.6875rem;color:var(--text-secondary);font-weight:500;margin:0;">Milk Yield</p>
+                <p style="font-size:0.8125rem;font-weight:800;color:var(--text-primary);margin:0;">+12.5% Today</p>
+              </div>
+            </div>
+            <div style="height:8px;background:var(--gray-100);border-radius:999px;overflow:hidden;">
+              <div class="progress-bar" style="height:100%;background:linear-gradient(90deg,var(--primary-indigo),var(--primary-violet));border-radius:999px;"></div>
+            </div>
+          </div>
+          <div style="position:absolute;top:24px;right:20px;background:rgba(255,255,255,0.96);backdrop-filter:blur(8px);padding:10px 14px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,0.12);transform:rotate(1.5deg);">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="material-symbols-outlined" style="color:var(--status-success);font-variation-settings:'FILL' 1;">check_circle</span>
+              <p style="font-size:0.8125rem;font-weight:800;color:var(--text-primary);margin:0;">Herd Healthy</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FEATURES ═══════════════ -->
+<section id="features" class="section" style="background:#fff;position:relative;">
+  <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--border-color),transparent);"></div>
+  <div class="container">
+    <div class="reveal" style="text-align:center;max-width:680px;margin:0 auto 56px;">
+      <span style="color:var(--primary-indigo);font-weight:700;letter-spacing:.15em;text-transform:uppercase;font-size:0.75rem;display:block;margin-bottom:12px;">Platform Features</span>
+      <h2 style="font-size:clamp(2rem,4vw,2.75rem);font-weight:900;color:var(--text-primary);letter-spacing:-.02em;margin-bottom:16px;line-height:1.1;">Everything you need to<br/>manage your herd</h2>
+      <p style="font-size:1.0625rem;color:var(--text-secondary);line-height:1.7;font-weight:400;">From milk production analytics to health monitoring, we've got you covered.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="brand-gradient" style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 6px 16px rgba(102,126,234,0.3);">
+          <span class="material-symbols-outlined" style="color:#fff;font-size:24px;font-variation-settings:'FILL' 1;">water_drop</span>
+        </div>
+        <h3 style="font-size:1.0625rem;font-weight:800;color:var(--text-primary);margin-bottom:10px;letter-spacing:-.01em;">Milk Production</h3>
+        <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;font-weight:400;">Track daily yields and quality metrics per cow with precision analytics and trend reporting.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="brand-gradient" style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 6px 16px rgba(102,126,234,0.3);">
+          <span class="material-symbols-outlined" style="color:#fff;font-size:24px;font-variation-settings:'FILL' 1;">monitor_heart</span>
+        </div>
+        <h3 style="font-size:1.0625rem;font-weight:800;color:var(--text-primary);margin-bottom:10px;letter-spacing:-.01em;">Health Monitoring</h3>
+        <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;font-weight:400;">Early detection of illness with smart alerts, behavioral tracking, and vet scheduling.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="brand-gradient" style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 6px 16px rgba(102,126,234,0.3);">
+          <span class="material-symbols-outlined" style="color:#fff;font-size:24px;font-variation-settings:'FILL' 1;">payments</span>
+        </div>
+        <h3 style="font-size:1.0625rem;font-weight:800;color:var(--text-primary);margin-bottom:10px;letter-spacing:-.01em;">Expense Tracking</h3>
+        <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;font-weight:400;">Monitor feed costs, veterinary expenses, and calculate ROI per animal effortlessly.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="brand-gradient" style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;box-shadow:0 6px 16px rgba(102,126,234,0.3);">
+          <span class="material-symbols-outlined" style="color:#fff;font-size:24px;font-variation-settings:'FILL' 1;">calendar_month</span>
+        </div>
+        <h3 style="font-size:1.0625rem;font-weight:800;color:var(--text-primary);margin-bottom:10px;letter-spacing:-.01em;">Breeding Mgmt</h3>
+        <p style="font-size:0.875rem;color:var(--text-secondary);line-height:1.7;font-weight:400;">Optimize reproduction cycles, insemination dates, and maintain complete calving records.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ REVIEWS ═══════════════ -->
+<section id="reviews" class="section" style="background:var(--brand-bg);overflow:hidden;">
+  <div class="container">
+    <div class="reveal" style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:48px;flex-wrap:wrap;gap:20px;">
+      <div>
+        <span style="color:var(--primary-indigo);font-weight:700;letter-spacing:.15em;text-transform:uppercase;font-size:0.75rem;display:block;margin-bottom:10px;">Customer Reviews</span>
+        <h2 style="font-size:clamp(1.75rem,4vw,2.75rem);font-weight:900;color:var(--text-primary);letter-spacing:-.02em;line-height:1.1;margin-bottom:10px;">Trusted by modern farmers</h2>
+        <p style="color:var(--text-secondary);font-size:1rem;font-weight:400;">See what our community has to say about Cattle Cloud.</p>
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button onclick="scrollCarousel(-1)" id="prev-btn" style="width:48px;height:48px;border-radius:50%;border:2px solid var(--primary-indigo);background:#fff;color:var(--primary-indigo);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <button onclick="scrollCarousel(1)" id="next-btn" class="brand-gradient" style="width:48px;height:48px;border-radius:50%;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px rgba(102,126,234,0.4);transition:all .2s;">
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="carousel-track" id="carousel">
+      <!-- Card 1 -->
+      <div class="carousel-card"><div class="review-card">
+        <div style="display:flex;gap:3px;">
+          <span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span>
+        </div>
+        <p style="color:#374151;line-height:1.75;flex-grow:1;font-size:0.9375rem;font-weight:400;">"This app saved me 10 hours a week on paperwork. The milk production insights helped us optimize our feed strategy significantly."</p>
+        <div style="display:flex;align-items:center;gap:14px;padding-top:14px;border-top:1px solid var(--gray-100);">
+          <div style="width:44px;height:44px;border-radius:10px;flex-shrink:0;background:var(--gray-200);background-image:url('https://lh3.googleusercontent.com/aida-public/AB6AXuCrDlcQXPa_E8uO5SnUhRBkMB4vPoJgYkILe28e8ANviuTrkONS94SdyK2isalulgCM6NL2NBGM3xzHmwuABkB3Ypxsio94XTX7EEAafU6zG6SkI0Nh4dM2JZvo4ic5_IfUIm15w5LjouCOaavS8-ZlPD-7YEsAOTpGRtZOybMEslu37I9Z3lVKd7OAU7pWfa0wLuWX6coL6NDLG_Ox1qaTYdmt5eIK6D1NBQramP2RzML-ZfqNnMELYSFLDQQXYsjhw8cu03ZlnKM');background-size:cover;"></div>
+          <div><h4 style="font-weight:800;color:var(--text-primary);margin:0;font-size:0.9375rem;">John D.</h4><p style="font-size:0.8125rem;color:var(--primary-indigo);font-weight:600;margin:0;">Dairy Farmer, Gujarat</p></div>
+        </div>
+      </div></div>
+
+      <!-- Card 2 -->
+      <div class="carousel-card"><div class="review-card">
+        <div style="display:flex;gap:3px;">
+          <span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span>
+        </div>
+        <p style="color:#374151;line-height:1.75;flex-grow:1;font-size:0.9375rem;font-weight:400;">"Best investment for our cattle health tracking. The early warning system caught an infection before it spread to the entire herd."</p>
+        <div style="display:flex;align-items:center;gap:14px;padding-top:14px;border-top:1px solid var(--gray-100);">
+          <div style="width:44px;height:44px;border-radius:10px;flex-shrink:0;background:var(--gray-200);background-image:url('https://lh3.googleusercontent.com/aida-public/AB6AXuCmrKueMwr37qDAbb8ZK8HRf9qv-asC6zGqCH2-p42l_-qR1_b06a2llRiLDcBslWRTB4aWdehJ3sW_TIJA0oIOePcAaas6gVa1-H1y9nWZudTWq-sG_GII6Q_SlBtT5iQbMGJhWOaSSJ1HMROYLoPSu9sF8YaSn6kJA67S699nrQveBqV29YP7DXCcdcCjkbjf6AvqpYjnQHtZZ6XAxEeYFfH0_2jNegnLADBjTsNWrPB1l6-ZBBDn_msI5HgQpVlo8bqkQk5uIEQ');background-size:cover;"></div>
+          <div><h4 style="font-weight:800;color:var(--text-primary);margin:0;font-size:0.9375rem;">Sarah M.</h4><p style="font-size:0.8125rem;color:var(--primary-indigo);font-weight:600;margin:0;">Ranch Owner, Rajasthan</p></div>
+        </div>
+      </div></div>
+
+      <!-- Card 3 -->
+      <div class="carousel-card"><div class="review-card">
+        <div style="display:flex;gap:3px;">
+          <span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span>
+        </div>
+        <p style="color:#374151;line-height:1.75;flex-grow:1;font-size:0.9375rem;font-weight:400;">"The breeding management module is outstanding. We've improved calving rates by 18% since switching to Cattle Cloud."</p>
+        <div style="display:flex;align-items:center;gap:14px;padding-top:14px;border-top:1px solid var(--gray-100);">
+          <div style="width:44px;height:44px;border-radius:10px;flex-shrink:0;background:var(--gray-200);background-image:url('https://lh3.googleusercontent.com/aida-public/AB6AXuCVPvN1Ax4MTVFjZBBImRE1PrLSPn7tatWf_HG5Xl74D-fz6fBSB723FyeJ3g5Rgtts5qOWkm4Is7dK1dZ8ZEtBAVxpHK8TfY8UsgLnxHWdeC31oXLRr5XNiiw83uJEhEiEorFsQ4Wdn-9yaV__jbC875qr6L82ZK-M8ZAoWuB5YDDJNFrBAKSqxP5FKTDUVvEeevgZwEqUA7ELmBikovuuduNXSIhQqpgPZBMbGNgZFfq_LjKmz_xwkH6z_4d4aMU8aKFXgZpw4MU');background-size:cover;"></div>
+          <div><h4 style="font-weight:800;color:var(--text-primary);margin:0;font-size:0.9375rem;">Mike T.</h4><p style="font-size:0.8125rem;color:var(--primary-indigo);font-weight:600;margin:0;">Livestock Manager, Punjab</p></div>
+        </div>
+      </div></div>
+
+      <!-- Card 4 -->
+      <div class="carousel-card"><div class="review-card">
+        <div style="display:flex;gap:3px;">
+          <span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span>
+        </div>
+        <p style="color:#374151;line-height:1.75;flex-grow:1;font-size:0.9375rem;font-weight:400;">"Expense tracking per animal changed how we think about profitability. We cut costs by 22% in the first quarter alone."</p>
+        <div style="display:flex;align-items:center;gap:14px;padding-top:14px;border-top:1px solid var(--gray-100);">
+          <div style="width:44px;height:44px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,var(--primary-indigo),var(--primary-violet));display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-weight:800;font-size:1rem;">A</span></div>
+          <div><h4 style="font-weight:800;color:var(--text-primary);margin:0;font-size:0.9375rem;">Amrita K.</h4><p style="font-size:0.8125rem;color:var(--primary-indigo);font-weight:600;margin:0;">Farm Owner, Maharashtra</p></div>
+        </div>
+      </div></div>
+
+      <!-- Card 5 -->
+      <div class="carousel-card"><div class="review-card">
+        <div style="display:flex;gap:3px;">
+          <span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span>
+        </div>
+        <p style="color:#374151;line-height:1.75;flex-grow:1;font-size:0.9375rem;font-weight:400;">"Importing our existing herd data was seamless. The CSV import took 10 minutes and our whole team was productive from day one."</p>
+        <div style="display:flex;align-items:center;gap:14px;padding-top:14px;border-top:1px solid var(--gray-100);">
+          <div style="width:44px;height:44px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#22c55e,#16a34a);display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-weight:800;font-size:1rem;">R</span></div>
+          <div><h4 style="font-weight:800;color:var(--text-primary);margin:0;font-size:0.9375rem;">Rajesh P.</h4><p style="font-size:0.8125rem;color:var(--primary-indigo);font-weight:600;margin:0;">Dairy Co-op Manager, UP</p></div>
+        </div>
+      </div></div>
+
+      <!-- Card 6 -->
+      <div class="carousel-card"><div class="review-card">
+        <div style="display:flex;gap:3px;">
+          <span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span><span class="material-symbols-outlined star-filled" style="font-size:22px;">star</span>
+          <span class="material-symbols-outlined" style="font-size:22px;font-variation-settings:'FILL' 0;color:var(--status-warning);">star</span>
+        </div>
+        <p style="color:#374151;line-height:1.75;flex-grow:1;font-size:0.9375rem;font-weight:400;">"Very reliable platform. The dashboard gives me an instant overview of my entire operation. Would love a dark mode but overall excellent."</p>
+        <div style="display:flex;align-items:center;gap:14px;padding-top:14px;border-top:1px solid var(--gray-100);">
+          <div style="width:44px;height:44px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,#f59e0b,#d97706);display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-weight:800;font-size:1rem;">P</span></div>
+          <div><h4 style="font-weight:800;color:var(--text-primary);margin:0;font-size:0.9375rem;">Priya N.</h4><p style="font-size:0.8125rem;color:var(--primary-indigo);font-weight:600;margin:0;">Cattle Breeder, Karnataka</p></div>
+        </div>
+      </div></div>
+    </div>
+
+    <div id="dots" style="display:flex;justify-content:center;gap:8px;margin-top:32px;"></div>
+  </div>
+</section>
+
+<!-- ═══════════════ FAQ ═══════════════ -->
+<section id="faq" class="section" style="background:#fff;">
+  <div class="container-sm">
+    <div class="reveal" style="text-align:center;margin-bottom:52px;">
+      <span style="color:var(--primary-indigo);font-weight:700;letter-spacing:.15em;text-transform:uppercase;font-size:0.75rem;display:block;margin-bottom:12px;">Help Center</span>
+      <h2 style="font-size:clamp(1.75rem,4vw,2.75rem);font-weight:900;color:var(--text-primary);letter-spacing:-.02em;line-height:1.1;">Frequently Asked Questions</h2>
+    </div>
+    <div class="reveal" style="display:flex;flex-direction:column;gap:14px;">
+
+      <details class="faq-item">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;">
+          <h3 style="font-weight:700;font-size:0.9375rem;color:var(--text-primary);margin:0;">How do I add and manage my cattle records?</h3>
+          <span class="material-symbols-outlined faq-arrow" style="color:var(--text-secondary);flex-shrink:0;font-size:22px;">expand_more</span>
+        </summary>
+        <div style="padding:0 24px 20px;color:var(--text-secondary);line-height:1.75;font-size:0.9rem;font-weight:400;">You can add individual animals through the "Add Cattle" form on your dashboard. Each record stores breed, date of birth, weight history, health notes, and milk data. You can also bulk import existing records using our CSV template.</div>
+      </details>
+
+      <details class="faq-item">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;">
+          <h3 style="font-weight:700;font-size:0.9375rem;color:var(--text-primary);margin:0;">Can I track milk production for individual cows?</h3>
+          <span class="material-symbols-outlined faq-arrow" style="color:var(--text-secondary);flex-shrink:0;font-size:22px;">expand_more</span>
+        </summary>
+        <div style="padding:0 24px 20px;color:var(--text-secondary);line-height:1.75;font-size:0.9rem;font-weight:400;">Absolutely. Cattle Cloud lets you log morning and evening yields per cow, track fat and protein percentages, and view weekly and monthly trend charts. Alerts notify you when a cow's production drops below your set threshold.</div>
+      </details>
+
+      <details class="faq-item">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;">
+          <h3 style="font-weight:700;font-size:0.9375rem;color:var(--text-primary);margin:0;">How does the health monitoring and alert system work?</h3>
+          <span class="material-symbols-outlined faq-arrow" style="color:var(--text-secondary);flex-shrink:0;font-size:22px;">expand_more</span>
+        </summary>
+        <div style="padding:0 24px 20px;color:var(--text-secondary);line-height:1.75;font-size:0.9rem;font-weight:400;">Our system monitors behavioral and production patterns and flags anomalies automatically. You receive email or dashboard alerts when unusual patterns are detected. You can also log vaccinations, treatments, and vet visits against each animal's profile.</div>
+      </details>
+
+      <details class="faq-item">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;">
+          <h3 style="font-weight:700;font-size:0.9375rem;color:var(--text-primary);margin:0;">Can I track feed and veterinary expenses per animal?</h3>
+          <span class="material-symbols-outlined faq-arrow" style="color:var(--text-secondary);flex-shrink:0;font-size:22px;">expand_more</span>
+        </summary>
+        <div style="padding:0 24px 20px;color:var(--text-secondary);line-height:1.75;font-size:0.9rem;font-weight:400;">Yes. You can allocate costs — feed, medicine, vet visits, supplements — to individual animals or groups. This gives you a clear picture of the cost-per-litre of milk and overall profitability per head.</div>
+      </details>
+
+      <details class="faq-item">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;">
+          <h3 style="font-weight:700;font-size:0.9375rem;color:var(--text-primary);margin:0;">How do I import my existing herd data?</h3>
+          <span class="material-symbols-outlined faq-arrow" style="color:var(--text-secondary);flex-shrink:0;font-size:22px;">expand_more</span>
+        </summary>
+        <div style="padding:0 24px 20px;color:var(--text-secondary);line-height:1.75;font-size:0.9rem;font-weight:400;">We offer a simple CSV import tool under Settings → Import Data. Download our template, fill in your herd details, and upload it. Our team can also assist with migration from other farm management software.</div>
+      </details>
+
+      <details class="faq-item">
+        <summary style="display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;">
+          <h3 style="font-weight:700;font-size:0.9375rem;color:var(--text-primary);margin:0;">Is my farm data secure and private?</h3>
+          <span class="material-symbols-outlined faq-arrow" style="color:var(--text-secondary);flex-shrink:0;font-size:22px;">expand_more</span>
+        </summary>
+        <div style="padding:0 24px 20px;color:var(--text-secondary);line-height:1.75;font-size:0.9rem;font-weight:400;">Your data is encrypted at rest and in transit using industry-standard TLS and AES-256. We never share or sell your farm data. You can export or delete your data at any time from account settings.</div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CTA ═══════════════ -->
+<section class="section" style="background:var(--brand-bg);">
+  <div class="container-md">
+    <div class="reveal cta-card">
+      <div style="position:absolute;top:-80px;right:-80px;width:240px;height:240px;background:rgba(255,255,255,0.08);border-radius:50%;"></div>
+      <div style="position:absolute;bottom:-60px;left:-60px;width:180px;height:180px;background:rgba(0,0,0,0.08);border-radius:50%;"></div>
+      <span style="display:inline-block;background:rgba(255,255,255,0.2);font-size:0.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:8px 18px;border-radius:999px;margin-bottom:20px;">Start Free Today</span>
+      <h2 style="font-size:clamp(1.75rem,4vw,3rem);font-weight:900;letter-spacing:-.02em;margin-bottom:16px;position:relative;z-index:1;">Ready to modernize your farm?</h2>
+      <p style="color:rgba(255,255,255,0.85);font-size:1.0625rem;margin-bottom:36px;max-width:520px;margin-left:auto;margin-right:auto;line-height:1.7;font-weight:400;position:relative;z-index:1;">Join 500+ farmers making smarter decisions with data. Start your 14-day free trial — no credit card required.</p>
+      <a href="/login" style="display:inline-block;background:#fff;color:var(--primary-violet);padding:14px 40px;border-radius:14px;font-weight:800;font-size:1rem;text-decoration:none;box-shadow:0 8px 24px rgba(0,0,0,0.15);transition:transform .2s;position:relative;z-index:1;font-family:'Lexend',sans-serif;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='none'">Get Started Now →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="footer-bg">
+  <div style="width:100%;overflow:hidden;line-height:0;">
+    <svg viewBox="0 0 1440 56" preserveAspectRatio="none" style="width:100%;height:40px;display:block;" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,28 C480,56 960,0 1440,28 L1440,0 L0,0 Z" fill="#f8f9fc"/>
+    </svg>
+  </div>
+  <div class="container" style="padding-top:32px;padding-bottom:48px;">
+    <div class="footer-grid" style="margin-bottom:40px;">
+      <!-- Brand -->
+      <div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <div style="width:36px;height:36px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;"><span style="font-size:18px;">🐄</span></div>
+          <span style="font-size:1.125rem;font-weight:800;letter-spacing:-.01em;color:#fff;">Cattle<span style="color:#a5b4fc;">Cloud</span></span>
+        </div>
+        <p style="color:rgba(255,255,255,0.6);font-size:0.875rem;line-height:1.75;max-width:260px;font-weight:400;margin-bottom:20px;">Empowering farmers across India with smart tools to manage herds, track production, and grow profitability.</p>
+        <div style="display:flex;gap:10px;">
+          <a href="#" style="width:36px;height:36px;background:rgba(255,255,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .2s;color:#fff;" onmouseover="this.style.background='rgba(102,126,234,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><svg style="width:15px;height:15px;" fill="currentColor" viewBox="0 0 24 24"><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
+          <a href="#" style="width:36px;height:36px;background:rgba(255,255,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .2s;color:#fff;" onmouseover="this.style.background='rgba(102,126,234,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><svg style="width:15px;height:15px;" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+          <a href="#" style="width:36px;height:36px;background:rgba(255,255,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .2s;color:#fff;" onmouseover="this.style.background='rgba(102,126,234,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><svg style="width:15px;height:15px;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></a>
+          <a href="#" style="width:36px;height:36px;background:rgba(255,255,255,0.1);border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background .2s;color:#fff;" onmouseover="this.style.background='rgba(102,126,234,0.6)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'"><svg style="width:15px;height:15px;" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+        </div>
+      </div>
+      <!-- Product -->
+      <div>
+        <h4 style="font-weight:800;font-size:0.75rem;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,0.45);margin-bottom:18px;">Product</h4>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;">
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Features</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Dashboard</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">API Access</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Changelog</a></li>
+        </ul>
+      </div>
+      <!-- Company -->
+      <div>
+        <h4 style="font-weight:800;font-size:0.75rem;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,0.45);margin-bottom:18px;">Company</h4>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;">
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">About Us</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Careers</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Blog</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Contact</a></li>
+        </ul>
+      </div>
+      <!-- Legal -->
+      <div>
+        <h4 style="font-weight:800;font-size:0.75rem;text-transform:uppercase;letter-spacing:.12em;color:rgba(255,255,255,0.45);margin-bottom:18px;">Legal</h4>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:12px;">
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Privacy Policy</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Terms of Service</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Cookie Policy</a></li>
+          <li><a href="#" style="color:rgba(255,255,255,0.65);text-decoration:none;font-size:0.875rem;font-weight:400;transition:color .2s;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.65)'">Security</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Contact bar -->
+    <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:28px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:20px;">
+      <div style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.55);font-size:0.875rem;">
+        <span class="material-symbols-outlined" style="font-size:16px;color:#a5b4fc;font-variation-settings:'FILL' 1;">mail</span>
+        <a href="mailto:support@cattlecloud.in" style="color:rgba(255,255,255,0.55);text-decoration:none;" onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.55)'">support@cattlecloud.in</a>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.55);font-size:0.875rem;">
+        <span class="material-symbols-outlined" style="font-size:16px;color:#a5b4fc;font-variation-settings:'FILL' 1;">call</span>
+        <span>+91 99990 00000</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.55);font-size:0.875rem;">
+        <span class="material-symbols-outlined" style="font-size:16px;color:#a5b4fc;font-variation-settings:'FILL' 1;">location_on</span>
+        <span>Ahmedabad, Gujarat, India</span>
+      </div>
+    </div>
+
+    <!-- Bottom -->
+    <div style="border-top:1px solid rgba(255,255,255,0.1);padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <p style="color:rgba(255,255,255,0.35);font-size:0.8125rem;font-weight:400;">© 2024 Cattle Cloud Inc. All rights reserved. Built with ❤️ for Indian farmers.</p>
+      <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);padding:8px 16px;border-radius:999px;">
+        <span class="material-symbols-outlined" style="font-size:14px;color:#a5b4fc;font-variation-settings:'FILL' 1;">verified</span>
+        <span style="color:rgba(255,255,255,0.5);font-size:0.75rem;font-weight:500;">SSL Secured · GDPR Compliant</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Reveal on scroll
+  const obs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }), { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Carousel
+  const track = document.getElementById('carousel');
+  const cards = track.querySelectorAll('.carousel-card');
+  const dotsEl = document.getElementById('dots');
+  let idx = 0;
+
+  cards.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.style.cssText = `height:8px;border:none;cursor:pointer;padding:0;border-radius:9999px;transition:all .3s;${i===0?'background:var(--primary-indigo);width:24px;':'background:var(--gray-200);width:8px;'}`;
+    d.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(d);
+  });
+
+  function getVisible() { return window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1; }
+
+  function goTo(i) {
+    const max = Math.max(0, cards.length - getVisible());
+    idx = Math.max(0, Math.min(i, max));
+    track.scrollTo({ left: idx * (cards[0].offsetWidth + 24), behavior: 'smooth' });
+    updateDots();
+  }
+
+  function updateDots() {
+    dotsEl.querySelectorAll('button').forEach((d, i) => {
+      d.style.background = i === idx ? 'var(--primary-indigo)' : 'var(--gray-200)';
+      d.style.width = i === idx ? '24px' : '8px';
+    });
+  }
+
+  window.scrollCarousel = dir => goTo(idx + dir);
+  track.addEventListener('scroll', () => {
+    idx = Math.round(track.scrollLeft / (cards[0].offsetWidth + 24));
+    updateDots();
+  });
+
+  // FAQ open styling
+  document.querySelectorAll('.faq-item').forEach(d => {
+    d.addEventListener('toggle', () => {
+      const h = d.querySelector('h3');
+      const arr = d.querySelector('.faq-arrow');
+      if (d.open) {
+        d.style.background = '#fff';
+        d.style.borderColor = 'rgba(102,126,234,0.3)';
+        d.style.boxShadow = '0 4px 20px rgba(102,126,234,0.1)';
+        h.style.color = 'var(--primary-indigo)';
+        arr.style.color = 'var(--primary-indigo)';
+      } else {
+        d.style.background = 'var(--brand-bg)';
+        d.style.borderColor = 'var(--border-color)';
+        d.style.boxShadow = 'none';
+        h.style.color = 'var(--text-primary)';
+        arr.style.color = 'var(--text-secondary)';
+      }
+    });
+  });
+
+  // Prev arrow hover
+  const prevBtn = document.getElementById('prev-btn');
+  prevBtn.addEventListener('mouseover', () => { prevBtn.style.background = 'var(--primary-indigo)'; prevBtn.style.color = '#fff'; });
+  prevBtn.addEventListener('mouseout', () => { prevBtn.style.background = '#fff'; prevBtn.style.color = 'var(--primary-indigo)'; });
+</script>
+</body>
+</html>
