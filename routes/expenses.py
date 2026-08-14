@@ -140,7 +140,7 @@ def get_cash_flow():
         date_map = {}
 
         for record in revenue_records:
-            date_str = record['date'].strftime('%Y-%m-%d')
+            date_str = record['date'] if isinstance(record['date'], str) else record['date'].strftime('%Y-%m-%d')
             date_map[date_str] = {
                 'date': date_str,
                 'revenue': float(record['revenue']),
@@ -148,7 +148,7 @@ def get_cash_flow():
             }
 
         for record in expense_records:
-            date_str = record['date'].strftime('%Y-%m-%d')
+            date_str = record['date'] if isinstance(record['date'], str) else record['date'].strftime('%Y-%m-%d')
             if date_str in date_map:
                 date_map[date_str]['expenses'] = float(record['expenses'])
             else:
@@ -157,6 +157,7 @@ def get_cash_flow():
                     'revenue': 0.0,
                     'expenses': float(record['expenses'])
                 }
+
 
         cash_flow_data = sorted(date_map.values(), key=lambda x: x['date'])
 
@@ -330,7 +331,8 @@ def get_transactions():
         for txn in paginated:
             formatted.append({
                 'id': txn.get('id', 0),
-                'date': txn['date'].strftime('%Y-%m-%d') if txn['date'] else '—',
+                'date': (txn['date'] if isinstance(txn['date'], str) else txn['date'].strftime('%Y-%m-%d')) if txn['date'] else '—',
+
                 'description': txn['description'] or 'N/A',
                 'category': txn['category'],
                 'amount': float(txn['amount']),

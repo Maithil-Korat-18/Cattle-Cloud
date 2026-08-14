@@ -130,7 +130,8 @@ def get_milk_chart_data(id):
         if start_date and end_date:
             q += " AND date BETWEEN %s AND %s"; params += [start_date, end_date]
         elif days:
-            q += " AND date >= DATE_SUB(CURDATE(), INTERVAL %s DAY)"; params.append(days)
+            q += f" AND date >= DATE_SUB(CURDATE(), INTERVAL {int(days)} DAY)"
+
         else:
             q += " AND date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)"
         q += " ORDER BY date ASC"
@@ -166,8 +167,8 @@ def get_feed_usage(id):
             p_personal += [start_date, end_date]
             p_general  += [start_date, end_date]
         elif days:
-            date_clause = " AND fu.usage_date >= DATE_SUB(CURDATE(), INTERVAL %s DAY)"
-            p_personal.append(days); p_general.append(days)
+            date_clause = f" AND fu.usage_date >= DATE_SUB(CURDATE(), INTERVAL {int(days)} DAY)"
+
         else:
             date_clause = " AND fu.usage_date >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)"
 

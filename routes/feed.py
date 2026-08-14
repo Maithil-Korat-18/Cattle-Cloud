@@ -109,9 +109,10 @@ def get_feed_usage_timeline():
         cursor.close(); conn.close()
 
         return jsonify({
-            'timeline': [{'date': r['date'].strftime('%Y-%m-%d'), 'quantity': float(r['total_quantity'])} for r in records],
+            'timeline': [{'date': r['date'] if isinstance(r['date'], str) else r['date'].strftime('%Y-%m-%d'), 'quantity': float(r['total_quantity'])} for r in records],
             'date_range': {'from': from_date, 'to': to_date}
         }), 200
+
     except Exception as e:
         print(f"Error in get_feed_usage_timeline: {traceback.format_exc()}")
         return jsonify({'error': 'Internal server error', 'details': str(e)}), 500
@@ -213,13 +214,14 @@ def get_feed_history():
 
         return jsonify({
             'history': [{
-                'date':        r['date'].strftime('%Y-%m-%d'),
+                'date':        r['date'] if isinstance(r['date'], str) else r['date'].strftime('%Y-%m-%d'),
                 'cattle_name': r['cattle_name'] or 'General Stock',
                 'feed_type':   r['feed_type'],
                 'quantity':    float(r['quantity']),
                 'cost':        float(r['cost']),
                 'cost_per_kg': float(r['cost_per_kg'])
             } for r in paginated],
+
             'pagination': {
                 'page': page, 'per_page': per_page,
                 'total': total, 'total_pages': (total + per_page - 1) // per_page

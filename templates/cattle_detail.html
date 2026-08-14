@@ -327,7 +327,7 @@
                     <div class="record-content">
                         <div class="record-header">
                             <h4 class="record-issue">{{ record.issue }}</h4>
-                            <span class="record-date">{{ record.created_at.strftime('%b %d, %Y') if record.created_at else 'N/A' }}</span>
+                            <span class="record-date">{{ record.created_at.strftime('%b %d, %Y') if record.created_at and record.created_at.strftime is defined else (record.created_at if record.created_at else 'N/A') }}</span>
                         </div>
                         <div class="record-details">
                             <div class="detail-item"><span class="material-symbols-outlined">person</span><span>Vet: {{ record.vet_name }}</span></div>
@@ -336,8 +336,9 @@
                             <div class="detail-item"><span class="material-symbols-outlined">payments</span><span>Treatment Cost: ₹{{ "%.0f"|format(record.treatment_cost) }}</span></div>
                             {% endif %}
                             {% if record.next_checkup %}
-                            <div class="detail-item"><span class="material-symbols-outlined">event</span><span>Next: {{ record.next_checkup.strftime('%b %d, %Y') }}</span></div>
+                            <div class="detail-item"><span class="material-symbols-outlined">event</span><span>Next: {{ record.next_checkup.strftime('%b %d, %Y') if record.next_checkup.strftime is defined else record.next_checkup }}</span></div>
                             {% endif %}
+
                         </div>
                     </div>
                 </div>

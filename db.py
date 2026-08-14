@@ -57,11 +57,14 @@ def init_sqlite_functions(conn):
             return datetime.strptime(str(date_str).split()[0], "%Y-%m-%d").year
         except:
             return None
+    def concat(*args):
+        return "".join(str(a) for a in args if a is not None)
 
     conn.create_function("CURDATE", 0, curdate)
     conn.create_function("NOW", 0, now)
     conn.create_function("MONTH", 1, month)
     conn.create_function("YEAR", 1, year)
+    conn.create_function("CONCAT", -1, concat)
 
 class SQLiteCursorWrapper:
     def __init__(self, sqlite_cursor, dictionary=False):
@@ -73,12 +76,13 @@ class SQLiteCursorWrapper:
         # Translate MySQL specific date functions
         q = re.sub(r'DATE_SUB\s*\(\s*CURDATE\s*\(\s*\)\s*,\s*INTERVAL\s+(\d+)\s+DAY\s*\)', r"date('now', '-\1 day')", q, flags=re.IGNORECASE)
         q = re.sub(r'DATE_SUB\s*\(\s*([^\,]+)\s*,\s*INTERVAL\s+(\d+)\s+DAY\s*\)', r"date(\1, '-\2 day')", q, flags=re.IGNORECASE)
+
         q = re.sub(r'NOW\(\)\s*-\s*INTERVAL\s+(\d+)\s+MINUTE', r"datetime('now', '-\1 minute')", q, flags=re.IGNORECASE)
         
         # Replace %s parameter placeholder with ?
         q = re.sub(r'%s', '?', q)
 
-        if params is None:
+        if params is None or len(params) == 0:
             self._cursor.execute(q)
         else:
             converted_params = []
@@ -92,6 +96,7 @@ class SQLiteCursorWrapper:
                     converted_params.append(p)
             self._cursor.execute(q, tuple(converted_params))
         return self
+
 
     def fetchone(self):
         row = self._cursor.fetchone()
